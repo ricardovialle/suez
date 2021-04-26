@@ -109,7 +109,9 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' @import doMC
 #' @useDynLib suez, .registration = TRUE
 #' @export
-map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_kernel=NULL, normalization_approach="qq", permutation_approach="boot", cisdist=1e5, checkpoint_dir=NULL, debug=F, genome_build= "GRCh38", maf_threshold = 0) {
+map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_kernel=NULL, 
+                               normalization_approach="qq", permutation_approach="boot", cisdist=1e5, 
+                               checkpoint_dir=NULL, debug=F, genome_build= "GRCh38", maf_threshold = 0) {
 
   if (normalization_approach=="qq") {
     input=quantile_normalize(input)
@@ -137,7 +139,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   cat("Performing initial eigendecomposition...\n")
   eigen_sample_kernel=eigen(sample_kernel, symmetric = T)
 
-  anno = anno %>% mutate(condition=as.factor(condition))
+  anno = anno #%>% mutate(condition=as.factor(condition))
   no_geno = model.matrix( ~ condition, data=anno) # [,2:5]
 
   N=ncol(input)
