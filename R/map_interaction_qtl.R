@@ -212,8 +212,8 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
 
         fit_geno=stan_optimizing_wrapper(stanmodels$suez_step_2, data, init=init, as_vector=F )
 
-        interact=model.matrix(~geno:condition,data=anno)
-        interact=interact[,3:ncol(interact),drop=F]
+        #interact=model.matrix(~geno:condition,data=anno)
+        interact=if (is.numeric(anno$condition)) interact[,2,drop=F] else interact[,3:ncol(interact),drop=F] # probably a cleaner way to do this
         data_interact=data
         data_interact$U_transpose_x=t(eigen_sample_kernel$vectors) %*% cbind( no_geno, geno, interact )
         data_interact$P=ncol(data_interact$U_transpose_x)
