@@ -31,8 +31,9 @@ within-individual G x condition). The models and function arguments are unchange
 - All dependencies are declared (`foreach`, `readr`, `stats`, `utils`; Bioconductor `VariantAnnotation`,
   `GenomicRanges`, `IRanges` as Suggests, only needed for a `TabixFile` genotype) and imported explicitly,
   which also removes the `magrittr::extract` / `rstan::extract` clash warning at load time.
-- `R CMD check --no-manual` passes with one NOTE: `LICENSE` holds the Apache 2.0 text while DESCRIPTION
-  says `GPL (>=3)` (inherited from upstream; to be resolved by the authors).
+- License: GPL (>= 3), as in DESCRIPTION; `LICENSE` now holds the GPL v3 text (it held Apache 2.0, which
+  conflicted with DESCRIPTION and with the GPL v3 code from rstanarm/rstantools in the package).
+- `R CMD check --no-manual`: Status OK.
 
 ### `learn_covariance` (step 1)
 
