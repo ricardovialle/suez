@@ -4,13 +4,13 @@ data {
   int<lower=0> G; // genes
   int<lower=0> P; // covariates
   int<lower=0> P_adjustable; // covariates
-  matrix[N,N] x[P]; 
-  vector[N] y[G]; 
+  array[P] matrix[N,N] x; 
+  array[G] vector[N] y; 
 }
 parameters {
-  real<lower=0> s[P];
-  real<lower=0> s_adjustable[P_adjustable]; 
-  unit_vector[N] x_adjustable[P_adjustable]; 
+  array[P] real<lower=0> s;
+  array[P_adjustable] real<lower=0> s_adjustable; 
+  array[P_adjustable] unit_vector[N] x_adjustable; 
 }
 model {
   matrix[N,N] sigma;

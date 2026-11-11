@@ -103,6 +103,22 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' @param debug Controls whether you see stan::optimizing messages and whether errors are suppressed.
 #' @param genome_build Only required if `genotype` is `TabixFile`. Default is "GRCh38"
 #' @param maf_threshold Minimum MAF to analyze variants. 
+#'
+#' @details Model: y = X b + e, e ~ N(0, sigma2_k * K + sigma2 * I), K = `sample_kernel`, fitted by
+#' maximum likelihood on the N-1 contrasts orthogonal to the intercept (REML for the intercept only),
+#' so a kernel with K 1 = 0 (a GRM from centred genotypes) is handled. A fit counts only if Stan reports
+#' convergence; alternative models start from the default variances and are retried from the null
+#' variances if they land below the null likelihood. Failed fits give NA. Columns are standardized
+#' before fitting (the likelihood is invariant). The function stops if the kernel is not positive
+#' semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
+#' default kernel with condition fitting every within-individual contrast).
+#'
+#' @return data.frame, one row per gene x SNP: `l0`, `l_geno`, `l_interact` (log-likelihoods of the
+#' contrasts under the no-genotype, genotype and genotype x condition models), `p_geno` (LRT, df 1),
+#' `df_interact` and `p_interact` (LRT of `l_interact` vs `l_geno`), `beta_geno` and `se_geno` (GLS
+#' genotype effect per ALT allele and its SE at the fitted variances), and for
+#' `permutation_approach = "boot"` `l_boot_geno` and `l_boot_interact` (one parametric bootstrap draw
+#' under the genotype model: 2 * (l_boot_interact - l_boot_geno) is a null draw of the interaction LR).
 #' @importFrom rstan optimizing
 #' @import dplyr
 #' @import readr
@@ -137,12 +153,25 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   }
 
   cat("Performing initial eigendecomposition...\n")
-  eigen_sample_kernel=eigen(sample_kernel, symmetric = T)
+  eig=kernel_contrast_eigen(sample_kernel) # N-1 contrasts orthogonal to the intercept
+  U=eig$vectors
+  lambda=eig$values
 
-  anno = anno #%>% mutate(condition=as.factor(condition))
-  no_geno = model.matrix( ~ condition, data=anno) # [,2:5]
+  # GxE design for a genotype vector (numeric condition: one column; factor: one per non-reference level)
+  interact_design=function(geno) {
+    interact=model.matrix(~geno:condition,data=cbind(anno, geno=geno))
+    if (is.numeric(anno$condition)) interact[,2,drop=F] else interact[,3:ncol(interact),drop=F]
+  }
+  df_interact=ncol(interact_design(rep(1, nrow(anno))))
 
-  N=ncol(input)
+  no_geno = model.matrix( ~ condition, data=anno)
+  no_geno = no_geno[, apply(no_geno, 2, sd) > 0, drop=F] # intercept: removed by the contrasts
+  X0 = standardize_cols(no_geno)
+  UX0 = crossprod(U, X0)
+
+  # condition varying within individual => GxE columns can fit the kernel's null directions
+  within = any(tapply(as.character(anno$condition), anno$individual, function(x) length(unique(x)) > 1))
+  check_identifiable(eig, X0, need = 1 + if (within) df_interact else 0)
 
   errorhandling=if (debug) 'stop' else 'remove'
 
@@ -153,6 +182,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     on.exit({
       sink(type="message")
       sink()
+      close(zz)
     })
   }
 
@@ -186,61 +216,53 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     if (permutation_approach=="permute") colnames(imp_geno)=colnames(imp_geno)[ sample(ncol(imp_geno),ncol(imp_geno)) ]
 
     y=input[gene,] %>% as.numeric
-    y=y-mean(y)
-    
-    data=list(N=N,
-              U_transpose_x=t(eigen_sample_kernel$vectors) %*% no_geno,
-              P=ncol(no_geno), 
-              U_transpose_y=t(eigen_sample_kernel$vectors) %*% y %>% as.numeric, 
-              lambda=eigen_sample_kernel$values)
+    Uy=crossprod(U, y) %>% as.numeric
 
-    init=list(sigma2=0.1, sigma2_k=1.0, beta=lm(y ~ no_geno - 1) %>% coef )
+    b0=if (ncol(UX0)) unname(lm.fit(UX0, Uy)$coefficients) else numeric(0)
+    init=list(sigma2=0.1, sigma2_k=1.0, beta=as.array(b0))
 
     if (debug) cat("Fitting no genotype model...\n")
-    fit_no_geno=stan_optimizing_wrapper(stanmodels$suez_step_2, data, init=init, as_vector=F, verbose = debug)
+    fit_no_geno=fit_lmm(Uy, UX0, lambda, init, debug)
+    if (is.null(fit_no_geno)) stop("no-genotype model did not converge for ", gene)
 
     gene_results = foreach(cis_snp=cis_snps, .errorhandling=errorhandling, .combine = bind_rows) %dopar% {
 
       geno=imp_geno[cis_snp,anno$individual]
-      if (sum(imp_geno[cis_snp,]) < 5.0) { return(NULL) }
+      if (sum(imp_geno[cis_snp,]) < 5.0 || sd(geno) == 0) { return(NULL) }
 
-      lrt = function(data) {
-        data$U_transpose_x=t(eigen_sample_kernel$vectors) %*% cbind( no_geno, geno )
-        data$P=ncol(data$U_transpose_x)
-        init=fit_no_geno$par
-        init$beta=c(init$beta,0.0)
+      UX1=cbind(UX0, crossprod(U, standardize_cols(cbind(geno))))
+      interact=interact_design(geno)
+      interact=interact[, apply(interact, 2, sd) > 0, drop=F]
+      UX2=cbind(UX1, crossprod(U, standardize_cols(interact)))
 
-        fit_geno=stan_optimizing_wrapper(stanmodels$suez_step_2, data, init=init, as_vector=F )
-
-        interact=model.matrix(~geno:condition,data=anno)
-        interact=if (is.numeric(anno$condition)) interact[,2,drop=F] else interact[,3:ncol(interact),drop=F] # probably a cleaner way to do this
-        data_interact=data
-        data_interact$U_transpose_x=t(eigen_sample_kernel$vectors) %*% cbind( no_geno, geno, interact )
-        data_interact$P=ncol(data_interact$U_transpose_x)
-
-        init=fit_geno$par
-        init$beta=c(init$beta,numeric(ncol(interact)))
-        fit_interact=stan_optimizing_wrapper(stanmodels$suez_step_2, data_interact, init=init, as_vector=F)
-
+      lrt = function(Uy, f0) {
+        fit_geno=fit_nested(Uy, UX1, lambda, f0, debug)
+        fit_interact=if (is.null(fit_geno) || ncol(interact)==0) NULL else fit_nested(Uy, UX2, lambda, fit_geno, debug)
         list( fit_geno=fit_geno, fit_interact=fit_interact )
       }
+      value=function(fit) if (is.null(fit)) NA_real_ else fit$value
 
-      lrt_true=lrt( data )
+      lrt_true=lrt( Uy, fit_no_geno )
       fit_geno=lrt_true$fit_geno
       fit_interact=lrt_true$fit_interact
 
-      res=data.frame(gene=gene, cis_snp=cis_snp, l0=fit_no_geno$value, l_geno=fit_geno$value, l_interact=fit_interact$value, stringsAsFactors=F  )
+      res=data.frame(gene=gene, cis_snp=cis_snp, l0=fit_no_geno$value, l_geno=value(fit_geno),
+                     l_interact=value(fit_interact), stringsAsFactors=F  )
+      res$p_geno=pchisq(pmax(0, 2*(res$l_geno-res$l0)), 1, lower.tail=F)
+      res$df_interact=ncol(interact)
+      res$p_interact=pchisq(pmax(0, 2*(res$l_interact-res$l_geno)), ncol(interact), lower.tail=F)
+      bse=if (is.null(fit_geno)) c(NA, NA) else gls_coef(fit_geno, UX1, Uy, lambda) / sd(geno) # per allele
+      res$beta_geno=bse[1]
+      res$se_geno=bse[2]
 
-      if (permutation_approach=="boot") {
-        Sigma = fit_geno$par$sigma2_k * sample_kernel + fit_geno$par$sigma2 * diag(N)
-        chol_Sigma = chol(Sigma)
-        xb = cbind( no_geno, geno ) %*% fit_geno$par$beta
-        y_boot = t(chol_Sigma) %*% rnorm(N) + xb
-        data_boot = data
-        data_boot$U_transpose_y = t(eigen_sample_kernel$vectors) %*% y_boot %>% as.numeric()
-        lrt_boot = lrt( data_boot )
-        res$l_boot_geno=lrt_boot$fit_geno$value
-        res$l_boot_interact=lrt_boot$fit_interact$value
+      if (permutation_approach=="boot" && !is.null(fit_geno)) {
+        # parametric bootstrap under the genotype (no-interaction) model, in the rotated space
+        o = fit_geno$par$sigma2_k * lambda + fit_geno$par$sigma2
+        Uy_boot = sqrt(o) * rnorm(length(o)) + drop(UX1 %*% fit_geno$par$beta)
+        fit_boot_0 = fit_lmm(Uy_boot, UX0, lambda, init, debug)
+        lrt_boot = if (is.null(fit_boot_0)) list() else lrt( Uy_boot, fit_boot_0 )
+        res$l_boot_geno=value(lrt_boot$fit_geno)
+        res$l_boot_interact=value(lrt_boot$fit_interact)
       }
 
       res
@@ -253,6 +275,4 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     gene_results
   }
 }
-
-# Could just zcat everything into one file rather than bind_rows
 

@@ -47,6 +47,24 @@ map_interaction_qtl(
 
 \item{maf_threshold}{Minimum MAF to analyze variants.}
 }
+\value{
+data.frame, one row per gene x SNP: `l0`, `l_geno`, `l_interact` (log-likelihoods of the
+contrasts under the no-genotype, genotype and genotype x condition models), `p_geno` (LRT, df 1),
+`df_interact` and `p_interact` (LRT of `l_interact` vs `l_geno`), `beta_geno` and `se_geno` (GLS
+genotype effect per ALT allele and its SE at the fitted variances), and for
+`permutation_approach = "boot"` `l_boot_geno` and `l_boot_interact` (one parametric bootstrap draw
+under the genotype model: 2 * (l_boot_interact - l_boot_geno) is a null draw of the interaction LR).
+}
 \description{
 Response (e)QTL mapping
+}
+\details{
+Model: y = X b + e, e ~ N(0, sigma2_k * K + sigma2 * I), K = `sample_kernel`, fitted by
+maximum likelihood on the N-1 contrasts orthogonal to the intercept (REML for the intercept only),
+so a kernel with K 1 = 0 (a GRM from centred genotypes) is handled. A fit counts only if Stan reports
+convergence; alternative models start from the default variances and are retried from the null
+variances if they land below the null likelihood. Failed fits give NA. Columns are standardized
+before fitting (the likelihood is invariant). The function stops if the kernel is not positive
+semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
+default kernel with condition fitting every within-individual contrast).
 }
