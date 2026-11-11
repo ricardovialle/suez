@@ -94,7 +94,7 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' @param checkpoint_dir An optional directory to store per gene results. If mapping crashes these results will be reused to save time.
 #' @param debug Controls whether you see progress messages and whether errors are suppressed.
 #' @param genome_build Only required if `genotype` is `TabixFile`. Default is "GRCh38"
-#' @param maf_threshold Minimum MAF to analyze variants. 
+#' @param maf_threshold Variants with minor allele frequency at or below this value are not tested.
 #'
 #' @details Model: y = X b + e, e ~ N(0, sigma2_k * K + sigma2 * I), K = `sample_kernel`, fitted by
 #' maximum likelihood on the N-1 contrasts orthogonal to the intercept (REML for the intercept only),
@@ -199,7 +199,8 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     
     imp_geno = easy_impute(geno_here)
     if (maf_threshold > 0) {
-      mafs = rowMeans(geno_here, na.rm=T)/2 # calculate on unimputed
+      af = rowMeans(geno_here, na.rm=T)/2 # ALT frequency, on unimputed genotypes
+      mafs = pmin(af, 1 - af)
       imp_geno = imp_geno[mafs > maf_threshold,,drop=F]
       if (nrow(imp_geno)==0) return(NULL)
     }

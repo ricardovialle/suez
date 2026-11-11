@@ -91,6 +91,16 @@ check("checkpointed results read back", identical(c1$cis_snp, c2$cis_snp) &&
         max(abs(as.matrix(c1[num]) - as.matrix(c2[num])), na.rm = TRUE) < 1e-8)
 unlink(cdir, recursive = TRUE)
 
+# maf_threshold filters on the minor allele frequency
+Gm = G; s_hi = rownames(G)[2]; s_lo = rownames(G)[3]
+Gm[s_hi, ] = 2; Gm[s_hi, 1:4] = 1                          # ALT frequency ~0.98: minor allele ~0.02
+Gm[s_lo, ] = 0; Gm[s_lo, 1:8] = 1                          # ALT frequency ~0.03 (8 alleles: not the < 5 skip)
+rm_ = map_interaction_qtl(Y[1, , drop = FALSE], Gm, geneloc, snploc, anno, sample_kernel = K,
+                          normalization_approach = "none", permutation_approach = "none", cisdist = 100,
+                          maf_threshold = 0.05)
+check("maf_threshold drops low-MAF SNPs coded either way", !any(c(s_hi, s_lo) %in% rm_$cis_snp) &&
+        all(setdiff(rownames(G)[1:n_snp], c(s_hi, s_lo)) %in% rm_$cis_snp))
+
 # errors
 check("non-PSD kernel refused", grepl("not positive semi-definite",
       errmsg(map_interaction_qtl(Y, G, geneloc, snploc, anno, sample_kernel = K - 3 * diag(N),

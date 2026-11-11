@@ -1,5 +1,8 @@
 # suez: response-eQTL mapping in R
 
+This is a fork of [davidaknowles/suez](https://github.com/davidaknowles/suez) with bug fixes, faster model
+fits, parallel processing and new documentation. All modifications are listed in [CHANGELOG.md](CHANGELOG.md).
+
 `suez` maps expression QTLs, and genotype x condition (response) eQTLs, in studies where individuals are
 measured more than once, for example before and after a treatment. It extends the PANAMA approach
 ([Fusi et al. 2012](https://doi.org/10.1371/journal.pcbi.1002330)) to handle:
@@ -17,8 +20,9 @@ It works in two steps:
    interaction.
 
 A worked example from raw counts and a joint-called VCF to eQTL calls (filtering, TMM normalization,
-genotype QC, both suez steps, multiple testing) is in the vignette: [vignettes/suez.Rmd](vignettes/suez.Rmd),
-rendered as [doc/suez.html](doc/suez.html). Changes in this fork are listed in [CHANGELOG.md](CHANGELOG.md).
+genotype QC, both suez steps, multiple testing) is in the
+[vignette](https://ricardovialle.github.io/suez/doc/suez.html) (source:
+[vignettes/suez.Rmd](vignettes/suez.Rmd)).
 
 ## Installation
 
@@ -140,7 +144,7 @@ res = map_interaction_qtl(input, genotype, geneloc, snploc, anno,
 - Without a `sample_kernel`, the model only accounts for repeated samples of the same individual.
 - For each gene, SNPs with `snploc$chr == chr` and `left - cisdist < pos < right + cisdist` are tested.
   SNPs with fewer than 5 ALT alleles in total, or no variation, are skipped. `maf_threshold` drops SNPs
-  whose ALT allele frequency (mean count / 2) is at or below the threshold.
+  whose minor allele frequency is at or below the threshold.
 - `permutation_approach = "permute"` shuffles the genotype labels per gene (a null run); `"none"` skips the
   bootstrap (about 20% faster).
 - With `debug = FALSE` (the default) all console output is suppressed during the run, and a gene that

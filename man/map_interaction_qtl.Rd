@@ -45,7 +45,7 @@ map_interaction_qtl(
 
 \item{genome_build}{Only required if `genotype` is `TabixFile`. Default is "GRCh38"}
 
-\item{maf_threshold}{Minimum MAF to analyze variants.}
+\item{maf_threshold}{Variants with minor allele frequency at or below this value are not tested.}
 }
 \value{
 data.frame, one row per gene x SNP: `l0`, `l_geno`, `l_interact` (log-likelihoods of the
