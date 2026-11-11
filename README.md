@@ -45,6 +45,8 @@ within-individual G x condition). The models and function arguments are unchange
 - The `same_condition` component is dropped: after removing the condition effects it is identically zero
   (it was already excluded from `cov_suez`). `optimized_fit$par$s` therefore has no `same_condition` entry.
 - Warns when `rstan::optimizing` does not report convergence.
+- The Stan model takes the sufficient statistic `sum_g y_g y_g'` (samples x samples) instead of looping over
+  genes, so run time no longer grows with the number of genes (same likelihood; ~10-50x faster in tests).
 
 ### `map_interaction_qtl` (step 2)
 
@@ -53,10 +55,11 @@ within-individual G x condition). The models and function arguments are unchange
   genotypes (plink, GCTA) has K 1 = 0: on the full data the intercept fits that direction exactly, the
   likelihood is unbounded as sigma2 -> 0, and the reported log-likelihoods were arbitrary (p-values off by
   up to ~4 orders of magnitude in a test with a 150-individual GRM).
-- **Convergence**: Stan's `return_code` is checked (it was ignored); a failed fit gives NA instead of a
-  silently wrong likelihood. Alternative models start from the default variances, because a null fit at the
-  sigma2 = 0 boundary made the warm-started L-BFGS stop at its start (LR = 0), with a retry from the null
-  variances if a fit lands below the null.
+- **Exact fits**: each model is fitted in C++ (`src/lmm.cpp`) by maximising the likelihood over
+  h = sigma2_k / (sigma2_k + sigma2), with the effects and total variance in closed form (grid plus
+  golden-section search, boundaries included). This replaces `rstan::optimizing`, which ignored failed
+  fits, and whose L-BFGS stopped short near sigma2 = 0 (LR = 0 when warm-started on the boundary; ~0.03
+  log-likelihood short otherwise). A fit that is not finite gives NA.
 - **Scaling**: covariate, genotype and interaction columns are standardized before fitting (invariant
   likelihood; L-BFGS stopped short on raw-scale conditions such as age).
 - **Checks**: stops on a kernel that is not positive semi-definite, or when the condition design fits every
@@ -67,13 +70,25 @@ within-individual G x condition). The models and function arguments are unchange
 - **Bootstrap**: drawn in the rotated space from the fitted variances (no Cholesky of a possibly singular
   covariance), with a null fit on the bootstrap data.
 - The `/dev/null` connection opened when `debug = FALSE` is closed on exit (it leaked one per call).
+- `checkpoint_dir` files are written inside the directory (`dir/gene.txt.gz`; without a trailing slash they
+  went next to it as `dirgene.txt.gz`).
+
+### Performance
+
+- Genes run in parallel with the registered `foreach` backend (e.g. `doMC::registerDoMC(8)`); SNPs within a
+  gene run in sequence. Each gene gets its own seed drawn from the caller's RNG, so with `set.seed()` the
+  bootstrap draws are the same for any number of cores.
+- Step 2 is ~3x faster on one core (C++ fits); 64 genes x 20 SNPs with bootstrap took 18 s on 1 core and
+  1.2 s on 8 (Apple M5, 4 performance + 6 efficiency cores).
+- Step 1 time no longer grows with the number of genes (see above).
 
 ### Tests
 
-`tests/` runs with `R CMD check` (about 15 s):
+`tests/` runs with `R CMD check` (about 10 s):
 
 - `model_checks.R`: every `map_interaction_qtl` LRT against an exact profile-likelihood reference, with
   repeated samples, a centred GRM and a condition varying within individuals (including fits on the
-  variance boundaries), effect sizes, bootstrap columns and the error paths.
+  variance boundaries), effect sizes, bootstrap columns, identical results on 1 and 2 cores,
+  checkpoint files and the error paths.
 - `learn_covariance_checks.R`: recovery of known noise, same-individual and latent-factor variances for a
   factor and a continuous condition.

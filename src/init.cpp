@@ -8,12 +8,15 @@
 #include <Rversion.h>
 
 
+extern "C" SEXP suez_profile_lmm(SEXP, SEXP, SEXP);
+
 static const R_CallMethodDef CallEntries[] = {
+  {"suez_profile_lmm", (DL_FUNC) &suez_profile_lmm, 3},
   {NULL, NULL, 0}
 };
 
 
-void attribute_visible R_init_suez(DllInfo *dll) {
+extern "C" void attribute_visible R_init_suez(DllInfo *dll) {   // C linkage, or R never calls it
   // next line is necessary to avoid a NOTE from R CMD check
   R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(dll, TRUE); // necessary for .onLoad() to work

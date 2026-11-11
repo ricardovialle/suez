@@ -1,6 +1,6 @@
 ## Fitting helpers for map_interaction_qtl: the model y = X b + e,
-## e ~ N(0, sigma2_k * K + sigma2 * I), fitted by maximum likelihood with
-## stanmodels$suez_step_2 on data rotated by K's eigenvectors.
+## e ~ N(0, sigma2_k * K + sigma2 * I), fitted by maximum likelihood
+## (src/lmm.cpp) on data rotated by K's eigenvectors.
 ##
 ## The likelihood is that of the N-1 contrasts orthogonal to the intercept
 ## (REML for the intercept only). Every model has an intercept, so likelihood-
@@ -52,31 +52,19 @@ standardize_cols = function(M) {
   M
 }
 
-# One ML fit; NULL unless Stan reports convergence.
-fit_lmm = function(Uy, UX, lambda, init, debug = FALSE) {
-  data = list(N = length(Uy), P = ncol(UX), U_transpose_x = UX, lambda = lambda, U_transpose_y = Uy)
-  fit = tryCatch(stan_optimizing_wrapper(stanmodels$suez_step_2, data, init = init, as_vector = FALSE,
-                                         verbose = debug),
-                 error = function(e) { if (debug) message("Stan error: ", conditionMessage(e)); NULL })
-  if (is.null(fit) || fit$return_code != 0 || !is.finite(fit$value)) return(NULL)
-  fit
+# Exact ML fit (src/lmm.cpp); NULL if the likelihood is not finite.
+fit_lmm = function(Uy, UX, lambda) {
+  f = .Call(suez_profile_lmm, as.matrix(UX) + 0, as.numeric(Uy), as.numeric(lambda))
+  if (!is.finite(f$value)) return(NULL)
+  list(value = f$value, par = list(sigma2 = f$sigma2, sigma2_k = f$sigma2_k, beta = f$beta))
 }
 
-# Fit a model nested over `f0` (extra columns appended to UX). Starts from the
-# default variances: a null fit at the sigma2 = 0 boundary stops L-BFGS at its
-# starting point. Retries from the null fit's variances if that lands below the
-# null likelihood; NULL if no fit reaches it (not a maximum).
-fit_nested = function(Uy, UX, lambda, f0, debug = FALSE) {
-  beta = as.array(c(f0$par$beta, numeric(ncol(UX) - length(f0$par$beta))))
-  best = NULL
-  for (init in list(list(sigma2 = 0.1, sigma2_k = 1.0, beta = beta),
-                    list(sigma2 = f0$par$sigma2, sigma2_k = f0$par$sigma2_k, beta = beta))) {
-    f = fit_lmm(Uy, UX, lambda, init, debug)
-    if (!is.null(f) && (is.null(best) || f$value > best$value)) best = f
-    if (!is.null(best) && best$value >= f0$value - 1e-6) break
-  }
-  if (is.null(best) || best$value < f0$value - 1e-3) return(NULL)
-  best
+# Fit a model nested over `f0` (extra columns appended to UX); NULL if it lands
+# below the null likelihood, which an exact fit should not.
+fit_nested = function(Uy, UX, lambda, f0) {
+  f = fit_lmm(Uy, UX, lambda)
+  if (is.null(f) || f$value < f0$value - 1e-6) return(NULL)
+  f
 }
 
 # GLS estimate and SE of column k at the fitted variance components.

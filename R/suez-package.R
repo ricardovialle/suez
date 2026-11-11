@@ -29,4 +29,4 @@
 NULL
 
 # foreach loop variables
-utils::globalVariables(c("p", "gene", "cis_snp"))
+utils::globalVariables(c("p", "gene", "cis_snp", "seed"))

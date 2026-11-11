@@ -73,6 +73,24 @@ check("GLS slope consistent with the truth", all(abs(z) < 4), sprintf("(max |z| 
 check("bootstrap columns", all(c("l_boot_geno", "l_boot_interact") %in% names(res)) &&
         mean(!is.na(res$l_boot_interact)) > 0.95)
 
+# reproducibility across core counts, and checkpoint files
+run = function(cores, ...) {
+  registerDoMC(cores); set.seed(11)
+  r = map_interaction_qtl(Y[1:4, ], G, geneloc, snploc, anno, sample_kernel = K, normalization_approach = "none",
+                          permutation_approach = "boot", cisdist = 100, ...)
+  registerDoMC(1); as.data.frame(r)
+}
+r1 = run(1); r2 = run(2)
+check("same set.seed => same bootstrap draws on 1 and 2 cores", identical(r1, r2))
+cdir = file.path(tempdir(), "suez_ckpt")                   # no trailing slash
+c1 = run(1, checkpoint_dir = cdir)
+check("checkpoint files written inside checkpoint_dir", setequal(dir(cdir), paste0("g", 1:4, ".txt.gz")))
+c2 = run(1, checkpoint_dir = cdir)                          # read back from the files
+num = sapply(c1, is.numeric)
+check("checkpointed results read back", identical(c1$cis_snp, c2$cis_snp) &&
+        max(abs(as.matrix(c1[num]) - as.matrix(c2[num])), na.rm = TRUE) < 1e-8)
+unlink(cdir, recursive = TRUE)
+
 # errors
 check("non-PSD kernel refused", grepl("not positive semi-definite",
       errmsg(map_interaction_qtl(Y, G, geneloc, snploc, anno, sample_kernel = K - 3 * diag(N),

@@ -3,7 +3,7 @@ PKG_CPPFLAGS = -I"../inst/include" -I"$(STANHEADERS_SRC)" -DBOOST_DISABLE_ASSERT
 
 CXX_STD = CXX17
 SOURCES = $(wildcard stan_files/*.stan)
-OBJECTS = $(SOURCES:.stan=.o) init.o
+OBJECTS = $(SOURCES:.stan=.o) init.o lmm.o
 
 all: $(SHLIB)
 

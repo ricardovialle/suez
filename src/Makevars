@@ -5,7 +5,7 @@ PKG_CXXFLAGS = $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "RcppParallel::Cx
 PKG_LIBS = $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "RcppParallel::RcppParallelLibs()") $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "StanHeaders:::LdFlags()")
 
 SOURCES = $(wildcard stan_files/*.stan)
-OBJECTS = $(SOURCES:.stan=.o) init.o
+OBJECTS = $(SOURCES:.stan=.o) init.o lmm.o
 
 CXX_STD = CXX17
 

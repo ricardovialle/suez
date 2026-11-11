@@ -1,15 +1,4 @@
 
-## Wrapper to supress extraneous stdout from rstan::optimizing
-## Doing this seems to open too many file handles though :(
-stan_optimizing_wrapper = function(...) {
-  #zz <- file( "/dev/null", open = "wt")
-  #sink(zz)
-  #sink(zz, type = "message")
-  res=optimizing(...)
-  #sink(type="message")
-  #sink()
-  res
-}
 
 #' Consistent implementation of diag
 fix_diag=function(x) {
@@ -103,15 +92,15 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' @param permutation_approach One of ("none","permute","boot"). We recommend boot (parametric bootstrap) since the permutation test is not really valid for interaction effect testing.
 #' @param cisdist How far from the gene boundaries to look for SNPs to test
 #' @param checkpoint_dir An optional directory to store per gene results. If mapping crashes these results will be reused to save time.
-#' @param debug Controls whether you see stan::optimizing messages and whether errors are suppressed.
+#' @param debug Controls whether you see progress messages and whether errors are suppressed.
 #' @param genome_build Only required if `genotype` is `TabixFile`. Default is "GRCh38"
 #' @param maf_threshold Minimum MAF to analyze variants. 
 #'
 #' @details Model: y = X b + e, e ~ N(0, sigma2_k * K + sigma2 * I), K = `sample_kernel`, fitted by
 #' maximum likelihood on the N-1 contrasts orthogonal to the intercept (REML for the intercept only),
-#' so a kernel with K 1 = 0 (a GRM from centred genotypes) is handled. A fit counts only if Stan reports
-#' convergence; alternative models start from the default variances and are retried from the null
-#' variances if they land below the null likelihood. Failed fits give NA. Columns are standardized
+#' so a kernel with K 1 = 0 (a GRM from centred genotypes) is handled. Each fit maximises the
+#' likelihood exactly: b and the total variance have closed forms given h = sigma2_k / (sigma2_k +
+#' sigma2), and h is found by grid and golden-section search on [0, 1]. Failed fits give NA. Columns are standardized
 #' before fitting (the likelihood is invariant). The function stops if the kernel is not positive
 #' semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
 #' default kernel with condition fitting every within-individual contrast).
@@ -187,10 +176,14 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     })
   }
 
-  foreach(gene=genes, .errorhandling=errorhandling, .combine = bind_rows) %do% {
+  # one seed per gene, drawn from the caller's RNG: results depend on set.seed() only, not on the cores
+  seeds = sample.int(.Machine$integer.max, length(genes))
 
+  foreach(gene=genes, seed=seeds, .errorhandling=errorhandling, .combine = bind_rows) %dopar% {
+
+    set.seed(seed)
     if (!is.null(checkpoint_dir)){
-      check_fn = paste0(checkpoint_dir,gene,".txt.gz")
+      check_fn = file.path(checkpoint_dir, paste0(gene, ".txt.gz"))
       if (file.exists(check_fn)) {
         return(read_tsv(check_fn))
       }
@@ -219,14 +212,11 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     y=input[gene,] %>% as.numeric
     Uy=crossprod(U, y) %>% as.numeric
 
-    b0=if (ncol(UX0)) unname(lm.fit(UX0, Uy)$coefficients) else numeric(0)
-    init=list(sigma2=0.1, sigma2_k=1.0, beta=as.array(b0))
-
     if (debug) cat("Fitting no genotype model...\n")
-    fit_no_geno=fit_lmm(Uy, UX0, lambda, init, debug)
+    fit_no_geno=fit_lmm(Uy, UX0, lambda)
     if (is.null(fit_no_geno)) stop("no-genotype model did not converge for ", gene)
 
-    gene_results = foreach(cis_snp=cis_snps, .errorhandling=errorhandling, .combine = bind_rows) %dopar% {
+    gene_results = foreach(cis_snp=cis_snps, .errorhandling=errorhandling, .combine = bind_rows) %do% {
 
       geno=imp_geno[cis_snp,anno$individual]
       if (sum(imp_geno[cis_snp,]) < 5.0 || sd(geno) == 0) { return(NULL) }
@@ -237,8 +227,8 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
       UX2=cbind(UX1, crossprod(U, standardize_cols(interact)))
 
       lrt = function(Uy, f0) {
-        fit_geno=fit_nested(Uy, UX1, lambda, f0, debug)
-        fit_interact=if (is.null(fit_geno) || ncol(interact)==0) NULL else fit_nested(Uy, UX2, lambda, fit_geno, debug)
+        fit_geno=fit_nested(Uy, UX1, lambda, f0)
+        fit_interact=if (is.null(fit_geno) || ncol(interact)==0) NULL else fit_nested(Uy, UX2, lambda, fit_geno)
         list( fit_geno=fit_geno, fit_interact=fit_interact )
       }
       value=function(fit) if (is.null(fit)) NA_real_ else fit$value
@@ -260,7 +250,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
         # parametric bootstrap under the genotype (no-interaction) model, in the rotated space
         o = fit_geno$par$sigma2_k * lambda + fit_geno$par$sigma2
         Uy_boot = sqrt(o) * rnorm(length(o)) + drop(UX1 %*% fit_geno$par$beta)
-        fit_boot_0 = fit_lmm(Uy_boot, UX0, lambda, init, debug)
+        fit_boot_0 = fit_lmm(Uy_boot, UX0, lambda)
         lrt_boot = if (is.null(fit_boot_0)) list() else lrt( Uy_boot, fit_boot_0 )
         res$l_boot_geno=value(lrt_boot$fit_geno)
         res$l_boot_interact=value(lrt_boot$fit_interact)

@@ -55,7 +55,7 @@ learn_covariance = function(input, anno, kinship_matrix=NULL, P=20, same_ind_ini
     variance_component_weights=c(variance_component_weights, kinship_matrix_initial_weight)
   }
 
-  dat=list(y=resi,
+  dat=list(YtY=crossprod(resi),
            N=ncol(resi),
            G=nrow(resi),
            P=length(variance_components),

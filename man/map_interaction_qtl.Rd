@@ -41,7 +41,7 @@ map_interaction_qtl(
 
 \item{checkpoint_dir}{An optional directory to store per gene results. If mapping crashes these results will be reused to save time.}
 
-\item{debug}{Controls whether you see stan::optimizing messages and whether errors are suppressed.}
+\item{debug}{Controls whether you see progress messages and whether errors are suppressed.}
 
 \item{genome_build}{Only required if `genotype` is `TabixFile`. Default is "GRCh38"}
 
@@ -61,9 +61,9 @@ Response (e)QTL mapping
 \details{
 Model: y = X b + e, e ~ N(0, sigma2_k * K + sigma2 * I), K = `sample_kernel`, fitted by
 maximum likelihood on the N-1 contrasts orthogonal to the intercept (REML for the intercept only),
-so a kernel with K 1 = 0 (a GRM from centred genotypes) is handled. A fit counts only if Stan reports
-convergence; alternative models start from the default variances and are retried from the null
-variances if they land below the null likelihood. Failed fits give NA. Columns are standardized
+so a kernel with K 1 = 0 (a GRM from centred genotypes) is handled. Each fit maximises the
+likelihood exactly: b and the total variance have closed forms given h = sigma2_k / (sigma2_k +
+sigma2), and h is found by grid and golden-section search on [0, 1]. Failed fits give NA. Columns are standardized
 before fitting (the likelihood is invariant). The function stops if the kernel is not positive
 semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
 default kernel with condition fitting every within-individual contrast).
