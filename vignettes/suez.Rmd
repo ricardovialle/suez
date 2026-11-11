@@ -1,0 +1,163 @@
+---
+title: "From raw counts and a VCF to response eQTLs"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{From raw counts and a VCF to response eQTLs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6, fig.height = 3.5)
+```
+
+This vignette goes from raw RNA-seq counts and a joint-called VCF to eQTL and response-eQTL calls. The
+example data are simulated: 60 individuals, each sequenced in a control and a treated condition, with 300
+genes and about 3,000 SNPs on chr22.
+
+```{r packages, message = FALSE, warning = FALSE}
+library(suez)
+library(edgeR)              # expression filtering and TMM normalization
+library(VariantAnnotation)  # VCF reading
+library(doMC)
+registerDoMC(2)             # genes are tested in parallel
+```
+
+## 1. Input files
+
+```{r files}
+ext = function(f) system.file("extdata", f, package = "suez")
+counts  = read.delim(ext("counts.tsv.gz"), row.names = 1, check.names = FALSE)  # genes x samples
+samples = read.delim(ext("samples.tsv"))       # sample_id, individual, condition
+genes   = read.delim(ext("genes.tsv"))         # gene_id, chr, start, end (e.g. from a GTF)
+head(samples, 3)
+stopifnot(identical(colnames(counts), samples$sample_id))   # suez matches samples by position
+```
+
+## 2. Expression: filter and normalize
+
+Keep genes with enough reads using `edgeR::filterByExpr`, then compute TMM-normalized log2 CPM.
+
+```{r expression}
+dge = DGEList(counts, group = samples$condition)
+dge = dge[filterByExpr(dge), , keep.lib.sizes = FALSE]
+dge = normLibSizes(dge)                          # TMM (calcNormFactors in edgeR < 4)
+logcpm = cpm(dge, log = TRUE)
+dim(logcpm)
+```
+
+## 3. Genotypes: read the VCF, filter, convert to dosages
+
+Keep biallelic SNPs with a call rate of at least 95% and a minor allele frequency of at least 5%. Missing
+calls can stay `NA`: suez imputes them per gene.
+
+```{r genotypes}
+vcf = readVcf(ext("genotypes.vcf.gz"))
+vcf = vcf[isSNV(vcf)]                            # biallelic SNPs
+gt = geno(vcf)$GT
+dosage = matrix(c("0/0" = 0, "0|0" = 0, "0/1" = 1, "0|1" = 1, "1|0" = 1, "1/1" = 2, "1|1" = 2)[gt],
+                nrow(gt), dimnames = dimnames(gt))
+call_rate = rowMeans(!is.na(dosage))
+af = rowMeans(dosage, na.rm = TRUE) / 2
+dosage = dosage[call_rate >= 0.95 & pmin(af, 1 - af) >= 0.05, ]
+dim(dosage)
+
+snploc = data.frame(snpid = rownames(dosage),
+                    chr = as.character(seqnames(rowRanges(vcf)[rownames(dosage)])),
+                    pos = start(rowRanges(vcf)[rownames(dosage)]))
+geneloc = data.frame(geneid = genes$gene_id, chr = genes$chr, left = genes$start, right = genes$end)
+```
+
+## 4. Step 1: learn the sample covariance
+
+`learn_covariance` models hidden confounders (latent factors), repeated samples of the same individual and,
+optionally, relatedness. Here the genetic relationship matrix (GRM) comes from the same SNPs; in a real
+study, build it from genome-wide, LD-pruned SNPs (e.g. with plink).
+
+```{r grm}
+Z = scale(t(dosage)); Z[is.na(Z)] = 0            # individuals x SNPs, standardized
+grm = tcrossprod(Z) / ncol(Z)
+```
+
+```{r step1, results = "hide"}
+anno = data.frame(individual = samples$individual, condition = samples$condition)
+qq = t(apply(logcpm, 1, function(x) qnorm((rank(x) - 0.5) / length(x))))   # per-gene normal scores
+step1 = learn_covariance(qq, anno, kinship_matrix = grm, P = 10)
+```
+
+```{r step1-summary}
+round(step1$optimized_fit$par$s, 3)              # noise, same-individual and kinship variances
+```
+
+## 5. Step 2: map eQTLs and response eQTLs
+
+Every SNP within 100 kb of a gene is tested for a genotype effect (`p_geno`) and a genotype x condition
+effect (`p_interact`).
+
+```{r step2}
+set.seed(1)
+res = map_interaction_qtl(logcpm, dosage, geneloc, snploc, anno,
+                          sample_kernel = step1$cov_suez, cisdist = 1e5)
+nrow(res)
+```
+
+## 6. Multiple testing
+
+Each gene has several correlated SNPs. A simple approach: Bonferroni within each gene (minimum p-value
+times the number of SNPs), then Benjamini-Hochberg across genes.
+
+```{r fdr}
+gene_level = function(res, p) {
+  top = do.call(rbind, lapply(split(res, res$gene), function(d) {
+    i = which.min(d[[p]])
+    data.frame(gene = d$gene[i], snp = d$cis_snp[i], p = d[[p]][i], p_gene = min(1, d[[p]][i] * nrow(d)))
+  }))
+  top$fdr = p.adjust(top$p_gene, "BH")
+  top[order(top$p), ]
+}
+eqtl  = gene_level(res, "p_geno")
+reqtl = gene_level(res, "p_interact")
+c(eGenes = sum(eqtl$fdr < 0.05), response_eGenes = sum(reqtl$fdr < 0.05))
+head(reqtl, 5)
+```
+
+Before trusting borderline calls, check that the p-values are calibrated. Most genes have no response eQTL,
+so the genomic inflation factor of `p_interact` over all tests should be close to 1:
+
+```{r lambda}
+lambda = function(p) median(qchisq(p, 1, lower.tail = FALSE), na.rm = TRUE) / qchisq(0.5, 1)
+c(geno = lambda(res$p_geno), interact = lambda(res$p_interact))
+```
+
+Because the data are simulated, we can compare the calls with the planted effects:
+
+```{r truth}
+truth = read.delim(ext("truth.tsv"))
+hits = reqtl$gene[reqtl$fdr < 0.05]
+table(planted = truth$type[match(hits, truth$gene_id)], useNA = "ifany")
+```
+
+All planted response eQTLs are found. The `NA` calls are genes without a planted effect: a few more than a
+5% FDR implies, which matches the mild inflation of `p_interact` above. Count noise makes the expression
+variance differ between conditions, and genotype x condition tests are sensitive to that. On real data,
+treat calls near the FDR threshold with care when the inflation factor is above 1.
+
+## 7. Plot a response eQTL
+
+```{r plot}
+top = reqtl[1, ]
+g = dosage[top$snp, samples$individual]
+boxplot(logcpm[top$gene, ] ~ g + samples$condition, col = rep(c("grey80", "tomato"), each = 3),
+        names = rep(0:2, 2), xlab = paste(top$snp, "ALT alleles (control | treated)"),
+        ylab = "log2 CPM", main = top$gene)
+```
+
+## Notes
+
+- `map_interaction_qtl` can also read genotypes straight from the VCF:
+  `genotype = Rsamtools::TabixFile(ext("genotypes.vcf.gz"))`. The filters in section 3 are then not
+  applied; use `maf_threshold` instead.
+- Use `checkpoint_dir` on large runs so a crashed run can resume, and save `res` with
+  `readr::write_tsv()`.
+- See the README for the meaning of every output column and for calibrating `p_interact` with the
+  bootstrap columns.

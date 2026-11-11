@@ -3,3 +3,6 @@ cleanup*
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE$
+^CHANGELOG\.md$
+^doc$
+^data-raw$
