@@ -55,23 +55,28 @@ qqnorm_no_plot=function(x) {
 }
 
 #' Quantile normalize columns
+#' @param input Numeric matrix
 quantile_normalize_cols=function(input) {
   apply(input, 2, qqnorm_no_plot)
 }
 
 #' Quantile normalize rows (to normal)
-#' @import magrittr
+#' @param input Numeric matrix
+#' @importFrom magrittr %>%
 quantile_normalize=function(input) {
   apply(input, 1, qqnorm_no_plot) %>% t()
 }
 
 get_cis_geno <- function(genotype, chrom, left, right, snploc, genome_build, ...){ UseMethod('get_cis_geno') }
 
+#' @export
 get_cis_geno.TabixFile = function(genotype, chrom, left, right, snploc, genome_build, ...) {
-  gr = GRanges(chrom, IRanges(left, right))
-  sp = ScanVcfParam(which = gr)
-  vcf = readVcf(genotype, genome_build, param = sp)
-  gt = geno(vcf)$GT
+  for (p in c("VariantAnnotation", "GenomicRanges", "IRanges"))
+    if (!requireNamespace(p, quietly = TRUE)) stop("Bioconductor package '", p, "' is needed for a TabixFile genotype.")
+  gr = GenomicRanges::GRanges(chrom, IRanges::IRanges(left, right))
+  sp = VariantAnnotation::ScanVcfParam(which = gr)
+  vcf = VariantAnnotation::readVcf(genotype, genome_build, param = sp)
+  gt = VariantAnnotation::geno(vcf)$GT
   if (nrow(gt) == 0) return(NULL)
   allele1 = substr(gt, 1, 1)
   class(allele1) = "numeric"
@@ -80,11 +85,9 @@ get_cis_geno.TabixFile = function(genotype, chrom, left, right, snploc, genome_b
   allele1 + allele2
 }
                 
+#' @export
 get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_build, ...) {
-  cis_snps=snploc %>%
-    filter(chr == chrom, left < pos, right > pos) %>%
-    .$snpid %>%
-    as.character()
+  cis_snps=as.character(snploc$snpid[snploc$chr == chrom & snploc$pos > left & snploc$pos < right])
   if (length(cis_snps)==0) NULL else genotype[cis_snps,,drop=F]
 }
 
@@ -120,8 +123,6 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' `permutation_approach = "boot"` `l_boot_geno` and `l_boot_interact` (one parametric bootstrap draw
 #' under the genotype model: 2 * (l_boot_interact - l_boot_geno) is a null draw of the interaction LR).
 #' @importFrom rstan optimizing
-#' @import dplyr
-#' @import readr
 #' @import doMC
 #' @useDynLib suez, .registration = TRUE
 #' @export

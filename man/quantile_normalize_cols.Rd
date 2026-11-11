@@ -6,6 +6,9 @@
 \usage{
 quantile_normalize_cols(input)
 }
+\arguments{
+\item{input}{Numeric matrix}
+}
 \description{
 Quantile normalize columns
 }

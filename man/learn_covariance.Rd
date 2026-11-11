@@ -17,7 +17,7 @@ learn_covariance(
 \arguments{
 \item{input}{[genes x samples] Normalized (e.g. quantile normalized) matrix of log2 gene expression}
 
-\item{anno}{[samples x 2] data.frame with `individual` and `condition` columns. If a kinship matrix is provided the row and column names must correspond to the values used in the `individual` column.}
+\item{anno}{[samples x 2] data.frame with `individual` and `condition` columns. `condition` may be a factor/character (one effect per level) or numeric (one slope). If a kinship matrix is provided the row and column names must correspond to the values used in the `individual` column.}
 
 \item{kinship_matrix}{Representing relatedness between individuals. Optional.}
 
@@ -31,4 +31,17 @@ learn_covariance(
 }
 \description{
 Function to learn covariance structure across samples using latent factors
+}
+\value{
+list: `cov_suez` [samples x samples], the latent-factor, same-individual and kinship parts
+of the covariance (no isotropic noise: pass it as `sample_kernel` to [map_interaction_qtl]), and
+`optimized_fit`, the rstan::optimizing result (factors `x_adjustable` are in the contrast basis).
+}
+\details{
+Model, per gene: y = X b + e, e ~ N(0, s_noise I + s_ind SameInd + s_kin Kinship +
+sum_p s_p x_p x_p'), X = model.matrix(~condition). The variances and latent factors (unit vectors
+x_p) are fitted by maximum likelihood of the N - rank(X) contrasts orthogonal to X (REML): the
+condition effects are removed exactly, without treating the regression residuals (which have no
+variance along X) as N-dimensional data. A same-condition kernel lies in the span of X, so it has no
+variance left to model and is not a component.
 }
