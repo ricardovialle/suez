@@ -19,6 +19,8 @@ It works in two steps:
    covariance. Each SNP gets a test of the genotype effect and a test of the genotype x condition
    interaction.
 
+![suez workflow: step 1 learns a sample covariance shared by all genes; step 2 tests every cis-SNP with three nested linear mixed models that use it](man/figures/suez_schematic.svg)
+
 A worked example from raw counts and a joint-called VCF to eQTL calls (filtering, TMM normalization,
 genotype QC, both suez steps, multiple testing) is in the
 [vignette](https://ricardovialle.github.io/suez/doc/suez.html) (source:
