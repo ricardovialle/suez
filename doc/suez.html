@@ -407,7 +407,8 @@ same SNPs; in a real study, build it from genome-wide, LD-pruned SNPs
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>grm <span class="ot">=</span> <span class="fu">tcrossprod</span>(Z) <span class="sc">/</span> <span class="fu">ncol</span>(Z)</span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>anno <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">individual =</span> samples<span class="sc">$</span>individual, <span class="at">condition =</span> samples<span class="sc">$</span>condition)</span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>qq <span class="ot">=</span> <span class="fu">t</span>(<span class="fu">apply</span>(logcpm, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">qnorm</span>((<span class="fu">rank</span>(x) <span class="sc">-</span> <span class="fl">0.5</span>) <span class="sc">/</span> <span class="fu">length</span>(x))))   <span class="co"># per-gene normal scores</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>step1 <span class="ot">=</span> <span class="fu">learn_covariance</span>(qq, anno, <span class="at">kinship_matrix =</span> grm, <span class="at">P =</span> <span class="dv">10</span>)</span></code></pre></div>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)                                      <span class="co"># rstan draws its seed from R&#39;s RNG</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>step1 <span class="ot">=</span> <span class="fu">learn_covariance</span>(qq, anno, <span class="at">kinship_matrix =</span> grm, <span class="at">P =</span> <span class="dv">10</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">round</span>(step1<span class="sc">$</span>optimized_fit<span class="sc">$</span>par<span class="sc">$</span>s, <span class="dv">3</span>)              <span class="co"># noise, same-individual and kinship variances</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; isotropic_noise        same_ind  kinship_matrix </span></span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt;           0.286           0.011           0.010</span></span></code></pre></div>
@@ -445,17 +446,17 @@ Benjamini-Hochberg across genes.</p>
 <span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt;              37              13</span></span>
 <span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="fu">head</span>(reqtl, <span class="dv">5</span>)</span>
 <span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt;                            gene       snp            p       p_gene</span></span>
-<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt; ENSG00000000121 ENSG00000000121 rs1001195 2.801174e-18 1.484622e-16</span></span>
-<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; ENSG00000000151 ENSG00000000151 rs1001491 4.229677e-16 2.410916e-14</span></span>
-<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt; ENSG00000000021 ENSG00000000021 rs1000188 3.791076e-15 2.274645e-13</span></span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; ENSG00000000084 ENSG00000000084 rs1000824 1.066338e-14 6.398030e-13</span></span>
-<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt; ENSG00000000291 ENSG00000000291 rs1002881 1.284372e-13 7.963105e-12</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt; ENSG00000000121 ENSG00000000121 rs1001195 2.800132e-18 1.484070e-16</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; ENSG00000000151 ENSG00000000151 rs1001491 4.223989e-16 2.407674e-14</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt; ENSG00000000021 ENSG00000000021 rs1000188 3.794388e-15 2.276633e-13</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; ENSG00000000084 ENSG00000000084 rs1000824 1.057325e-14 6.343947e-13</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt; ENSG00000000291 ENSG00000000291 rs1002881 1.284692e-13 7.965092e-12</span></span>
 <span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#&gt;                          fdr</span></span>
-<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#&gt; ENSG00000000121 3.563094e-14</span></span>
-<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="co">#&gt; ENSG00000000151 2.893099e-12</span></span>
-<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co">#&gt; ENSG00000000021 1.819716e-11</span></span>
-<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="co">#&gt; ENSG00000000084 3.838818e-11</span></span>
-<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="co">#&gt; ENSG00000000291 3.822290e-10</span></span></code></pre></div>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#&gt; ENSG00000000121 3.561767e-14</span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="co">#&gt; ENSG00000000151 2.889208e-12</span></span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co">#&gt; ENSG00000000021 1.821306e-11</span></span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="co">#&gt; ENSG00000000084 3.806368e-11</span></span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="co">#&gt; ENSG00000000291 3.823244e-10</span></span></code></pre></div>
 <p>Before trusting borderline calls, check that the p-values are
 calibrated. Most genes have no response eQTL, so the genomic inflation
 factor of <code>p_interact</code> over all tests should be close to
@@ -463,7 +464,7 @@ factor of <code>p_interact</code> over all tests should be close to
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>lambda <span class="ot">=</span> <span class="cf">function</span>(p) <span class="fu">median</span>(<span class="fu">qchisq</span>(p, <span class="dv">1</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> <span class="fu">qchisq</span>(<span class="fl">0.5</span>, <span class="dv">1</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">c</span>(<span class="at">geno =</span> <span class="fu">lambda</span>(res<span class="sc">$</span>p_geno), <span class="at">interact =</span> <span class="fu">lambda</span>(res<span class="sc">$</span>p_interact))</span>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt;     geno interact </span></span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; 1.008172 1.086215</span></span></code></pre></div>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; 1.008251 1.086487</span></span></code></pre></div>
 <p>Because the data are simulated, we can compare the calls with the
 planted effects:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>truth <span class="ot">=</span> <span class="fu">read.delim</span>(<span class="fu">ext</span>(<span class="st">&quot;truth.tsv&quot;</span>))</span>

@@ -82,6 +82,7 @@ grm = tcrossprod(Z) / ncol(Z)
 ```{r step1, results = "hide"}
 anno = data.frame(individual = samples$individual, condition = samples$condition)
 qq = t(apply(logcpm, 1, function(x) qnorm((rank(x) - 0.5) / length(x))))   # per-gene normal scores
+set.seed(1)                                      # rstan draws its seed from R's RNG
 step1 = learn_covariance(qq, anno, kinship_matrix = grm, P = 10)
 ```
 

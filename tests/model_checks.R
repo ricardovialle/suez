@@ -4,7 +4,8 @@
 #      repeated samples, a centred GRM (K 1 = 0) and a condition varying within individuals,
 #      including genes whose ML sits on the s2 = 0 or s2k = 0 boundary
 #   2. GLS effect sizes, bootstrap columns
-#   3. errors: non-PSD kernel, unidentifiable residual variance
+#   3. a bimodal likelihood in h (two near-equal peaks)
+#   4. errors: non-PSD kernel, unidentifiable residual variance
 suppressPackageStartupMessages({ library(suez); library(doMC) })
 registerDoMC(1)
 fails = 0
@@ -100,6 +101,42 @@ rm_ = map_interaction_qtl(Y[1, , drop = FALSE], Gm, geneloc, snploc, anno, sampl
                           maf_threshold = 0.05)
 check("maf_threshold drops low-MAF SNPs coded either way", !any(c(s_hi, s_lo) %in% rm_$cis_snp) &&
         all(setdiff(rownames(G)[1:n_snp], c(s_hi, s_lo)) %in% rm_$cis_snp))
+
+# bimodal likelihood in h: two peaks of near-equal height, the higher one on either side, so a fit
+# that refines only the best grid point lands on the wrong peak in one of the two genes
+exact_ml = function(UX, Uy, lam) {                         # dense log-delta grid, every local max refined
+  f = function(x) { h = 1 / (1 + 10^-x); d = h * lam + (1 - h); W = 1 / d
+    b = solve(crossprod(UX, UX * W), crossprod(UX, Uy * W))
+    -0.5 * length(Uy) - 0.5 * sum(log(sum((Uy - UX %*% b)^2 * W) / length(Uy) * d)) }
+  xs = seq(-8, 8, length.out = 1601); v = sapply(xs, f); pk = which(diff(sign(diff(v))) == -2) + 1
+  sapply(pk, function(i) optimize(f, xs[c(i - 1, i + 1)], maximum = TRUE, tol = 1e-10)$objective)
+}
+set.seed(1859)
+nb = 120; Qb = qr.Q(qr(matrix(1, nb, 1)), complete = TRUE)[, -1]
+lb = c(rep(1e-3, 40), rep(1, 40), rep(30, 39)) * exp(rnorm(nb - 1, 0, 0.3))
+vb = c(runif(1, 0.01, 2), runif(1, 0.01, 2), runif(1, 0.01, 60))
+zb = rnorm(nb - 1) * sqrt(rep(vb, c(40, 40, 39)))
+Kb = Qb %*% (lb * t(Qb)) + 1 / nb                           # contrast eigenvalues lb
+eb = suez:::kernel_contrast_eigen(Kb); condb = rnorm(nb); UX0b = crossprod(eb$vectors, std(condb))
+y_of = function(t) drop(Qb %*% (zb * rep(c(1, 1, t), c(40, 40, 39))))
+peaks = function(t) exact_ml(UX0b, drop(crossprod(eb$vectors, y_of(t))), eb$values)
+sgap = function(t) { p = peaks(t); p[1] - p[length(p)] }   # left peak minus right peak
+tb = sapply(c(2e-3, -2e-3), function(g) uniroot(function(t) sgap(t) - g, c(0.9, 1))$root)
+indb = paste0("B", 1:nb); sb = paste0("b", 1:nb)
+Yb = rbind(bL = y_of(tb[1]), bR = y_of(tb[2])); colnames(Yb) = sb; dimnames(Kb) = list(sb, sb)
+Gb = matrix(rbinom(4 * nb, 2, 0.3), 4, nb, dimnames = list(paste0("sb", 1:4), indb))
+rb = map_interaction_qtl(Yb, Gb, data.frame(geneid = rownames(Yb), chr = "1", left = 100, right = 110),
+                         data.frame(snpid = rownames(Gb), chr = "1", pos = 101:104),
+                         data.frame(individual = indb, condition = condb), sample_kernel = Kb,
+                         normalization_approach = "none", permutation_approach = "none", cisdist = 100)
+db = sapply(seq_len(nrow(rb)), function(i) {
+  Uy = drop(crossprod(eb$vectors, Yb[rb$gene[i], ]))
+  p0 = exact_ml(UX0b, Uy, eb$values)
+  p1 = exact_ml(cbind(UX0b, crossprod(eb$vectors, std(Gb[rb$cis_snp[i], ]))), Uy, eb$values)
+  c(length(p0), rb$l0[i] - max(p0), rb$l_geno[i] - max(p1))
+})
+check("bimodal likelihood: the higher of two near-equal peaks is found",
+      all(db[1, ] == 2) && max(abs(db[2:3, ])) < 1e-6, sprintf("(max |dl| %.2g)", max(abs(db[2:3, ]))))
 
 # errors
 check("non-PSD kernel refused", grepl("not positive semi-definite",
