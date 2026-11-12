@@ -100,7 +100,8 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' maximum likelihood on the N-1 contrasts orthogonal to the intercept (REML for the intercept only),
 #' so a kernel with K 1 = 0 (a GRM from centred genotypes) is handled. Each fit maximises the
 #' likelihood exactly: b and the total variance have closed forms given h = sigma2_k / (sigma2_k +
-#' sigma2), and h is found by grid and golden-section search on [0, 1]. Failed fits give NA. Columns are standardized
+#' sigma2), and h is found by a grid in log10(sigma2_k / sigma2) followed by Newton steps around
+#' every local maximum of the grid (the likelihood can have two peaks). Failed fits give NA. Columns are standardized
 #' before fitting (the likelihood is invariant). The function stops if the kernel is not positive
 #' semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
 #' default kernel with condition fitting every within-individual contrast).
@@ -135,6 +136,21 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   if (!is.null(checkpoint_dir)) dir.create(checkpoint_dir, recursive = T, showWarnings = F)
 
   genes=intersect(rownames(input),geneloc$geneid)
+
+  if (is.matrix(genotype)) {
+    # cis lookup: snploc rows per chromosome sorted by position, and snploc -> genotype rows, built once
+    # (scanning all of snploc for every gene costs ~20 ms per gene per million SNPs)
+    geno_row = match(as.character(snploc$snpid), rownames(genotype))
+    by_chr = lapply(split(seq_len(nrow(snploc)), as.character(snploc$chr)), function(i) i[order(snploc$pos[i])])
+    cis_geno = function(chrom, left, right) {   # SNPs with left < pos < right, in snploc order
+      i = by_chr[[as.character(chrom)]]
+      if (is.null(i)) return(NULL)
+      p = snploc$pos[i]; from = findInterval(left, p)
+      r = sort(i[seq.int(from + 1L, length.out = max(0L, findInterval(right, p, left.open = TRUE) - from))])
+      r = r[!is.na(geno_row[r])]
+      if (length(r)) genotype[geno_row[r],,drop=F] else NULL
+    }
+  }
   rownames(geneloc)=geneloc$geneid
 
   if (is.null(sample_kernel)) {
@@ -177,7 +193,8 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   # one seed per gene, drawn from the caller's RNG: results depend on set.seed() only, not on the cores
   seeds = sample.int(.Machine$integer.max, length(genes))
 
-  foreach(gene=genes, seed=seeds, .errorhandling=errorhandling, .combine = bind_rows) %dopar% {
+  # results are combined once at the end (combining pairwise copies the growing table at every gene)
+  res = foreach(gene=genes, seed=seeds, .errorhandling=errorhandling) %dopar% {
 
     set.seed(seed)
     if (!is.null(checkpoint_dir)){
@@ -187,7 +204,9 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
       }
     }
     
-    geno_here = get_cis_geno(genotype, 
+    geno_here = if (is.matrix(genotype))
+      cis_geno(geneloc[gene,"chr"], geneloc[gene,"left"]-cisdist, geneloc[gene,"right"]+cisdist)
+    else get_cis_geno(genotype, 
                               chrom = geneloc[gene,"chr"], 
                               left = geneloc[gene,"left"]-cisdist, 
                               right = geneloc[gene,"right"]+cisdist, 
@@ -195,7 +214,8 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
                               genome_build = genome_build)
     if (is.null(geno_here)) return(NULL)
     
-    imp_geno = easy_impute(geno_here)
+    imp_geno = if (anyNA(geno_here)) easy_impute(geno_here) else {   # nothing to impute: rounded, as easy_impute does
+      g = round(geno_here); storage.mode(g) = "integer"; g }
     if (maf_threshold > 0) {
       af = rowMeans(geno_here, na.rm=T)/2 # ALT frequency, on unimputed genotypes
       mafs = pmin(af, 1 - af)
@@ -237,5 +257,5 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
 
     gene_results
   }
+  bind_rows(res)
 }
-

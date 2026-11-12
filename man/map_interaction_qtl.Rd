@@ -63,7 +63,8 @@ Model: y = X b + e, e ~ N(0, sigma2_k * K + sigma2 * I), K = `sample_kernel`, fi
 maximum likelihood on the N-1 contrasts orthogonal to the intercept (REML for the intercept only),
 so a kernel with K 1 = 0 (a GRM from centred genotypes) is handled. Each fit maximises the
 likelihood exactly: b and the total variance have closed forms given h = sigma2_k / (sigma2_k +
-sigma2), and h is found by grid and golden-section search on [0, 1]. Failed fits give NA. Columns are standardized
+sigma2), and h is found by a grid in log10(sigma2_k / sigma2) followed by Newton steps around
+every local maximum of the grid (the likelihood can have two peaks). Failed fits give NA. Columns are standardized
 before fitting (the likelihood is invariant). The function stops if the kernel is not positive
 semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
 default kernel with condition fitting every within-individual contrast).

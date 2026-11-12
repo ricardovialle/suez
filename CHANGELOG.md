@@ -70,6 +70,18 @@ within-individual G x condition). The models and function arguments are unchange
   log10(1 - h), where a kernel with null directions can put the maximum within 1e-6 of the boundary.
   Results match the previous version (log-likelihoods within 1e-13); 4.7-5.6x faster per core
   (e.g. 731 -> 4,120 SNPs/s on one core, 400 genes x 50 SNPs, 200 samples, bootstrap).
+- The search over h follows GEMMA / FaST-LMM: a grid uniform in log10(delta), delta = sigma2_k / sigma2
+  (80 points on [-5, 5] plus h = 0 and h = 1), then safeguarded Newton steps with analytic first and second
+  derivatives around every local maximum of the grid, keeping the best. A grid uniform in h missed narrow
+  or second peaks when the kernel's eigenvalues span orders of magnitude (e.g. a learned `cov_suez`): on the
+  vignette data 4 of 13,801 fits were up to 0.065 log-likelihood below the maximum. Checked against a
+  1,000-point reference on seven datasets: no fit below it.
+- cis-SNPs are found with a per-chromosome index of `snploc` sorted by position, built once (it was a scan
+  of all of `snploc` per gene, ~20 ms per gene per million SNPs). SNPs in `snploc` missing from `genotype`
+  are skipped (they made the gene fail).
+- Genes without missing genotypes skip the SVD imputation, and results are combined once at the end
+  instead of pairwise. With 1 million SNPs in `snploc`: 2,957 -> 4,719 tests/s on one core, 11,766 ->
+  18,368 on 8 cores; results equal the previous version except where it missed the maximum.
 
 #### Tests
 

@@ -222,8 +222,9 @@ and either backend. For genome-wide runs on a cluster, you can also split genes 
 chromosome) by subsetting `geneloc`.
 
 Rough timings on an Apple M5: step 1 takes a few seconds for 200 samples, whatever the number of genes;
-step 2 with the bootstrap processes about 3,500-4,000 SNPs per second per core with 200 samples (about
-1,400 with 500 samples). A genome-wide run of 10^8 gene x SNP tests is then roughly 7 core-hours.
+step 2 with the bootstrap processes about 4,500 tests per second per core with 200 samples (measured
+with 1 million SNPs in `snploc`; about 1,400 with 500 samples). A genome-wide run of 10^8 gene x SNP tests
+is then roughly 6 core-hours.
 
 ## Tests
 

@@ -1,65 +1,108 @@
 // Exact ML fits for map_interaction_qtl, all cis-SNPs of one gene per call.
 // Model on rotated data: Uy = UX b + e, e ~ N(0, diag(sigma2_k * lambda + sigma2)). Writing
 // sigma2_k = s h, sigma2 = s (1 - h), b and s have closed forms for each h in [0, 1], so each fit is a 1-D
-// maximisation over h: a grid of 60 values (dense near h = 1), evaluated for every SNP of the gene together (shared
-// condition terms once, genotype terms as matrix products across SNPs), then Brent's method around each
-// SNP's best grid point.
+// maximisation over h. The search follows GEMMA / FaST-LMM: a grid uniform in x = log10(delta),
+// delta = sigma2_k / sigma2 = h / (1 - h), evaluated for every SNP of the gene together (shared condition
+// terms once, genotype terms as matrix products across SNPs); then safeguarded Newton steps with analytic
+// derivatives around every local maximum of the grid (the likelihood can be bimodal), keeping the best.
 #include <RcppEigen.h>
-#include <boost/math/tools/minima.hpp>
+#include <algorithm>
 #include <cmath>
 #include <limits>
 using Eigen::ArrayXd; using Eigen::ArrayXXd; using Eigen::MatrixXd; using Eigen::VectorXd; using Eigen::VectorXi;
 static const double NEG_INF = -std::numeric_limits<double>::infinity();
-// h grid: 0, 0.02, ..., 0.98, then 1 - 10^-k (k = 2..10), then 1. The extra points matter when the kernel
-// has null directions: the likelihood can then peak within 1e-6 of h = 1, too sharply for a linear grid
-// (Brent's method then settles short of the maximum).
+static const double L10 = 2.302585092994046;   // log(10)
+
+// h grid: h = 0, then x = log10(delta) uniform on [-5, 5] (80 points, spacing 0.13), then h = 1. Uniform in
+// x, the grid suits kernels of any scale; in h a fixed grid misses narrow peaks when the kernel's
+// eigenvalues span orders of magnitude (e.g. a learned cov_suez). Peaks beyond |x| = 5 are reached from
+// the end points (Newton works up to |x| = 12).
 static std::vector<double> make_grid() {
-  std::vector<double> h; for (int i = 0; i < 50; ++i) h.push_back(i / 50.0);
-  for (int k = 2; k <= 10; ++k) h.push_back(1 - std::pow(10.0, -k));
+  const int nx = 80; const double xl = 5;
+  std::vector<double> h(1, 0.0);
+  for (int i = 0; i < nx; ++i) h.push_back(1 / (1 + std::pow(10.0, -(-xl + 2 * xl * i / (nx - 1.0)))));
   h.push_back(1); return h;
 }
 static const std::vector<double> HS = make_grid();
 static const int NG = HS.size();
+static const int MAX_PEAKS = 3;   // local maxima of the grid refined per fit
 
 struct Fit { double value = NAN, s2k = NAN, s2 = NAN; VectorXd b; bool ok = false; };
 
-// direct evaluation at one h (used for the refinement and the final fit)
-struct Direct {
-  ArrayXd d, w; MatrixXd Xw, A; VectorXd r, b, rhs; double s = NAN;
-  double operator()(const MatrixXd& X, const VectorXd& y, const ArrayXd& lam, double h) {
+// Profile log-likelihood at h (no 2 pi constant) and its first two derivatives in h:
+//   f   = -(n/2) log(g) - (1/2) sum log d,      d = h lam + 1 - h,  c = lam - 1,  w = 1/d,  g = y'Py
+//   f'  = (n/2) Q1/g - (1/2) sum c w,            Q1 = sum c (Py)^2
+//   f'' = -(n/2) (2 Q2/g - Q1^2/g^2) + (1/2) sum c^2 w^2,   Q2 = v'Pv, v = c * Py
+// with P = W - W X (X'WX)^-1 X'W, so Py = W r for the GLS residual r. Sets b and s (= g / n).
+struct Profile {
+  ArrayXd d, w, c, r, v; MatrixXd Xw, A; VectorXd b, rhs, Xv; Eigen::LDLT<MatrixXd> L; double s = NAN;
+  double operator()(const MatrixXd& X, const VectorXd& y, const ArrayXd& lam, double h, double* f1 = nullptr, double* f2 = nullptr) {
     const int n = y.size();
     d = h * lam + (1 - h);
-    if ((d <= 0).any()) return NEG_INF;
-    w = d.inverse(); r = y;
+    if ((d <= 0).any()) { if (f1) *f1 = *f2 = NAN; return NEG_INF; }
+    w = d.inverse(); r = y.array();
     if (X.cols()) {
       Xw.noalias() = (X.array().colwise() * w).matrix();
-      A.noalias() = Xw.transpose() * X; rhs.noalias() = Xw.transpose() * y;
-      b = A.ldlt().solve(rhs); r.noalias() -= X * b;
+      A.noalias() = Xw.transpose() * X; L.compute(A);
+      rhs.noalias() = Xw.transpose() * y; b = L.solve(rhs); r -= (X * b).array();
     } else b.resize(0);
-    s = (r.array().square() * w).sum() / n;
-    if (!(s > 0)) return std::numeric_limits<double>::infinity();
+    ArrayXd Py = w * r; double g = (r * Py).sum(); s = g / n;
+    if (!(s > 0)) { if (f1) *f1 = *f2 = NAN; return std::numeric_limits<double>::infinity(); }
+    if (f1) {
+      c = lam - 1; v = c * Py;
+      double Q1 = (c * Py.square()).sum(), Q2 = (w * v.square()).sum();
+      if (X.cols()) { Xv.noalias() = Xw.transpose() * v.matrix(); Q2 -= Xv.dot(L.solve(Xv)); }
+      *f1 = 0.5 * n * Q1 / g - 0.5 * (c * w).sum();
+      *f2 = -0.5 * n * (2 * Q2 / g - Q1 * Q1 / (g * g)) + 0.5 * (c.square() * w.square()).sum();
+    }
     return -0.5 * n - 0.5 * (n * std::log(s) + d.log().sum());
   }
 };
 
-// refine around grid index `best` (grid values v) and return the fit
-static Fit refine(const MatrixXd& X, const VectorXd& y, const ArrayXd& lam, const double* v, int best) {
-  Direct D;
-  double hb = HS[best], vb = v[best];
+// Safeguarded Newton in x = log10(delta) on the bracket around grid point `best`: h = 1 / (1 + 10^-x),
+// dh/dx = ln10 h (1 - h), d2h/dx2 = ln10 (1 - 2h) dh/dx. Steps leaving the bracket become bisections.
+// Returns the best h found and its value.
+static std::pair<double, double> newton(Profile& P, const MatrixXd& X, const VectorXd& y, const ArrayXd& lam,
+                                        const double* v, int best) {
+  const double XCAP = 12;
+  auto X_of = [&](double h) { return h <= 0 ? -XCAP : h >= 1 ? XCAP : std::max(-XCAP, std::min(XCAP, std::log10(h / (1 - h)))); };
+  auto H = [](double x) { return 1 / (1 + std::pow(10.0, -x)); };
+  double hb = HS[best], vb = v[best], f1, f2;
   double a = HS[std::max(0, best - 1)], c = HS[std::min(NG - 1, best + 1)];
-  if (std::isfinite(vb) && c > a) {
-    std::uintmax_t it = 100;
-    if (a >= 0.98) {   // near h = 1 the peak is smooth in log10(1 - h), not in h
-      double ta = std::log10(1 - a), tc = c < 1 ? std::log10(1 - c) : -12;
-      auto m = boost::math::tools::brent_find_minima([&](double t) { return -D(X, y, lam, 1 - std::pow(10.0, t)); },
-                                                     tc, ta, 40, it);
-      if (-m.second > vb) hb = 1 - std::pow(10.0, m.first);
-    } else {
-      auto m = boost::math::tools::brent_find_minima([&](double h) { return -D(X, y, lam, h); }, a, c, 40, it);
-      if (-m.second > vb) hb = m.first;
+  if (!std::isfinite(vb) || !(c > a)) return {hb, vb};
+  double lo = X_of(a), hi = X_of(c), x = X_of(hb);
+  for (int it = 0; it < 60; ++it) {
+    double h = H(x), fv = P(X, y, lam, h, &f1, &f2);
+    if (fv > vb) { vb = fv; hb = h; }
+    double dh = L10 * h * (1 - h), d2h = L10 * (1 - 2 * h) * dh;
+    double g1 = f1 * dh, g2 = f2 * dh * dh + f1 * d2h;
+    if (!std::isfinite(g1)) break;
+    if (g1 > 0) lo = std::max(lo, x); else hi = std::min(hi, x);       // the maximum is uphill
+    double xn = g2 < 0 ? x - g1 / g2 : NAN;
+    if (!std::isfinite(xn) || xn <= lo || xn >= hi) xn = 0.5 * (lo + hi);
+    if (std::fabs(xn - x) < 1e-9 || hi - lo < 1e-10) {
+      double hh = H(xn), fv2 = P(X, y, lam, hh);
+      if (fv2 > vb) { vb = fv2; hb = hh; }
+      break;
     }
+    x = xn;
   }
-  Fit f; f.value = D(X, y, lam, hb); f.s2k = D.s * hb; f.s2 = D.s * (1 - hb); f.b = D.b;
+  return {hb, vb};
+}
+
+// Refine every local maximum of the grid values v (up to MAX_PEAKS, highest first) and return the best fit.
+static Fit refine(const MatrixXd& X, const VectorXd& y, const ArrayXd& lam, const double* v, int best) {
+  std::vector<int> peaks;
+  for (int i = 0; i < NG; ++i)
+    if (std::isfinite(v[i]) && (i == 0 || v[i] >= v[i - 1]) && (i == NG - 1 || v[i] >= v[i + 1])) peaks.push_back(i);
+  std::sort(peaks.begin(), peaks.end(), [&](int p, int q) { return v[p] > v[q]; });
+  if (peaks.empty()) peaks.push_back(best);
+  Profile P; double hb = HS[peaks[0]], vb = NEG_INF;
+  for (size_t j = 0; j < peaks.size() && j < (size_t)MAX_PEAKS; ++j) {
+    auto m = newton(P, X, y, lam, v, peaks[j]);
+    if (m.second > vb) { vb = m.second; hb = m.first; }
+  }
+  Fit f; f.value = P(X, y, lam, hb); f.s2k = P.s * hb; f.s2 = P.s * (1 - hb); f.b = P.b;
   f.ok = std::isfinite(f.value);
   return f;
 }
