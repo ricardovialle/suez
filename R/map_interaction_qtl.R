@@ -147,12 +147,10 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   U=eig$vectors
   lambda=eig$values
 
-  # GxE design for a genotype vector (numeric condition: one column; factor: one per non-reference level)
-  interact_design=function(geno) {
-    interact=model.matrix(~geno:condition,data=cbind(anno, geno=geno))
-    if (is.numeric(anno$condition)) interact[,2,drop=F] else interact[,3:ncol(interact),drop=F]
-  }
-  df_interact=ncol(interact_design(rep(1, nrow(anno))))
+  # GxE multipliers: the numeric condition (one column), or indicators of the non-reference levels;
+  # genotype x column j is the interaction term j (as in model.matrix(~ geno:condition))
+  C = if (is.numeric(anno$condition)) cbind(anno$condition) else model.matrix(~ condition, data=anno)[, -1, drop=F]
+  df_interact = ncol(C)
 
   no_geno = model.matrix( ~ condition, data=anno)
   no_geno = no_geno[, apply(no_geno, 2, sd) > 0, drop=F] # intercept: removed by the contrasts
@@ -205,60 +203,33 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
       if (nrow(imp_geno)==0) return(NULL)
     }
     
-    cis_snps = rownames(imp_geno)
-    cat(gene,length(cis_snps)," cis snps\n")
-    
+    cat(gene, nrow(imp_geno), " cis snps\n")
+
     if (permutation_approach=="permute") colnames(imp_geno)=colnames(imp_geno)[ sample(ncol(imp_geno),ncol(imp_geno)) ]
 
-    y=input[gene,] %>% as.numeric
-    Uy=crossprod(U, y) %>% as.numeric
+    G = t(imp_geno[, anno$individual, drop=F])                     # samples x SNPs
+    storage.mode(G) = "double"
+    keep = rowSums(imp_geno) >= 5 & apply(G, 2, sd) > 0            # >= 5 ALT alleles, varies across samples
+    if (!any(keep)) return(NULL)
+    G = G[, keep, drop=F]
+    Uy = drop(crossprod(U, as.numeric(input[gene,])))
 
-    if (debug) cat("Fitting no genotype model...\n")
-    fit_no_geno=fit_lmm(Uy, UX0, lambda)
-    if (is.null(fit_no_geno)) stop("no-genotype model did not converge for ", gene)
-
-    gene_results = foreach(cis_snp=cis_snps, .errorhandling=errorhandling, .combine = bind_rows) %do% {
-
-      geno=imp_geno[cis_snp,anno$individual]
-      if (sum(imp_geno[cis_snp,]) < 5.0 || sd(geno) == 0) { return(NULL) }
-
-      UX1=cbind(UX0, crossprod(U, standardize_cols(cbind(geno))))
-      interact=interact_design(geno)
-      interact=interact[, apply(interact, 2, sd) > 0, drop=F]
-      UX2=cbind(UX1, crossprod(U, standardize_cols(interact)))
-
-      lrt = function(Uy, f0) {
-        fit_geno=fit_nested(Uy, UX1, lambda, f0)
-        fit_interact=if (is.null(fit_geno) || ncol(interact)==0) NULL else fit_nested(Uy, UX2, lambda, fit_geno)
-        list( fit_geno=fit_geno, fit_interact=fit_interact )
-      }
-      value=function(fit) if (is.null(fit)) NA_real_ else fit$value
-
-      lrt_true=lrt( Uy, fit_no_geno )
-      fit_geno=lrt_true$fit_geno
-      fit_interact=lrt_true$fit_interact
-
-      res=data.frame(gene=gene, cis_snp=cis_snp, l0=fit_no_geno$value, l_geno=value(fit_geno),
-                     l_interact=value(fit_interact), stringsAsFactors=F  )
-      res$p_geno=pchisq(pmax(0, 2*(res$l_geno-res$l0)), 1, lower.tail=F)
-      res$df_interact=ncol(interact)
-      res$p_interact=pchisq(pmax(0, 2*(res$l_interact-res$l_geno)), ncol(interact), lower.tail=F)
-      bse=if (is.null(fit_geno)) c(NA, NA) else gls_coef(fit_geno, UX1, Uy, lambda) / sd(geno) # per allele
-      res$beta_geno=bse[1]
-      res$se_geno=bse[2]
-
-      if (permutation_approach=="boot" && !is.null(fit_geno)) {
-        # parametric bootstrap under the genotype (no-interaction) model, in the rotated space
-        o = fit_geno$par$sigma2_k * lambda + fit_geno$par$sigma2
-        Uy_boot = sqrt(o) * rnorm(length(o)) + drop(UX1 %*% fit_geno$par$beta)
-        fit_boot_0 = fit_lmm(Uy_boot, UX0, lambda)
-        lrt_boot = if (is.null(fit_boot_0)) list() else lrt( Uy_boot, fit_boot_0 )
-        res$l_boot_geno=value(lrt_boot$fit_geno)
-        res$l_boot_interact=value(lrt_boot$fit_interact)
-      }
-
-      res
+    if (debug) cat("Fitting", ncol(G), "SNPs...\n")
+    fit = .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot")   # src/lmm.cpp
+    m = fit$res
+    gene_results = data.frame(gene=gene, cis_snp=colnames(G), l0=fit$l0, l_geno=m[,1], l_interact=m[,2],
+                              stringsAsFactors=F)
+    gene_results$p_geno = pchisq(pmax(0, 2*(gene_results$l_geno-gene_results$l0)), 1, lower.tail=F)
+    gene_results$df_interact = as.integer(m[,3])
+    gene_results$p_interact = pchisq(pmax(0, 2*(gene_results$l_interact-gene_results$l_geno)), m[,3], lower.tail=F)
+    gene_results$beta_geno = m[,4]
+    gene_results$se_geno = m[,5]
+    if (permutation_approach=="boot") {
+      # parametric bootstrap under the genotype (no-interaction) model, one draw per SNP
+      gene_results$l_boot_geno = m[,6]
+      gene_results$l_boot_interact = m[,7]
     }
+
     if (!is.null(checkpoint_dir)){
       cat("Saving results to ", checkpoint_dir, "\n")
       gene_results %>% write_tsv(check_fn)

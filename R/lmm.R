@@ -1,6 +1,6 @@
 ## Fitting helpers for map_interaction_qtl: the model y = X b + e,
 ## e ~ N(0, sigma2_k * K + sigma2 * I), fitted by maximum likelihood
-## (src/lmm.cpp) on data rotated by K's eigenvectors.
+## (src/lmm.cpp, all SNPs of a gene per call) on data rotated by K's eigenvectors.
 ##
 ## The likelihood is that of the N-1 contrasts orthogonal to the intercept
 ## (REML for the intercept only). Every model has an intercept, so likelihood-
@@ -50,26 +50,4 @@ standardize_cols = function(M) {
     attr(M, "scaled:center") = attr(M, "scaled:scale") = NULL
   }
   M
-}
-
-# Exact ML fit (src/lmm.cpp); NULL if the likelihood is not finite.
-fit_lmm = function(Uy, UX, lambda) {
-  f = .Call(suez_profile_lmm, as.matrix(UX) + 0, as.numeric(Uy), as.numeric(lambda))
-  if (!is.finite(f$value)) return(NULL)
-  list(value = f$value, par = list(sigma2 = f$sigma2, sigma2_k = f$sigma2_k, beta = f$beta))
-}
-
-# Fit a model nested over `f0` (extra columns appended to UX); NULL if it lands
-# below the null likelihood, which an exact fit should not.
-fit_nested = function(Uy, UX, lambda, f0) {
-  f = fit_lmm(Uy, UX, lambda)
-  if (is.null(f) || f$value < f0$value - 1e-6) return(NULL)
-  f
-}
-
-# GLS estimate and SE of column k at the fitted variance components.
-gls_coef = function(fit, UX, Uy, lambda, k = ncol(UX)) {
-  o = fit$par$sigma2_k * lambda + fit$par$sigma2
-  V = solve(crossprod(UX, UX / o))
-  c(drop(V %*% crossprod(UX, Uy / o))[k], sqrt(V[k, k]))
 }

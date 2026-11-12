@@ -8,10 +8,10 @@
 #include <Rversion.h>
 
 
-extern "C" SEXP suez_profile_lmm(SEXP, SEXP, SEXP);
+extern "C" SEXP suez_fit_gene(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-  {"suez_profile_lmm", (DL_FUNC) &suez_profile_lmm, 3},
+  {"suez_fit_gene", (DL_FUNC) &suez_fit_gene, 7},
   {NULL, NULL, 0}
 };
 

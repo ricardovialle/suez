@@ -146,7 +146,7 @@ res = map_interaction_qtl(input, genotype, geneloc, snploc, anno,
   SNPs with fewer than 5 ALT alleles in total, or no variation, are skipped. `maf_threshold` drops SNPs
   whose minor allele frequency is at or below the threshold.
 - `permutation_approach = "permute"` shuffles the genotype labels per gene (a null run); `"none"` skips the
-  bootstrap (about 20% faster).
+  bootstrap (about a third less time).
 - With `debug = FALSE` (the default) all console output is suppressed during the run, and a gene that
   fails with an error is dropped from the results. Use `debug = TRUE` to see progress and stop at the
   first error.
@@ -222,7 +222,8 @@ and either backend. For genome-wide runs on a cluster, you can also split genes 
 chromosome) by subsetting `geneloc`.
 
 Rough timings on an Apple M5: step 1 takes a few seconds for 200 samples, whatever the number of genes;
-step 2 with the bootstrap processes about 230 SNPs per second per core with 200 samples.
+step 2 with the bootstrap processes about 3,500-4,000 SNPs per second per core with 200 samples (about
+1,400 with 500 samples). A genome-wide run of 10^8 gene x SNP tests is then roughly 7 core-hours.
 
 ## Tests
 

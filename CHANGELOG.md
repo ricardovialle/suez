@@ -64,6 +64,12 @@ within-individual G x condition). The models and function arguments are unchange
 - Step 2 is ~3x faster on one core (C++ fits); 64 genes x 20 SNPs with bootstrap took 18 s on 1 core and
   1.2 s on 8 (Apple M5, 4 performance + 6 efficiency cores).
 - Step 1 time no longer grows with the number of genes (see above).
+- Step 2 fits all cis-SNPs of a gene in one C++ call: the h grid is evaluated for every SNP together
+  (condition terms once per grid point, genotype terms as matrix products across SNPs), then each SNP is
+  refined with Brent's method; the grid is dense near h = 1 and the refinement there works in
+  log10(1 - h), where a kernel with null directions can put the maximum within 1e-6 of the boundary.
+  Results match the previous version (log-likelihoods within 1e-13); 4.7-5.6x faster per core
+  (e.g. 731 -> 4,120 SNPs/s on one core, 400 genes x 50 SNPs, 200 samples, bootstrap).
 
 #### Tests
 
