@@ -38,7 +38,7 @@ within-individual G x condition). The models and function arguments are unchange
   up to ~4 orders of magnitude in a test with a 150-individual GRM).
 - **Exact fits**: each model is fitted in C++ (`src/lmm.cpp`) by maximising the likelihood over
   h = sigma2_k / (sigma2_k + sigma2), with the effects and total variance in closed form (grid plus
-  golden-section search, boundaries included). This replaces `rstan::optimizing`, which ignored failed
+  Newton refinement, boundaries included; see Performance). This replaces `rstan::optimizing`, which ignored failed
   fits, and whose L-BFGS stopped short near sigma2 = 0 (LR = 0 when warm-started on the boundary; ~0.03
   log-likelihood short otherwise). A fit that is not finite gives NA.
 - **Scaling**: covariate, genotype and interaction columns are standardized before fitting (invariant
@@ -89,8 +89,8 @@ within-individual G x condition). The models and function arguments are unchange
 
 - `model_checks.R`: every `map_interaction_qtl` LRT against an exact profile-likelihood reference, with
   repeated samples, a centred GRM and a condition varying within individuals (including fits on the
-  variance boundaries), effect sizes, bootstrap columns, identical results on 1 and 2 cores,
-  checkpoint files and the error paths.
+  variance boundaries), a likelihood with two near-equal peaks in h, effect sizes, bootstrap columns,
+  identical results on 1 and 2 cores, checkpoint files, `maf_threshold` and the error paths.
 - `learn_covariance_checks.R`: recovery of known noise, same-individual and latent-factor variances for a
   factor and a continuous condition.
 
