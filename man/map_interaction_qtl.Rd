@@ -17,19 +17,21 @@ map_interaction_qtl(
   checkpoint_dir = NULL,
   debug = F,
   genome_build = "GRCh38",
-  maf_threshold = 0
+  maf_threshold = 0,
+  local_ancestry = NULL,
+  covariates = NULL
 )
 }
 \arguments{
 \item{input}{[genes x samples] matrix of log_2 expression values, e.g. cpm or fpkm}
 
-\item{genotype}{[SNPs x individuals] matrix of genotypes (can have some NAs) OR a Bioconductor `TabixFile`` object}
+\item{genotype}{[SNPs x individuals] matrix of genotypes (can have some NAs) OR a Bioconductor `TabixFile`` object. Ignored (can be NULL) when `local_ancestry` is given.}
 
 \item{geneloc}{[genes x 4] data.frame with columns (geneid, chr, left, right). The intersect of geneloc$geneid and rownames(input) will be tested.}
 
 \item{snploc}{[SNPs x 3] data.frame with columns (snpid, chr, pos) where snpid's map to rows of `genotype`}
 
-\item{anno}{[samples x 2] data.frame with columns (individual, condition) where individual must correspond to column names of `genotype`}
+\item{anno}{[samples x 2] data.frame with columns (individual, condition) where individual must correspond to column names of `genotype`. A `condition` with a single value (e.g. all 1) maps eQTLs without interaction tests.}
 
 \item{sample_kernel}{[samples x samples] covariance matrix learned in suez step 1. If you don't want to control for latent confounders leave this as NULL to use the matrix representing which samples are from the same individual.}
 
@@ -46,6 +48,14 @@ map_interaction_qtl(
 \item{genome_build}{Only required if `genotype` is `TabixFile`. Default is "GRCh38"}
 
 \item{maf_threshold}{Variants with minor allele frequency at or below this value are not tested.}
+
+\item{local_ancestry}{Optional, for admixed samples: list with `dosage` and `hapcount`, each a list
+with one [SNPs x individuals] matrix per ancestry (ALT dosage on that ancestry's haplotypes, and
+number of haplotypes of that ancestry, 0/1/2), as written by Tractor's `extract_tracts.py` and read
+by [read_tractor]. SNP ids (row names) map to `snploc`. Switches to the local-ancestry models below.}
+
+\item{covariates}{Optional [samples x q] numeric matrix or data.frame of fixed covariates added to
+every model (e.g. global ancestry proportions or genotype PCs, age, sex).}
 }
 \value{
 data.frame, one row per gene x SNP: `l0`, `l_geno`, `l_interact` (log-likelihoods of the
@@ -69,3 +79,21 @@ before fitting (the likelihood is invariant). The function stops if the kernel i
 semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
 default kernel with condition fitting every within-individual contrast).
 }
+\section{Local-ancestry models}{
+
+With `local_ancestry` (k ancestries), each SNP is fitted with the models of Tractor (Atkinson et al.
+2021) inside the suez mixed model: LA = haplotype counts of the first k - 1 ancestries, G_a = ALT
+dosage on ancestry-a haplotypes, C = condition multipliers.
+M0: LA; M1: LA + G_1..G_k; M1s: LA + (G_1 + ... + G_k); M1c: M1 + LA x C; M2: M1c + G_1..G_k x C;
+M2s: M1c + (G_1 + ... + G_k) x C. Tests: `p_geno` (M1 vs M0, any ancestry-specific effect),
+`p_het` (M1 vs M1s, effects differ between ancestries), `p_interact` (M2 vs M1c, any
+ancestry-specific response; LA x C is in the null so a local-ancestry effect on the response is not
+attributed to the SNP), `p_interact_het` (M2 vs M2s). Per ancestry: `af_*`, `laprop_*`, and GLS
+`beta_*`, `se_*`, `p_*` (Wald, M1, per ALT allele; SE on the residual df and a t reference, as Tractor) and, for one interaction column,
+`beta_interact_*`, `se_interact_*`, `p_interact_*` (Wald, M2). An ancestry's terms are dropped for a
+SNP with fewer than 5 ALT alleles on that ancestry (its columns are NA, and the df shrink).
+The bootstrap simulates under M1c: `l_boot_interact_null`, `l_boot_interact`.
+Differences between ancestries at a SNP that only tags the causal variant can reflect LD that
+differs between ancestries rather than different effects.
+}
+

@@ -2,10 +2,12 @@
 #   python3 data-raw/make_schematic.py
 import math, random, re
 
-W, H = 1000, 672
+W, H = 1000, 812
 INK, MUTED, LINE = "#1f2933", "#52606d", "#9aa5b1"
 S1, S1F, S1L = "#2563a8", "#eef4fb", "#bcd3ee"     # step 1: blue
 S2, S2F, S2L = "#1f7a5a", "#edf7f2", "#b9dfcd"     # step 2: green
+S3, S3F, S3L = "#7a4a9e", "#f5f0fa", "#d9c8e8"     # local-ancestry mode: purple
+AFR, EUR = "#c9822b", "#4f9c9a"                    # ancestry colours in the haplotype sketch
 INF = "#f5f6f8"
 FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
 out = []
@@ -32,7 +34,7 @@ def rect(x, y, w, h, fill, stroke="none", r=8, sw=1.2, dash=None):
 
 def arrow(pts, color=LINE, sw=1.8, label=None, lpos=None):
     d = "M" + " L".join(f"{x},{y}" for x, y in pts)
-    mk = {LINE: "a-grey", S1: "a-s1", S2: "a-s2"}[color]
+    mk = {LINE: "a-grey", S1: "a-s1", S2: "a-s2", S3: "a-s3"}[color]
     out.append(f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{sw}" marker-end="url(#{mk})"/>')
     if label: text(*lpos, label, 12, color, "600")
 
@@ -42,7 +44,7 @@ out.append('<title id="t">suez workflow</title><desc id="d">Step 1 learns a samp
            'all genes; step 2 tests every cis-SNP with nested linear mixed models that use it.</desc>')
 out.append("<defs>" + "".join(
     f'<marker id="{i}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
-    f'<path d="M0,0 L10,5 L0,10 z" fill="{c}"/></marker>' for i, c in [("a-grey", LINE), ("a-s1", S1), ("a-s2", S2)]) + "</defs>")
+    f'<path d="M0,0 L10,5 L0,10 z" fill="{c}"/></marker>' for i, c in [("a-grey", LINE), ("a-s1", S1), ("a-s2", S2), ("a-s3", S3)]) + "</defs>")
 rect(0, 0, W, H, "#ffffff", r=14)
 
 # ---------------- inputs ----------------
@@ -52,6 +54,7 @@ cards = [  # y, h, title, lines
     (158, 92, "Sample annotation", ["individual (repeated samples)", "condition: factor or numeric"]),
     (266, 72, "Kinship / GRM", ["optional, individuals ×", "individuals"]),
     (420, 112, "Genotypes", ["SNPs × individuals (0/1/2)", "+ SNP positions", "+ gene positions"]),
+    (672, 112, "Local ancestry", ["optional, admixed samples:", "Tractor files per ancestry", "(dosage + hapcount)"]),
 ]
 for y, h, t, ls in cards:
     rect(20, y, 200, h, INF, "#d9dde3")
@@ -157,6 +160,35 @@ text(tx + 4, Y2 + 222, "optional bootstrap", 12, INK, "600")
 for i, l in enumerate(["simulate under M1 to", "calibrate p_interact", "(l_boot_* columns)"]):
     text(tx + 4, Y2 + 239 + 15 * i, l, 11.5, MUTED)
 
+# ---------------- local-ancestry mode ----------------
+X3, Y3, W3, H3 = 262, 668, 718, 124
+rect(X3, Y3, W3, H3, S3F, S3L, r=12)
+text(X3 + 18, Y3 + 28, "Optional · local ancestry", 15, S3, "700")
+text(X3 + 210, Y3 + 28, "map_interaction_qtl(local_ancestry = read_tractor(...))", 12, MUTED, italic=True)
+# two haplotypes of one individual, coloured by ancestry, with the tested SNP
+hx3, hy3, hw = X3 + 18, Y3 + 50, 196
+for r_, segs in enumerate([[(0, 0.55, AFR), (0.55, 1, EUR)], [(0, 0.3, EUR), (0.3, 1, AFR)]]):
+    yy = hy3 + 26 * r_
+    for a, b, col in segs:
+        out.append(f'<rect x="{hx3 + a*hw:.1f}" y="{yy}" width="{(b-a)*hw:.1f}" height="12" fill="{col}" opacity="0.85"/>')
+sx = hx3 + 0.66 * hw
+out.append(f'<line x1="{sx:.1f}" y1="{hy3-6}" x2="{sx:.1f}" y2="{hy3+44}" stroke="{INK}" stroke-width="1.4" stroke-dasharray="3 2"/>')
+out.append(f'<circle cx="{sx:.1f}" cy="{hy3+6}" r="4" fill="#ffffff" stroke="{INK}" stroke-width="1.4"/>')
+out.append(f'<circle cx="{sx:.1f}" cy="{hy3+32}" r="4" fill="{INK}"/>')
+text(hx3, hy3 + 62, "AFR", 11, AFR, "700"); text(hx3 + 34, hy3 + 62, "EUR", 11, EUR, "700")
+text(hx3 + 70, hy3 + 62, "● ALT allele at the SNP", 11, MUTED)
+# terms and models
+mx3 = X3 + 240
+text(mx3, Y3 + 54, "genotype g split by haplotype ancestry:", 12, MUTED)
+text(mx3, Y3 + 74, "LA = # AFR haplotypes,  G_{AFR}, G_{EUR} = ALT on each", 12.5)
+text(mx3, Y3 + 96, "M1: LA + G_{AFR} + G_{EUR}", 13); text(mx3, Y3 + 114, "M2: + LA·c + G_{AFR}·c + G_{EUR}·c", 13)
+# tests
+tx3 = X3 + 545
+text(tx3, Y3 + 54, "p_AFR, p_EUR", 12.5, S3, "700"); text(tx3 + 92, Y3 + 54, "(= Tractor)", 11.5, MUTED)
+text(tx3, Y3 + 74, "p_het", 12.5, S3, "700"); text(tx3 + 44, Y3 + 74, "effects differ", 11.5, MUTED)
+text(tx3, Y3 + 94, "p_interact_AFR / _EUR", 12.5, S3, "700")
+text(tx3, Y3 + 112, "ancestry-specific response", 11.5, MUTED)
+
 # ---------------- arrows ----------------
 arrow([(220, 96), (X1 - 4, 96)])                      # expression -> step 1
 arrow([(220, 204), (X1 - 4, 204)])                    # annotation -> step 1
@@ -164,6 +196,8 @@ arrow([(220, 302), (X1 - 4, 302)])                    # kinship -> step 1
 arrow([(236, 96), (236, 470), (X2 - 4, 470)])         # expression -> step 2
 arrow([(244, 204), (244, 486), (X2 - 4, 486)])        # annotation -> step 2
 arrow([(220, 520), (X2 - 4, 520)])                    # genotypes -> step 2
+arrow([(220, 728), (X3 - 4, 728)], S3)                # local ancestry -> local-ancestry mode
+arrow([(X3 + W3 - 60, Y3 + 4), (X3 + W3 - 60, Y2 + H2 + 4)], S3)   # replaces g in step 2
 arrow([(hx + n*cs/2, Y1 + H1 - 4), (hx + n*cs/2, Y2 + 4)], S1, 2.2, "sample_kernel", (hx + n*cs/2 + 10, Y1 + H1 + 26))
 
 out.append("</svg>")

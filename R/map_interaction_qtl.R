@@ -83,10 +83,10 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' Response (e)QTL mapping
 #'
 #' @param input [genes x samples] matrix of log_2 expression values, e.g. cpm or fpkm
-#' @param genotype [SNPs x individuals] matrix of genotypes (can have some NAs) OR a Bioconductor `TabixFile`` object
+#' @param genotype [SNPs x individuals] matrix of genotypes (can have some NAs) OR a Bioconductor `TabixFile`` object. Ignored (can be NULL) when `local_ancestry` is given.
 #' @param geneloc [genes x 4] data.frame with columns (geneid, chr, left, right). The intersect of geneloc$geneid and rownames(input) will be tested.
 #' @param snploc [SNPs x 3] data.frame with columns (snpid, chr, pos) where snpid's map to rows of `genotype`
-#' @param anno [samples x 2] data.frame with columns (individual, condition) where individual must correspond to column names of `genotype`
+#' @param anno [samples x 2] data.frame with columns (individual, condition) where individual must correspond to column names of `genotype`. A `condition` with a single value (e.g. all 1) maps eQTLs without interaction tests.
 #' @param sample_kernel [samples x samples] covariance matrix learned in suez step 1. If you don't want to control for latent confounders leave this as NULL to use the matrix representing which samples are from the same individual.
 #' @param normalization_approach One of (qq,log,linear) determining how to normalize within each gene. We recommend qq (quantile normalization to normal) to ensure the assumptions of the test hold.
 #' @param permutation_approach One of ("none","permute","boot"). We recommend boot (parametric bootstrap) since the permutation test is not really valid for interaction effect testing.
@@ -95,6 +95,12 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' @param debug Controls whether you see progress messages and whether errors are suppressed.
 #' @param genome_build Only required if `genotype` is `TabixFile`. Default is "GRCh38"
 #' @param maf_threshold Variants with minor allele frequency at or below this value are not tested.
+#' @param local_ancestry Optional, for admixed samples: list with `dosage` and `hapcount`, each a list
+#'   with one [SNPs x individuals] matrix per ancestry (ALT dosage on that ancestry's haplotypes, and
+#'   number of haplotypes of that ancestry, 0/1/2), as written by Tractor's `extract_tracts.py` and read
+#'   by [read_tractor]. SNP ids (row names) map to `snploc`. Switches to the local-ancestry models below.
+#' @param covariates Optional [samples x q] numeric matrix or data.frame of fixed covariates added to
+#'   every model (e.g. global ancestry proportions or genotype PCs, age, sex).
 #'
 #' @details Model: y = X b + e, e ~ N(0, sigma2_k * K + sigma2 * I), K = `sample_kernel`, fitted by
 #' maximum likelihood on the N-1 contrasts orthogonal to the intercept (REML for the intercept only),
@@ -105,6 +111,22 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' before fitting (the likelihood is invariant). The function stops if the kernel is not positive
 #' semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
 #' default kernel with condition fitting every within-individual contrast).
+#'
+#' @section Local-ancestry models:
+#' With `local_ancestry` (k ancestries), each SNP is fitted with the models of Tractor (Atkinson et al.
+#' 2021) inside the suez mixed model: LA = haplotype counts of the first k - 1 ancestries, G_a = ALT
+#' dosage on ancestry-a haplotypes, C = condition multipliers.
+#' M0: LA; M1: LA + G_1..G_k; M1s: LA + (G_1 + ... + G_k); M1c: M1 + LA x C; M2: M1c + G_1..G_k x C;
+#' M2s: M1c + (G_1 + ... + G_k) x C. Tests: `p_geno` (M1 vs M0, any ancestry-specific effect),
+#' `p_het` (M1 vs M1s, effects differ between ancestries), `p_interact` (M2 vs M1c, any
+#' ancestry-specific response; LA x C is in the null so a local-ancestry effect on the response is not
+#' attributed to the SNP), `p_interact_het` (M2 vs M2s). Per ancestry: `af_*`, `laprop_*`, and GLS
+#' `beta_*`, `se_*`, `p_*` (Wald, M1, per ALT allele; SE on the residual df and a t reference, as Tractor) and, for one interaction column,
+#' `beta_interact_*`, `se_interact_*`, `p_interact_*` (Wald, M2). An ancestry's terms are dropped for a
+#' SNP with fewer than 5 ALT alleles on that ancestry (its columns are NA, and the df shrink).
+#' The bootstrap simulates under M1c: `l_boot_interact_null`, `l_boot_interact`.
+#' Differences between ancestries at a SNP that only tags the causal variant can reflect LD that
+#' differs between ancestries rather than different effects.
 #'
 #' @return data.frame, one row per gene x SNP: `l0`, `l_geno`, `l_interact` (log-likelihoods of the
 #' contrasts under the no-genotype, genotype and genotype x condition models), `p_geno` (LRT, df 1),
@@ -118,7 +140,8 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' @export
 map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_kernel=NULL, 
                                normalization_approach="qq", permutation_approach="boot", cisdist=1e5, 
-                               checkpoint_dir=NULL, debug=F, genome_build= "GRCh38", maf_threshold = 0) {
+                               checkpoint_dir=NULL, debug=F, genome_build= "GRCh38", maf_threshold = 0,
+                               local_ancestry=NULL, covariates=NULL) {
 
   if (normalization_approach=="qq") {
     input=quantile_normalize(input)
@@ -137,20 +160,22 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
 
   genes=intersect(rownames(input),geneloc$geneid)
 
-  if (is.matrix(genotype)) {
+  la_mode = !is.null(local_ancestry)
+  if (la_mode) local_ancestry = check_local_ancestry(local_ancestry, anno$individual)
+  ref_geno = if (la_mode) local_ancestry$dosage[[1]] else genotype
+  if (is.matrix(ref_geno)) {
     # cis lookup: snploc rows per chromosome sorted by position, and snploc -> genotype rows, built once
     # (scanning all of snploc for every gene costs ~20 ms per gene per million SNPs)
-    geno_row = match(as.character(snploc$snpid), rownames(genotype))
+    geno_row = match(as.character(snploc$snpid), rownames(ref_geno))
     by_chr = lapply(split(seq_len(nrow(snploc)), as.character(snploc$chr)), function(i) i[order(snploc$pos[i])])
-    cis_geno = function(chrom, left, right) {   # SNPs with left < pos < right, in snploc order
+    cis_rows = function(chrom, left, right) {   # genotype rows of SNPs with left < pos < right, in snploc order
       i = by_chr[[as.character(chrom)]]
-      if (is.null(i)) return(NULL)
+      if (is.null(i)) return(integer(0))
       p = snploc$pos[i]; from = findInterval(left, p)
       r = sort(i[seq.int(from + 1L, length.out = max(0L, findInterval(right, p, left.open = TRUE) - from))])
-      r = r[!is.na(geno_row[r])]
-      if (length(r)) genotype[geno_row[r],,drop=F] else NULL
+      geno_row[r[!is.na(geno_row[r])]]
     }
-  }
+  } else if (la_mode) stop("local_ancestry matrices must be matrices (see read_tractor()).", call. = FALSE)
   rownames(geneloc)=geneloc$geneid
 
   if (is.null(sample_kernel)) {
@@ -165,17 +190,28 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
 
   # GxE multipliers: the numeric condition (one column), or indicators of the non-reference levels;
   # genotype x column j is the interaction term j (as in model.matrix(~ geno:condition))
-  C = if (is.numeric(anno$condition)) cbind(anno$condition) else model.matrix(~ condition, data=anno)[, -1, drop=F]
+  # A single condition (e.g. a constant) gives a plain eQTL map: no interaction terms.
+  one_condition = length(unique(anno$condition)) == 1
+  C = if (one_condition) matrix(0, nrow(anno), 0) else
+    if (is.numeric(anno$condition)) cbind(anno$condition) else model.matrix(~ condition, data=anno)[, -1, drop=F]
   df_interact = ncol(C)
 
-  no_geno = model.matrix( ~ condition, data=anno)
+  no_geno = if (one_condition) matrix(0, nrow(anno), 0) else model.matrix( ~ condition, data=anno)
+  if (!is.null(covariates)) {
+    if (is.data.frame(covariates)) covariates = model.matrix(~ ., data = covariates)
+    covariates = as.matrix(covariates)
+    if (nrow(covariates) != nrow(anno) || !is.numeric(covariates) || anyNA(covariates))
+      stop("covariates must be numeric, without NA, with one row per sample (as anno).", call. = FALSE)
+    no_geno = cbind(no_geno, covariates)
+  }
   no_geno = no_geno[, apply(no_geno, 2, sd) > 0, drop=F] # intercept: removed by the contrasts
   X0 = standardize_cols(no_geno)
   UX0 = crossprod(U, X0)
 
   # condition varying within individual => GxE columns can fit the kernel's null directions
   within = any(tapply(as.character(anno$condition), anno$individual, function(x) length(unique(x)) > 1))
-  check_identifiable(eig, X0, need = 1 + if (within) df_interact else 0)
+  k_anc = if (la_mode) length(local_ancestry$dosage) else 1
+  check_identifiable(eig, X0, need = 1 + if (within) (2 * k_anc - 1) * df_interact else 0)
 
   errorhandling=if (debug) 'stop' else 'remove'
 
@@ -204,9 +240,25 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
       }
     }
     
-    geno_here = if (is.matrix(genotype))
-      cis_geno(geneloc[gene,"chr"], geneloc[gene,"left"]-cisdist, geneloc[gene,"right"]+cisdist)
-    else get_cis_geno(genotype, 
+    if (la_mode) {
+      rows = cis_rows(geneloc[gene,"chr"], geneloc[gene,"left"]-cisdist, geneloc[gene,"right"]+cisdist)
+      if (!length(rows)) return(NULL)
+      D = lapply(local_ancestry$dosage, function(m) m[rows,,drop=F])
+      H = lapply(local_ancestry$hapcount, function(m) m[rows,,drop=F])
+      if (permutation_approach=="permute") {   # same shuffle of individuals for every ancestry
+        perm = sample(ncol(D[[1]]))
+        D = lapply(D, function(m) { colnames(m) = colnames(m)[perm]; m }); H = lapply(H, function(m) { colnames(m) = colnames(m)[perm]; m })
+      }
+      Uy = drop(crossprod(U, as.numeric(input[gene,])))
+      gene_results = la_gene(gene, D, H, anno, C, U, lambda, Uy, UX0, permutation_approach=="boot", maf_threshold)
+      if (!is.null(checkpoint_dir) && !is.null(gene_results)) gene_results %>% write_tsv(check_fn)
+      return(gene_results)
+    }
+
+    geno_here = if (is.matrix(genotype)) {
+      rows = cis_rows(geneloc[gene,"chr"], geneloc[gene,"left"]-cisdist, geneloc[gene,"right"]+cisdist)
+      if (length(rows)) genotype[rows,,drop=F] else NULL
+    } else get_cis_geno(genotype, 
                               chrom = geneloc[gene,"chr"], 
                               left = geneloc[gene,"left"]-cisdist, 
                               right = geneloc[gene,"right"]+cisdist, 

@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.4
+
+Local-ancestry (Tractor-style) eQTL and response-eQTL mapping for admixed samples.
+
+#### `map_interaction_qtl` (step 2)
+
+- **`local_ancestry`**: per-ancestry ALT dosages and haplotype counts (Tractor's `extract_tracts.py`
+  output, read with the new `read_tractor()`) replace `genotype`. Each SNP is fitted with the models of
+  Tractor (Atkinson et al. 2021) inside the suez mixed model: local ancestry plus one genotype term per
+  ancestry, and their interactions with the condition. New tests: any ancestry-specific eQTL (`p_geno`, k
+  df), eQTL effects differ between ancestries (`p_het`), any ancestry-specific response (`p_interact`, with
+  local ancestry x condition in the null), responses differ (`p_interact_het`), and per-ancestry Wald
+  estimates (`beta_<anc>`, `p_<anc>`, `beta_interact_<anc>`, ...). Works for any number of ancestries;
+  an ancestry with fewer than 5 ALT alleles at a SNP is dropped for that SNP. Bootstrap under the
+  no-response model.
+- With one sample per individual and the default kernel, the per-ancestry betas, SEs and p-values equal
+  Tractor's `run_tractor.R` linear model (Wald SEs on the residual degrees of freedom with a t reference).
+- **`covariates`**: fixed covariates (e.g. global ancestry, PCs, age, sex) added to every model, in both
+  modes.
+- A `condition` with a single value maps eQTLs without interaction tests (it was an error for a factor).
+- `src/lmm.cpp`: a general fitter for any set of per-SNP terms (`suez_fit_models`), using the same
+  batched grid and Newton search.
+
+#### Tests and documentation
+
+- `tests/local_ancestry_checks.R`: every local-ancestry likelihood against the exact profile-likelihood
+  reference, equality with Tractor's linear model, three ancestries, dropped rare ancestries and
+  `read_tractor()`.
+- README: local-ancestry section (inputs, models, output columns, recommendations) and an updated
+  schematic.
+- Simulations behind the recommendations (300 admixed individuals, 2 conditions, sibling pairs, LD that
+  differs by ancestry): a GRM in step 1 does not absorb ancestry-specific effects (same estimates and
+  power) and removes the inflation from relatives; a response present only in the minor ancestry is found
+  far more often than by the pooled test; LD that differs by ancestry makes tag SNPs look ancestry-specific.
+
 ## 0.3
 
 Faster and more accurate search over h in step 2; results equal 0.2 except where 0.2 missed the maximum.

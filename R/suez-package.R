@@ -16,7 +16,7 @@
 #' @importFrom dplyr bind_rows
 #' @importFrom readr read_tsv write_tsv
 #' @importFrom utils globalVariables
-#' @importFrom stats lm.fit model.matrix optimize pchisq qnorm rnorm sd
+#' @importFrom stats lm.fit model.matrix optimize pchisq pt qnorm rnorm sd
 #' 
 #' @references 
 #' * Fusi N, Stegle O, Lawrence ND. 2012. Joint modelling of confounding factors and prominent genetic regulators provides increased accuracy in genetical genomics studies. PLoS Computational Biology 8:e1002330.

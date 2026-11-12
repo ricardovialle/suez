@@ -9,9 +9,11 @@
 
 
 extern "C" SEXP suez_fit_gene(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern "C" SEXP suez_fit_models(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
   {"suez_fit_gene", (DL_FUNC) &suez_fit_gene, 7},
+  {"suez_fit_models", (DL_FUNC) &suez_fit_models, 8},
   {NULL, NULL, 0}
 };
 

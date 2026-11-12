@@ -1,7 +1,7 @@
 Package: suez
 Type: Package
 Title: Molecular response QTL mapping
-Version: 0.3
+Version: 0.4
 Date: 2017-09-28
 Author: David A. Knowles
 Maintainer: David A. Knowles <knowles84@gmail.com>

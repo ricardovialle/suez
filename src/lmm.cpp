@@ -248,3 +248,81 @@ extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SE
                   Rcpp::as<MatrixXd>(G), Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot));
   END_RCPP
 }
+
+// General per-SNP models, used by the local-ancestry mode. cols: list of samples x S matrices, already
+// standardized (an all-zero column = term absent for that SNP). models: list of 0-based index vectors into
+// cols, the terms each model adds to X0. Returns ll and npar (S x models: log-likelihood, number of terms
+// used), beta and se (per model, S x terms: GLS estimates on the standardized scale) and, with
+// boot_null >= 0, ll_boot (S x 2): y simulated per SNP under model boot_null, then models boot_null and
+// boot_alt refitted.
+static MatrixXd design(const MatrixXd& UX0, const std::vector<MatrixXd>& B, int s, std::vector<int>& use) {
+  use.clear(); for (int k = 0; k < (int)B.size(); ++k) if (B[k].col(s).squaredNorm() > 0) use.push_back(k);
+  MatrixXd X(UX0.rows(), UX0.cols() + use.size()); X.leftCols(UX0.cols()) = UX0;
+  for (size_t k = 0; k < use.size(); ++k) X.col(UX0.cols() + k) = B[use[k]].col(s);
+  return X;
+}
+
+static Rcpp::List fit_models(const MatrixXd& U, const VectorXd& lam_, const VectorXd& Uy, const MatrixXd& UX0,
+                             Rcpp::List cols, Rcpp::List models, int boot_null, int boot_alt) {
+  const int n = Uy.size(), p0 = UX0.cols(), M = models.size();
+  const ArrayXd lam = lam_.array();
+  std::vector<MatrixXd> R;
+  for (int j = 0; j < cols.size(); ++j) R.push_back(U.transpose() * Rcpp::as<MatrixXd>(cols[j]));
+  const int S = R[0].cols();
+  MatrixXd Y1(n, 1); Y1.col(0) = Uy;
+  Rcpp::NumericMatrix ll(S, M); Rcpp::IntegerMatrix npar(S, M); Rcpp::List betas(M), ses(M);
+  std::fill(ll.begin(), ll.end(), NA_REAL);
+  std::vector<std::vector<MatrixXd>> Bm(M);
+  MatrixXd Yb; if (boot_null >= 0) Yb = MatrixXd::Zero(n, S);
+  Rcpp::RNGScope rng;
+  for (int m = 0; m < M; ++m) {
+    Rcpp::IntegerVector t = models[m];
+    for (int j : t) Bm[m].push_back(R[j]);
+    Rcpp::NumericMatrix beta(S, t.size()), se(S, t.size());
+    std::fill(beta.begin(), beta.end(), NA_REAL); std::fill(se.begin(), se.end(), NA_REAL);
+    MatrixXd V = grid_values(UX0, Bm[m], Y1, lam, S);
+    std::vector<int> use;
+    for (int s = 0; s < S; ++s) {
+      MatrixXd X = design(UX0, Bm[m], s, use);
+      npar(s, m) = use.size();
+      VectorXd v = V.row(s).transpose();
+      Fit f = refine(X, Uy, lam, v.data(), argmax(v.data()));
+      if (!f.ok) continue;
+      ll(s, m) = f.value;
+      ArrayXd w = (f.s2k * lam + f.s2).inverse();
+      MatrixXd Xw = (X.array().colwise() * w).matrix();
+      MatrixXd Vb = (Xw.transpose() * X).inverse();
+      for (size_t k = 0; k < use.size(); ++k) { beta(s, use[k]) = f.b[p0 + k]; se(s, use[k]) = std::sqrt(Vb(p0 + k, p0 + k)); }
+      if (m == boot_null) {   // drawn in SNP order, from R's RNG
+        for (int i = 0; i < n; ++i) Yb(i, s) = std::sqrt(f.s2k * lam[i] + f.s2) * R::norm_rand();
+        Yb.col(s) += X * f.b;
+      }
+    }
+    betas[m] = beta; ses[m] = se;
+  }
+  Rcpp::List res = Rcpp::List::create(Rcpp::Named("ll") = ll, Rcpp::Named("npar") = npar,
+                                      Rcpp::Named("beta") = betas, Rcpp::Named("se") = ses);
+  if (boot_null >= 0) {
+    Rcpp::NumericMatrix lb(S, 2); std::fill(lb.begin(), lb.end(), NA_REAL);
+    const int mm[2] = {boot_null, boot_alt};
+    for (int a = 0; a < 2; ++a) {
+      MatrixXd V = grid_values(UX0, Bm[mm[a]], Yb, lam, S); std::vector<int> use;
+      for (int s = 0; s < S; ++s) {
+        if (ISNAN(ll(s, boot_null))) continue;
+        MatrixXd X = design(UX0, Bm[mm[a]], s, use); VectorXd v = V.row(s).transpose();
+        Fit f = refine(X, Yb.col(s), lam, v.data(), argmax(v.data()));
+        if (f.ok) lb(s, a) = f.value;
+      }
+    }
+    res["ll_boot"] = lb;
+  }
+  return res;
+}
+
+extern "C" SEXP suez_fit_models(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP cols, SEXP models,
+                                SEXP boot_null, SEXP boot_alt) {
+  BEGIN_RCPP
+  return fit_models(Rcpp::as<MatrixXd>(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
+                    Rcpp::List(cols), Rcpp::List(models), Rcpp::as<int>(boot_null), Rcpp::as<int>(boot_alt));
+  END_RCPP
+}

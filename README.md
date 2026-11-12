@@ -1,7 +1,7 @@
 # suez: response-eQTL mapping in R
 
 This is a fork of [davidaknowles/suez](https://github.com/davidaknowles/suez) with bug fixes, faster model
-fits, parallel processing and new documentation. All modifications are listed in [CHANGELOG.md](CHANGELOG.md).
+fits, parallel processing, local-ancestry (Tractor-style) models for admixed samples and new documentation. All modifications are listed in [CHANGELOG.md](CHANGELOG.md).
 
 `suez` maps expression QTLs, and genotype x condition (response) eQTLs, in studies where individuals are
 measured more than once, for example before and after a treatment. It extends the PANAMA approach
@@ -10,6 +10,9 @@ measured more than once, for example before and after a treatment. It extends th
 - several conditions per individual, categorical (control / treated) or continuous (dose, time, age)
 - hidden confounders, learned as latent factors
 - repeated samples of the same individual, and known relatedness (a kinship matrix or GRM)
+- admixed individuals: ancestry-specific eQTL and response-eQTL effects from local ancestry, with the
+  models of [Tractor](https://github.com/Atkinson-Lab/Tractor) inside the suez mixed model
+  ([below](#local-ancestry-admixed-samples))
 
 It works in two steps:
 
@@ -19,7 +22,7 @@ It works in two steps:
    covariance. Each SNP gets a test of the genotype effect and a test of the genotype x condition
    interaction.
 
-![suez workflow: step 1 learns a sample covariance shared by all genes; step 2 tests every cis-SNP with three nested linear mixed models that use it](man/figures/suez_schematic.svg)
+![suez workflow: step 1 learns a sample covariance shared by all genes; step 2 tests every cis-SNP with nested linear mixed models that use it; optionally, local ancestry splits each genotype into ancestry-specific terms](man/figures/suez_schematic.svg)
 
 A worked example from raw counts and a joint-called VCF to eQTL calls (filtering, TMM normalization,
 genotype QC, both suez steps, multiple testing) is in the
@@ -208,6 +211,74 @@ calling `map_interaction_qtl()` again with the same `checkpoint_dir` reads finis
 and only computes the rest. The files are reused as they are, so delete the directory (or use a new one)
 after changing the data or the arguments. Genes with no testable SNP get no file.
 
+## Local ancestry (admixed samples)
+
+For admixed individuals, `map_interaction_qtl()` can estimate eQTL and response-eQTL effects separately for
+each ancestry, using local ancestry as in [Tractor](https://github.com/Atkinson-Lab/Tractor) (Atkinson et
+al. 2021). The input is Tractor's per-ancestry files: phase the genotypes, infer local ancestry (RFMix2 or
+FLARE), and run Tractor's `extract_tracts.py` (or `extract_tracts_flare.py`). This writes, for each ancestry
+`k`, `<prefix>.anck.dosage.txt` (ALT alleles carried on ancestry-`k` haplotypes) and `<prefix>.anck.hapcount.txt`
+(number of ancestry-`k` haplotypes, 0/1/2).
+
+```r
+la = read_tractor("cohort/chr22.phased", ancestry_names = c("AFR", "EUR"))  # dosage, hapcount, snploc
+global = sapply(la$hapcount, colMeans) / 2        # global ancestry per individual (or use RFMix .Q / PCs)
+
+step1 = learn_covariance(qq, anno, kinship_matrix = grm, P = 10)   # keep the GRM: see below
+res = map_interaction_qtl(input, NULL, geneloc, la$snploc, anno,
+                          sample_kernel = step1$cov_suez,
+                          local_ancestry = la,
+                          covariates = cbind(AFR = global[anno$individual, "AFR"]),
+                          cisdist = 1e5)
+```
+
+For each SNP, with LA the haplotype counts of the first k - 1 ancestries and G_a the ALT dosage on
+ancestry-a haplotypes, six nested models are fitted (each also includes the condition and `covariates`):
+
+| Model | Terms | Used for |
+|---|---|---|
+| M0 | LA | null of the eQTL test |
+| M1 | LA + G_1 ... G_k | ancestry-specific eQTL effects (Tractor's model) |
+| M1s | LA + (G_1 + ... + G_k) | one effect shared by all ancestries |
+| M1c | M1 + LA x condition | null of the response test |
+| M2 | M1c + G_1 ... G_k x condition | ancestry-specific response eQTL |
+| M2s | M1c + (G_1 + ... + G_k) x condition | one response shared by all ancestries |
+
+| Column | Meaning |
+|---|---|
+| `p_geno`, `df_geno` | any eQTL effect: M1 vs M0 (df = number of ancestries tested) |
+| `p_het`, `df_het` | eQTL effects differ between ancestries: M1 vs M1s |
+| `p_interact`, `df_interact` | any response eQTL: M2 vs M1c |
+| `p_interact_het` | responses differ between ancestries: M2 vs M2s |
+| `beta_<anc>`, `se_<anc>`, `p_<anc>` | eQTL effect per ALT allele on that ancestry's haplotypes (Wald, M1) |
+| `beta_interact_<anc>`, `se_interact_<anc>`, `p_interact_<anc>` | response effect on that ancestry (Wald, M2; numeric or 2-level condition) |
+| `af_<anc>`, `laprop_<anc>` | ALT frequency on that ancestry's haplotypes, and its share of haplotypes at the SNP |
+| `l0`, `l_geno`, `l_geno_shared`, `l_interact_null`, `l_interact`, `l_interact_shared` | log-likelihoods of M0 ... M2s |
+| `l_boot_interact_null`, `l_boot_interact` | bootstrap under M1c (`permutation_approach = "boot"`): `2 * (l_boot_interact - l_boot_interact_null)` is a null draw of the response LR |
+
+- **Same answers as Tractor**: with one sample per individual, no relatedness and the default kernel, the
+  ancestry-specific betas, SEs and p-values equal Tractor's `run_tractor.R` linear model (tested to 1e-13).
+  suez adds the random effect (repeated samples, kinship, hidden confounders), the response tests, the
+  joint and heterogeneity tests, and more than one condition.
+- **Use a GRM.** A GRM in step 1 (preferably leaving out the tested chromosome) does not absorb the
+  ancestry-specific effects: in simulations the per-ancestry betas and power were the same with and without
+  it. Without it, related individuals inflate the tests (λ 1.18 vs 1.04 for the eQTL test with sibling
+  pairs). Add global ancestry as a fixed covariate as well.
+- **One condition**: with a single value of `anno$condition` (e.g. `condition = 1`), suez maps eQTLs
+  only (no interaction terms), as a Tractor GWAS with a random effect.
+- **Rare ancestries**: an ancestry's terms are dropped for a SNP with fewer than 5 ALT alleles on that
+  ancestry (its columns are `NA` and the degrees of freedom shrink). Ancestry-specific tests need many
+  haplotypes of that ancestry: in simulations with 300 individuals (33% of haplotypes from the minor
+  ancestry), a response effect of 0.6 SD per allele present only in the minor ancestry was found 45% of
+  the time at p < 1e-4, against 6% by the standard (pooled genotype) suez test.
+- **LD caveat**: at a SNP that only tags the causal variant, LD that differs between ancestries makes the
+  effects look different (`p_het` < 0.05 in 28% of simulated tag SNPs whose causal effect was shared).
+  Treat ancestry differences at non-lead SNPs with care, and fine-map before interpreting them.
+- Both pooled and local-ancestry analyses are worth running: when the response is the same in all
+  ancestries, the standard test (1 df) has slightly more power than the k-df local-ancestry test.
+- Local-ancestry matrices must be complete (no `NA`), and a `TabixFile` genotype is not supported in this
+  mode. Each matrix is dense in memory: read one chromosome at a time.
+
 ## Parallel processing and reproducibility
 
 Genes run in parallel on the registered `foreach` backend; register one before calling
@@ -230,9 +301,10 @@ is then roughly 6 core-hours.
 
 ## Tests
 
-`tests/` run with `R CMD check` (about 10 s). They compare every likelihood-ratio test with an exact
-reference, check recovery of known variances in step 1, results on 1 vs 2 cores, checkpoint files and the
-error checks.
+`tests/` run with `R CMD check` (about 15 s). They compare every likelihood-ratio test with an exact
+reference (including a likelihood with two peaks and every local-ancestry model), check recovery of known
+variances in step 1, the local-ancestry estimates against Tractor's linear model, `read_tractor()`, results
+on 1 vs 2 cores, checkpoint files and the error checks.
 
 ## Citation
 
