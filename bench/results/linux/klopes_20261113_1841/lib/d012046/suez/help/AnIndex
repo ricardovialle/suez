@@ -1,0 +1,8 @@
+suez-package	suez-package
+easy_impute	easy_impute
+learn_covariance	learn_covariance
+map_interaction_qtl	map_interaction_qtl
+qqnorm_no_plot	qqnorm_no_plot
+quantile_normalize	quantile_normalize
+quantile_normalize_cols	quantile_normalize_cols
+suez	suez-package

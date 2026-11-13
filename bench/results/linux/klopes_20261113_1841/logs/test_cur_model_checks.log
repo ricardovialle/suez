@@ -1,0 +1,49 @@
+eigen solver: lapack 
+PASS centred donor GRM is singular along 1  
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS one row per gene x SNP, no failed fits  
+PASS LRT = exact profile-ML LRT (96 LRTs, max |dLR| 0.00063) 
+PASS G x condition detected at the causal SNPs  
+PASS GLS slope consistent with the truth (max |z| 2.21) 
+PASS bootstrap columns  
+Checkpoint dir: 
+Performing initial eigendecomposition...
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS same set.seed => same bootstrap draws on 1 and 2 cores  
+Checkpoint dir: /tmp/Rtmph2efnH/suez_ckpt 
+Performing initial eigendecomposition...
+PASS checkpoint files written inside checkpoint_dir  
+Checkpoint dir: /tmp/Rtmph2efnH/suez_ckpt 
+Performing initial eigendecomposition...
+PASS checkpointed results read back  
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS maf_threshold drops low-MAF SNPs coded either way  
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS missing genotypes imputed, gene with a monomorphic SNP with missing calls kept  
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS bimodal likelihood: the higher of two near-equal peaks is found (max |dl| 2.8e-14) 
+Checkpoint dir: 
+Performing initial eigendecomposition...
+Checkpoint dir: 
+Performing initial eigendecomposition...
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS kernel scaled by 1e6 and 1e-6: same log-likelihoods (max |dl| 8.7e-08) 
+Checkpoint dir: 
+Performing initial eigendecomposition...
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS Eigen and LAPACK eigen solvers: same log-likelihoods (max |dl| 9.9e-10) 
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS non-PSD kernel refused  
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS unidentifiable residual variance refused  
+PASS non-finite genotypes refused (no sort on NaN)  
+0 failure(s)

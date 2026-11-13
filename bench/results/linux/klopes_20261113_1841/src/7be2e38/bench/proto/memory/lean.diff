@@ -1,0 +1,172 @@
+diff --color -ru /Users/rvialle/suez/R/learn_covariance.R pkg_lean/R/learn_covariance.R
+--- /Users/rvialle/suez/R/learn_covariance.R	2026-11-11 15:12:07
++++ pkg_lean/R/learn_covariance.R	2026-11-13 07:11:12
+@@ -19,7 +19,6 @@
+ #' of the covariance (no isotropic noise: pass it as `sample_kernel` to [map_interaction_qtl]), and
+ #' `optimized_fit`, the rstan::optimizing result (factors `x_adjustable` are in the contrast basis).
+ #' @importFrom stats model.matrix
+-#' @import rstan
+ #' @import doMC
+ #' @export
+ learn_covariance = function(input, anno, kinship_matrix=NULL, P=20, same_ind_initial_weight=0.01, kinship_matrix_initial_weight=0.01, ... )
+@@ -64,7 +63,7 @@
+ 
+   init=list( s_adjustable=sinit[1:P], s=variance_component_weights, x_adjustable=x_adjustable )
+ 
+-  optimized_fit=optimizing(stanmodels$suez_step_1,
++  optimized_fit=rstan::optimizing(stanmodels$suez_step_1,
+                            data=dat,
+                            init=init,
+                            as_vector=F,
+diff --color -ru /Users/rvialle/suez/R/lmm.R pkg_lean/R/lmm.R
+--- /Users/rvialle/suez/R/lmm.R	2026-11-12 06:56:55
++++ pkg_lean/R/lmm.R	2026-11-13 07:58:52
+@@ -14,14 +14,29 @@
+ # that is not positive semi-definite.
+ kernel_contrast_eigen = function(K) {
+   K = as.matrix(K)
+-  stopifnot(nrow(K) == ncol(K), isSymmetric(unname(K), tol = 1e-8))
++  stopifnot(nrow(K) == ncol(K), is_symmetric(K, tol = 1e-8))
+   n = nrow(K)
+-  Q = qr.Q(qr(matrix(1, n, 1)), complete = TRUE)[, -1, drop = FALSE]
++  # = qr.Q(qr(1), complete = TRUE)[, -1] (same Householder product, column by column), without the N x N
++  # identity and the complete Q
++  I = matrix(0, n, n - 1); I[cbind(seq_len(n - 1) + 1, seq_len(n - 1))] = 1
++  Q = qr.qy(qr(matrix(1, n, 1)), I); rm(I)
+   e = eigen(crossprod(Q, K %*% Q), symmetric = TRUE)
+   if (min(e$values) < -1e-6 * max(abs(e$values)))
+     stop("sample_kernel is not positive semi-definite (min eigenvalue ",
+          signif(min(e$values), 3), ").", call. = FALSE)
+   list(vectors = Q %*% e$vectors, values = pmax(e$values, 0))
++}
++
++# isSymmetric(unname(K), tol) (all.equal: mean relative difference over the unequal entries), one column
++# at a time: isSymmetric holds ~4 N x N temporaries.
++is_symmetric = function(K, tol) {
++  d = a = m = 0
++  for (j in seq_len(ncol(K))) {
++    x = K[, j]; y = K[j, ]; u = x != y
++    if (anyNA(u)) return(FALSE)
++    d = d + sum(abs(x[u] - y[u])); a = a + sum(abs(x[u])); m = m + sum(u)
++  }
++  m == 0 || (if (a / m > tol) d / a else d / m) <= tol
+ }
+ 
+ # Null directions of the kernel (eigenvalue ~ 0, e.g. contrasts between samples
+diff --color -ru /Users/rvialle/suez/R/map_interaction_qtl.R pkg_lean/R/map_interaction_qtl.R
+--- /Users/rvialle/suez/R/map_interaction_qtl.R	2026-11-12 22:45:42
++++ pkg_lean/R/map_interaction_qtl.R	2026-11-13 07:27:11
+@@ -53,7 +53,10 @@
+ #' @param input Numeric matrix
+ #' @importFrom magrittr %>%
+ quantile_normalize=function(input) {
+-  apply(input, 1, qqnorm_no_plot) %>% t()
++  # row by row into one result matrix: apply() + t() hold ~6 copies of the input at once
++  out = matrix(0, nrow(input), ncol(input), dimnames = dimnames(input))
++  for (i in seq_len(nrow(input))) out[i, ] = qqnorm_no_plot(input[i, ])
++  out
+ }
+ 
+ get_cis_geno <- function(genotype, chrom, left, right, snploc, genome_build, ...){ UseMethod('get_cis_geno') }
+@@ -135,7 +138,6 @@
+ #' genotype effect per ALT allele and its SE at the fitted variances), and for
+ #' `permutation_approach = "boot"` `l_boot_geno` and `l_boot_interact` (one parametric bootstrap draw
+ #' under the genotype model: 2 * (l_boot_interact - l_boot_geno) is a null draw of the interaction LR).
+-#' @importFrom rstan optimizing
+ #' @import doMC
+ #' @useDynLib suez, .registration = TRUE
+ #' @export
+@@ -180,14 +182,18 @@
+   rownames(geneloc)=geneloc$geneid
+ 
+   if (is.null(sample_kernel)) {
+-    sample_kernel=outer(anno$individual,anno$individual,"==")
+-    class(sample_kernel)="numeric"
++    # same individual: Z Z' for the samples x individuals indicator Z (outer() builds two N^2 vectors of ids)
++    Z = matrix(0, nrow(anno), length(unique(anno$individual)))
++    Z[cbind(seq_len(nrow(anno)), match(anno$individual, unique(anno$individual)))] = 1
++    sample_kernel = tcrossprod(Z)
++    rm(Z)
+   }
+ 
+   cat("Performing initial eigendecomposition...\n")
+   eig=kernel_contrast_eigen(sample_kernel) # N-1 contrasts orthogonal to the intercept
+   U=eig$vectors
+   lambda=eig$values
++  sample_kernel=NULL   # not used below: frees the default kernel (N x N) during the gene loop
+ 
+   # GxE multipliers: the numeric condition (one column), or indicators of the non-reference levels;
+   # genotype x column j is the interaction term j (as in model.matrix(~ geno:condition))
+diff --color -ru /Users/rvialle/suez/R/suez-package.R pkg_lean/R/suez-package.R
+--- /Users/rvialle/suez/R/suez-package.R	2026-11-12 14:40:01
++++ pkg_lean/R/suez-package.R	2026-11-13 07:11:18
+@@ -8,9 +8,8 @@
+ #' @useDynLib suez, .registration = TRUE
+ #' @import methods
+ #' @import Rcpp
+-#' @import rstantools
++#' @importFrom rstantools rstan_config
+ #' @import doMC
+-#' @importFrom rstan optimizing
+ #' @importFrom foreach foreach %do% %dopar%
+ #' @importFrom magrittr %>%
+ #' @importFrom dplyr bind_rows
+--- /Users/rvialle/suez/NAMESPACE	2026-11-12 14:40:01
++++ pkg_lean/NAMESPACE	2026-11-13 07:11:18
+@@ -8,8 +8,6 @@
+ import(Rcpp)
+ import(doMC)
+ import(methods)
+-import(rstan)
+-import(rstantools)
+ importFrom(dplyr,bind_rows)
+ importFrom(foreach,"%do%")
+ importFrom(foreach,"%dopar%")
+@@ -17,7 +15,7 @@
+ importFrom(magrittr,"%>%")
+ importFrom(readr,read_tsv)
+ importFrom(readr,write_tsv)
+-importFrom(rstan,optimizing)
++importFrom(rstantools,rstan_config)
+ importFrom(stats,lm.fit)
+ importFrom(stats,model.matrix)
+ importFrom(stats,optimize)
+--- /Users/rvialle/suez/src/lmm.cpp	2026-11-12 14:28:51
++++ pkg_lean/src/lmm.cpp	2026-11-13 07:27:11
+@@ -162,7 +162,7 @@
+ // U: samples x contrasts; G: samples x SNPs (genotypes); C: samples x q interaction multipliers (the
+ // numeric condition, or indicators of the non-reference levels). Returns l0 and an S x 7 matrix:
+ // l_geno, l_interact, df_interact, beta_geno, se_geno (per allele), l_boot_geno, l_boot_interact.
+-static Rcpp::List fit_gene(const MatrixXd& U, const VectorXd& lam_, const VectorXd& Uy, const MatrixXd& UX0,
++static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, const VectorXd& Uy, const MatrixXd& UX0,
+                            const MatrixXd& G, const MatrixXd& C, bool boot) {
+   const int S = G.cols(), q = C.cols(), p0 = UX0.cols(), n = Uy.size();
+   const ArrayXd lam = lam_.array();
+@@ -244,7 +244,8 @@
+ 
+ extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot) {
+   BEGIN_RCPP
+-  return fit_gene(Rcpp::as<MatrixXd>(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
++  return fit_gene(Rcpp::as<Eigen::Map<MatrixXd>>(U),   // U (N x N-1) used in place, not copied per gene
++                  Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
+                   Rcpp::as<MatrixXd>(G), Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot));
+   END_RCPP
+ }
+@@ -262,7 +263,7 @@
+   return X;
+ }
+ 
+-static Rcpp::List fit_models(const MatrixXd& U, const VectorXd& lam_, const VectorXd& Uy, const MatrixXd& UX0,
++static Rcpp::List fit_models(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, const VectorXd& Uy, const MatrixXd& UX0,
+                              Rcpp::List cols, Rcpp::List models, int boot_null, int boot_alt) {
+   const int n = Uy.size(), p0 = UX0.cols(), M = models.size();
+   const ArrayXd lam = lam_.array();
+@@ -322,7 +323,7 @@
+ extern "C" SEXP suez_fit_models(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP cols, SEXP models,
+                                 SEXP boot_null, SEXP boot_alt) {
+   BEGIN_RCPP
+-  return fit_models(Rcpp::as<MatrixXd>(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
++  return fit_models(Rcpp::as<Eigen::Map<MatrixXd>>(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
+                     Rcpp::List(cols), Rcpp::List(models), Rcpp::as<int>(boot_null), Rcpp::as<int>(boot_alt));
+   END_RCPP
+ }

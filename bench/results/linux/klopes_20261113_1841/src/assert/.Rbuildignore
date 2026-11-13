@@ -1,0 +1,10 @@
+cleanup*
+^\.travis\.yml$
+^.*\.Rproj$
+^\.Rproj\.user$
+^LICENSE$
+^CHANGELOG\.md$
+^doc$
+^data-raw$
+^bench$
+^\.gitignore$

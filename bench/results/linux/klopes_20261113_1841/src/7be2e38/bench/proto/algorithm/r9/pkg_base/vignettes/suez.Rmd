@@ -1,0 +1,293 @@
+---
+title: "From raw counts and a VCF to response eQTLs"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{From raw counts and a VCF to response eQTLs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6, fig.height = 3.5)
+```
+
+This vignette goes from raw RNA-seq counts and a joint-called VCF to eQTL and response-eQTL calls, and
+ends with ancestry-specific eQTLs in admixed samples (section 8). The
+example data are simulated: 60 individuals, each sequenced in a control and a treated condition, with 300
+genes and about 3,000 SNPs on chr22.
+
+```{r packages, message = FALSE, warning = FALSE}
+library(suez)
+library(edgeR)              # expression filtering and TMM normalization
+library(VariantAnnotation)  # VCF reading
+library(doMC)
+registerDoMC(2)             # genes are tested in parallel
+```
+
+## 1. Input files
+
+```{r files}
+ext = function(f) system.file("extdata", f, package = "suez")
+counts  = read.delim(ext("counts.tsv.gz"), row.names = 1, check.names = FALSE)  # genes x samples
+samples = read.delim(ext("samples.tsv"))       # sample_id, individual, condition
+genes   = read.delim(ext("genes.tsv"))         # gene_id, chr, start, end (e.g. from a GTF)
+head(samples, 3)
+stopifnot(identical(colnames(counts), samples$sample_id))   # suez matches samples by position
+```
+
+## 2. Expression: filter and normalize
+
+Keep genes with enough reads using `edgeR::filterByExpr`, then compute TMM-normalized log2 CPM.
+
+```{r expression}
+dge = DGEList(counts, group = samples$condition)
+dge = dge[filterByExpr(dge), , keep.lib.sizes = FALSE]
+dge = normLibSizes(dge)                          # TMM (calcNormFactors in edgeR < 4)
+logcpm = cpm(dge, log = TRUE)
+dim(logcpm)
+```
+
+## 3. Genotypes: read the VCF, filter, convert to dosages
+
+Keep biallelic SNPs with a call rate of at least 95% and a minor allele frequency of at least 5%. Missing
+calls can stay `NA`: suez imputes them per gene.
+
+```{r genotypes}
+vcf = readVcf(ext("genotypes.vcf.gz"))
+vcf = vcf[isSNV(vcf)]                            # biallelic SNPs
+gt = geno(vcf)$GT
+dosage = matrix(c("0/0" = 0, "0|0" = 0, "0/1" = 1, "0|1" = 1, "1|0" = 1, "1/1" = 2, "1|1" = 2)[gt],
+                nrow(gt), dimnames = dimnames(gt))
+call_rate = rowMeans(!is.na(dosage))
+af = rowMeans(dosage, na.rm = TRUE) / 2
+dosage = dosage[call_rate >= 0.95 & pmin(af, 1 - af) >= 0.05, ]
+dim(dosage)
+
+snploc = data.frame(snpid = rownames(dosage),
+                    chr = as.character(seqnames(rowRanges(vcf)[rownames(dosage)])),
+                    pos = start(rowRanges(vcf)[rownames(dosage)]))
+geneloc = data.frame(geneid = genes$gene_id, chr = genes$chr, left = genes$start, right = genes$end)
+```
+
+## 4. Step 1: learn the sample covariance
+
+`learn_covariance` models hidden confounders (latent factors), repeated samples of the same individual and,
+optionally, relatedness. Here the genetic relationship matrix (GRM) comes from the same SNPs; in a real
+study, build it from genome-wide, LD-pruned SNPs (e.g. with plink).
+
+```{r grm}
+Z = scale(t(dosage)); Z[is.na(Z)] = 0            # individuals x SNPs, standardized
+grm = tcrossprod(Z) / ncol(Z)
+```
+
+```{r step1, results = "hide"}
+anno = data.frame(individual = samples$individual, condition = samples$condition)
+qq = t(apply(logcpm, 1, function(x) qnorm((rank(x) - 0.5) / length(x))))   # per-gene normal scores
+set.seed(1)                                      # rstan draws its seed from R's RNG
+step1 = learn_covariance(qq, anno, kinship_matrix = grm, P = 10)
+```
+
+```{r step1-summary}
+round(step1$optimized_fit$par$s, 3)              # noise, same-individual and kinship variances
+```
+
+## 5. Step 2: map eQTLs and response eQTLs
+
+Every SNP within 100 kb of a gene is tested for a genotype effect (`p_geno`) and a genotype x condition
+effect (`p_interact`).
+
+```{r step2}
+set.seed(1)
+res = map_interaction_qtl(logcpm, dosage, geneloc, snploc, anno,
+                          sample_kernel = step1$cov_suez, cisdist = 1e5)
+nrow(res)
+```
+
+## 6. Multiple testing
+
+Each gene has several correlated SNPs. A simple approach: Bonferroni within each gene (minimum p-value
+times the number of SNPs), then Benjamini-Hochberg across genes.
+
+```{r fdr}
+gene_level = function(res, p) {
+  top = do.call(rbind, lapply(split(res, res$gene), function(d) {
+    i = which.min(d[[p]])
+    data.frame(gene = d$gene[i], snp = d$cis_snp[i], p = d[[p]][i], p_gene = min(1, d[[p]][i] * nrow(d)))
+  }))
+  top$fdr = p.adjust(top$p_gene, "BH")
+  top[order(top$p), ]
+}
+eqtl  = gene_level(res, "p_geno")
+reqtl = gene_level(res, "p_interact")
+c(eGenes = sum(eqtl$fdr < 0.05), response_eGenes = sum(reqtl$fdr < 0.05))
+head(reqtl, 5)
+```
+
+Before trusting borderline calls, check that the p-values are calibrated. Most genes have no response eQTL,
+so the genomic inflation factor of `p_interact` over all tests should be close to 1:
+
+```{r lambda}
+lambda = function(p) median(qchisq(p, 1, lower.tail = FALSE), na.rm = TRUE) / qchisq(0.5, 1)
+c(geno = lambda(res$p_geno), interact = lambda(res$p_interact))
+```
+
+A QQ plot shows the same thing across the whole distribution: points on the diagonal are null tests, and
+true effects rise above it at the top right.
+
+```{r qq, fig.width = 7, fig.height = 3.5}
+qq = function(p, main) {
+  p = sort(p[!is.na(p)]); e = -log10(ppoints(length(p)))
+  plot(e, -log10(p), pch = 19, cex = 0.4, xlab = "expected -log10 p", ylab = "observed -log10 p", main = main)
+  abline(0, 1, col = "grey50")
+}
+par(mfrow = c(1, 2))
+qq(res$p_geno, "genotype (p_geno)")
+qq(res$p_interact, "genotype x condition (p_interact)")
+```
+
+Because the data are simulated, we can compare the calls with the planted effects:
+
+```{r truth}
+truth = read.delim(ext("truth.tsv"))
+hits = reqtl$gene[reqtl$fdr < 0.05]
+table(planted = truth$type[match(hits, truth$gene_id)], useNA = "ifany")
+```
+
+All planted response eQTLs are found. The `NA` calls are genes without a planted effect: a few more than a
+5% FDR implies, which matches the mild inflation of `p_interact` above. Count noise makes the expression
+variance differ between conditions, and genotype x condition tests are sensitive to that. On real data,
+treat calls near the FDR threshold with care when the inflation factor is above 1.
+
+## 7. Plot a response eQTL
+
+All cis-SNPs of the top response gene, with the gene body in grey: the interaction signal peaks at one SNP.
+
+```{r regional, fig.width = 7, fig.height = 3.5}
+top = reqtl[1, ]
+d = res[res$gene == top$gene, ]
+x = snploc$pos[match(d$cis_snp, snploc$snpid)] / 1e6
+y = -log10(cbind(d$p_geno, d$p_interact))
+plot(x, y[, 2], pch = 17, col = "tomato", ylim = c(0, max(y) * 1.05), xlab = "chr22 position (Mb)",
+     ylab = "-log10 p", main = paste(top$gene, "cis-SNPs"))
+points(x, y[, 1], pch = 19, col = "grey50")
+gene_body = unlist(geneloc[geneloc$geneid == top$gene, c("left", "right")]) / 1e6
+rect(gene_body[1], 0, gene_body[2], max(y) * 0.03, col = "grey70", border = NA)
+legend("topright", c("genotype x condition", "genotype"), pch = c(17, 19), col = c("tomato", "grey50"), bty = "n")
+```
+
+Expression at the top SNP, by genotype and condition:
+
+```{r plot}
+top = reqtl[1, ]
+g = dosage[top$snp, samples$individual]
+boxplot(logcpm[top$gene, ] ~ g + samples$condition, col = rep(c("grey80", "tomato"), each = 3),
+        names = rep(0:2, 2), xlab = paste(top$snp, "ALT alleles (control | treated)"),
+        ylab = "log2 CPM", main = top$gene)
+```
+
+## 8. Admixed samples: local ancestry
+
+In admixed individuals the same allele can have a different effect depending on the ancestry of the
+haplotype that carries it. suez can fit the models of [Tractor](https://github.com/Atkinson-Lab/Tractor):
+each genotype is split into the ALT alleles carried on each ancestry's haplotypes, with local ancestry as a
+covariate. The input is Tractor's per-ancestry files: phase the VCF, infer local ancestry (RFMix2 or
+FLARE), and run Tractor's `extract_tracts.py`. The example cohort is simulated: 150 two-way admixed
+individuals (AFR/EUR, about 75% AFR) in two conditions, 80 genes, with AFR-only, EUR-only and shared eQTLs
+and AFR-only response eQTLs.
+
+```{r la-input}
+adm = function(f) ext(file.path("admixed", f))
+la = read_tractor(sub("\\.anc0\\.dosage\\.txt\\.gz$", "", adm("cohort.anc0.dosage.txt.gz")),
+                  ancestry_names = c("AFR", "EUR"))     # anc0, anc1 as in the local-ancestry calls
+str(la, max.level = 1)
+samples_a = read.delim(adm("samples.tsv"))
+genes_a = read.delim(adm("genes.tsv"))
+counts_a = read.delim(adm("counts.tsv.gz"), row.names = 1, check.names = FALSE)
+dge_a = DGEList(counts_a, group = samples_a$condition)
+logcpm_a = cpm(normLibSizes(dge_a[filterByExpr(dge_a), , keep.lib.sizes = FALSE]), log = TRUE)
+```
+
+Keep the GRM in step 1: it accounts for relatedness and does not absorb ancestry-specific effects. Global
+ancestry (here the mean AFR local ancestry; RFMix's `.Q` file or genotype PCs also work) goes in as a fixed
+covariate.
+
+```{r la-step1, results = "hide"}
+Z = scale(t(la$dosage$AFR + la$dosage$EUR))
+grm_a = tcrossprod(Z) / ncol(Z)
+global = colMeans(la$hapcount$AFR) / 2                   # AFR fraction per individual
+anno_a = data.frame(individual = samples_a$individual, condition = samples_a$condition)
+qq_a = t(apply(logcpm_a, 1, function(x) qnorm((rank(x) - 0.5) / length(x))))
+set.seed(1)
+step1_a = learn_covariance(qq_a, anno_a, kinship_matrix = grm_a, P = 5)
+```
+
+```{r la-step2}
+geneloc_a = data.frame(geneid = genes_a$gene_id, chr = genes_a$chr, left = genes_a$start, right = genes_a$end)
+set.seed(1)
+res_a = map_interaction_qtl(logcpm_a, NULL, geneloc_a, la$snploc, anno_a,
+                            sample_kernel = step1_a$cov_suez, cisdist = 1e5,
+                            local_ancestry = la, covariates = cbind(AFR = global[anno_a$individual]))
+```
+
+Each SNP gets a joint eQTL test (`p_geno`), a test of whether the effects differ between ancestries
+(`p_het`), a response test (`p_interact`), and an effect per ancestry (`beta_AFR`, `beta_EUR`,
+`beta_interact_AFR`, ...). At the planted SNPs:
+
+```{r la-truth}
+truth_a = read.delim(adm("truth.tsv"))
+at = merge(truth_a, res_a, by.x = c("gene_id", "snp"), by.y = c("gene", "cis_snp"))
+aggregate(cbind(beta_AFR, beta_EUR, beta_interact_AFR, beta_interact_EUR) ~ type, at,
+          function(x) round(mean(x), 2))
+aggregate(cbind(eQTL = p_geno < 1e-3, differs = p_het < 0.05, response = p_interact < 1e-3) ~ type, at, mean)
+```
+
+The per-ancestry effects match the simulation (AFR only, EUR only, both, or an AFR-only response), and
+`p_het` separates the ancestry-specific eQTLs from the shared ones. The standard model on the pooled
+genotype, `map_interaction_qtl(logcpm_a, la$dosage$AFR + la$dosage$EUR, ...)`, finds 6 of the 8 EUR-only
+eQTLs at the same threshold, against 8 of 8 here: the EUR minority is diluted when ancestries are pooled.
+
+The two ancestry effects at the lead SNP of every gene with an eQTL: AFR-only eQTLs lie on the x axis,
+EUR-only ones on the y axis and shared ones on the diagonal.
+
+```{r la-betas, fig.width = 5, fig.height = 5}
+lead = do.call(rbind, lapply(split(res_a, res_a$gene), function(d) d[which.min(d$p_geno), ]))
+lead = lead[lead$p_geno < 1e-3, ]
+type = truth_a$type[match(lead$gene, truth_a$gene_id)]
+type[is.na(type)] = "none planted"
+cols = c("AFR eQTL" = "#c9822b", "EUR eQTL" = "#4f9c9a", "shared eQTL" = "grey20",
+         "AFR response eQTL" = "#7a4a9e", "none planted" = "grey75")
+lim = range(c(lead$beta_AFR, lead$beta_EUR), na.rm = TRUE)
+plot(lead$beta_AFR, lead$beta_EUR, pch = 19, col = cols[type], xlim = lim, ylim = lim,
+     xlab = "beta_AFR (per ALT allele on AFR haplotypes)", ylab = "beta_EUR (per ALT allele on EUR haplotypes)",
+     main = "Lead SNP of each eGene")
+abline(h = 0, v = 0, lty = 3); abline(0, 1, col = "grey60")
+legend("right", names(cols), pch = 19, col = cols, bty = "n", cex = 0.8)
+```
+
+An AFR-only response eQTL: expression rises with the ALT alleles carried on AFR haplotypes, in treated
+samples only. The raw EUR panel even slopes down in treated samples, because individuals with more EUR
+haplotypes carry fewer AFR ones; the model separates the two through the local-ancestry term, and the
+estimated EUR response (`beta_interact_EUR`) is close to 0.
+
+```{r la-response, fig.width = 7, fig.height = 3.5}
+r = truth_a[truth_a$type == "AFR response eQTL", ][1, ]
+par(mfrow = c(1, 2))
+for (a in c("AFR", "EUR")) {
+  dose = factor(la$dosage[[a]][r$snp, samples_a$individual], levels = 0:2)
+  boxplot(split(logcpm_a[r$gene_id, ], interaction(dose, samples_a$condition)),
+          col = rep(c("grey80", "tomato"), each = 3), names = rep(0:2, 2), ylab = "log2 CPM",
+          xlab = "ALT alleles (control | treated)", main = paste(r$snp, "on", a, "haplotypes"))
+}
+```
+At a SNP that only tags the causal variant, LD that differs between ancestries can also make effects look
+different, so fine-map before interpreting `p_het` at non-lead SNPs.
+
+## Notes
+
+- `map_interaction_qtl` can also read genotypes straight from the VCF:
+  `genotype = Rsamtools::TabixFile(ext("genotypes.vcf.gz"))`. The filters in section 3 are then not
+  applied; use `maf_threshold` instead.
+- Use `checkpoint_dir` on large runs so a crashed run can resume, and save `res` with
+  `readr::write_tsv()`.
+- See the README for the meaning of every output column and for calibrating `p_interact` with the
+  bootstrap columns.

@@ -1,0 +1,18 @@
+date: Fri Nov 13 18:41:10 UTC 2026
+host: Linux klopes 4.18.0-383.el8.x86_64 #1 SMP Wed Apr 20 15:38:08 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+suez HEAD: 04689dd dirty: 0 files
+cpu: Intel(R) Xeon(R) CPU @ 2.80GHz
+cores: 8
+CXX: x86_64-conda-linux-gnu-c++ / x86_64-conda-linux-gnu-c++ (conda-forge gcc 15.3.0-7) 15.3.0
+CXX17FLAGS: -std=c++17
+OPENBLAS_NUM_THREADS=unset OMP_NUM_THREADS=unset
+R: R version 4.5.3 (2026-03-11) 
+LAPACK: /pastel/Github_scripts/PARDoS_GWAS/eqtl_smk/tests/.pixi/envs/default/lib/libmkl_rt.so.3 
+BLAS: /pastel/Github_scripts/PARDoS_GWAS/eqtl_smk/tests/.pixi/envs/default/lib/libmkl_rt.so.3 
+BLAS (resolved): /pastel/Github_scripts/PARDoS_GWAS/eqtl_smk/tests/.pixi/envs/default/lib/libmkl_rt.so.3 
+rstan 2.32.7 
+StanHeaders 2.39.1 
+RcppEigen 0.3.4.0.2 
+Rcpp 1.1.2 
+RcppParallel 5.1.11.2 
+BH 1.90.0.1 

@@ -1,0 +1,5 @@
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+S (40 genes, 3975 SNPs): median s 0.99 / 0.62 / 0.44 / 0.31 | paired speed-up 1 / 1.59 / 2.24 / 3.13 | efficiency 1 / 0.8 / 0.56 / 0.39 | identical across threads: TRUE
+M (30 genes, 5980 SNPs): median s 3.02 / 1.99 / 1.35 / 0.93 | paired speed-up 1 / 1.49 / 2.22 / 3.12 | efficiency 1 / 0.75 / 0.56 / 0.39 | identical across threads: TRUE
+M_dense (8 genes, 6488 SNPs): median s 3.23 / 2.04 / 1.31 / 1.02 | paired speed-up 1 / 1.59 / 2.48 / 3.22 | efficiency 1 / 0.79 / 0.62 / 0.4 | identical across threads: TRUE

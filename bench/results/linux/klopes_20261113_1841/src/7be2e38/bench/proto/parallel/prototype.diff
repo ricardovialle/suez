@@ -1,0 +1,210 @@
+--- R/map_interaction_qtl.R	2026-11-12 22:45:42
++++ bench/proto/parallel/pkg/R/map_interaction_qtl.R	2026-11-13 07:12:37
+@@ -231,7 +231,7 @@
+   seeds = sample.int(.Machine$integer.max, length(genes))
+ 
+   # results are combined once at the end (combining pairwise copies the growing table at every gene)
+-  res = foreach(gene=genes, seed=seeds, .errorhandling=errorhandling) %dopar% {
++  fit_one = function(gene, seed) {
+ 
+     set.seed(seed)
+     if (!is.null(checkpoint_dir)){
+@@ -288,7 +288,7 @@
+     Uy = drop(crossprod(U, as.numeric(input[gene,])))
+ 
+     if (debug) cat("Fitting", ncol(G), "SNPs...\n")
+-    fit = .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot")   # src/lmm.cpp
++    fit = .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot", as.integer(getOption("suez.threads", Sys.getenv("SUEZ_THREADS", "1"))))   # src/lmm.cpp
+     m = fit$res
+     gene_results = data.frame(gene=gene, cis_snp=colnames(G), l0=fit$l0, l_geno=m[,1], l_interact=m[,2],
+                               stringsAsFactors=F)
+@@ -310,5 +310,22 @@
+ 
+     gene_results
+   }
++
++  # prototype switch (bench/proto/parallel): "static" = baseline, "dynamic" = one task per gene,
++  # "chunk" = ~chunks_per_worker contiguous chunks per worker, handed out as workers free up
++  sched = getOption("suez.schedule", Sys.getenv("SUEZ_SCHEDULE", "chunk"))
++  if (sched == "static") {
++    res = foreach(gene=genes, seed=seeds, .errorhandling=errorhandling) %dopar% fit_one(gene, seed)
++  } else if (sched == "dynamic") {
++    res = foreach(gene=genes, seed=seeds, .errorhandling=errorhandling,
++                  .options.multicore=list(preschedule=FALSE)) %dopar% fit_one(gene, seed)
++  } else {
++    # dynamic scheduling: workers on slow (efficiency) cores or with big genes take fewer chunks
++    n_chunks = min(length(genes), getOption("suez.chunks_per_worker", as.numeric(Sys.getenv("SUEZ_CPW", "4"))) * foreach::getDoParWorkers())
++    chunks = split(seq_along(genes), cut(seq_along(genes), max(1, n_chunks), labels=FALSE))
++    one = if (debug) fit_one else function(gene, seed) tryCatch(fit_one(gene, seed), error=function(e) NULL)
++    res = foreach(idx=chunks, .options.multicore=list(preschedule=FALSE)) %dopar% Map(one, genes[idx], seeds[idx])
++    res = unlist(res, recursive=FALSE, use.names=FALSE)
++  }
+   bind_rows(res)
+ }
+--- src/lmm.cpp	2026-11-12 14:28:51
++++ bench/proto/parallel/pkg/src/lmm.cpp	2026-11-13 07:11:53
+@@ -9,6 +9,8 @@
+ #include <algorithm>
+ #include <cmath>
+ #include <limits>
++#include <atomic>
++#include <thread>
+ using Eigen::ArrayXd; using Eigen::ArrayXXd; using Eigen::MatrixXd; using Eigen::VectorXd; using Eigen::VectorXi;
+ static const double NEG_INF = -std::numeric_limits<double>::infinity();
+ static const double L10 = 2.302585092994046;   // log(10)
+@@ -27,6 +29,17 @@
+ static const int NG = HS.size();
+ static const int MAX_PEAKS = 3;   // local maxima of the grid refined per fit
+ 
++// f(i) for i in [0, n) on up to nt threads, indices handed out one at a time. f must not call R and each
++// i must write its own outputs, so results do not depend on nt.
++template <class F> static void par_for(int n, int nt, F f) {
++  nt = std::min(nt, n);
++  if (nt <= 1) { for (int i = 0; i < n; ++i) f(i); return; }
++  std::atomic<int> next(0);
++  auto work = [&] { for (int i; (i = next++) < n;) f(i); };
++  std::vector<std::thread> th; for (int t = 1; t < nt; ++t) th.emplace_back(work);
++  work(); for (auto& t : th) t.join();
++}
++
+ struct Fit { double value = NAN, s2k = NAN, s2 = NAN; VectorXd b; bool ok = false; };
+ 
+ // Profile log-likelihood at h (no 2 pi constant) and its first two derivatives in h:
+@@ -109,17 +122,17 @@
+ 
+ // Grid values V (S x NG) for models X_s = [X0, B_1[,s], ..., B_k[,s]], y_s = Y[,s] (or Y[,0] if one column).
+ // A zero column in a block (constant interaction) is left out of that SNP's model.
+-static MatrixXd grid_values(const MatrixXd& X0, const std::vector<MatrixXd>& B, const MatrixXd& Y, const ArrayXd& lam, int S) {
++static MatrixXd grid_values(const MatrixXd& X0, const std::vector<MatrixXd>& B, const MatrixXd& Y, const ArrayXd& lam, int S, int nt = 1) {
+   const int n = X0.rows(), p0 = X0.cols(), k = B.size(), p = p0 + k;
+   const bool shared_y = Y.cols() == 1;
+   MatrixXd V(S, NG);
+-  std::vector<VectorXd> bb(k * k);                       // colsum(B_j .* W .* B_l)
+-  std::vector<MatrixXd> A0B(k);                           // X0' W B_j   (p0 x S)
+-  std::vector<VectorXd> By(k);                            // B_j' W y_s  (S)
+-  for (int i = 0; i < NG; ++i) {
++  par_for(NG, nt, [&](int i) {
++    std::vector<VectorXd> bb(k * k);                       // colsum(B_j .* W .* B_l)
++    std::vector<MatrixXd> A0B(k);                           // X0' W B_j   (p0 x S)
++    std::vector<VectorXd> By(k);                            // B_j' W y_s  (S)
+     double h = HS[i];
+     ArrayXd d = h * lam + (1 - h);
+-    if ((d <= 0).any()) { V.col(i).setConstant(NEG_INF); continue; }
++    if ((d <= 0).any()) { V.col(i).setConstant(NEG_INF); return; }
+     ArrayXd w = d.inverse(); double logdet = d.log().sum();
+     MatrixXd X0w = (X0.array().colwise() * w).matrix();
+     MatrixXd A00 = X0w.transpose() * X0;
+@@ -147,7 +160,7 @@
+       double rss = yy[shared_y ? 0 : s] - rhs.dot(b), sv = rss / n;
+       V(s, i) = sv > 0 ? -0.5 * n - 0.5 * (n * std::log(sv) + logdet) : std::numeric_limits<double>::infinity();
+     }
+-  }
++  });
+   return V;
+ }
+ 
+@@ -163,7 +176,7 @@
+ // numeric condition, or indicators of the non-reference levels). Returns l0 and an S x 7 matrix:
+ // l_geno, l_interact, df_interact, beta_geno, se_geno (per allele), l_boot_geno, l_boot_interact.
+ static Rcpp::List fit_gene(const MatrixXd& U, const VectorXd& lam_, const VectorXd& Uy, const MatrixXd& UX0,
+-                           const MatrixXd& G, const MatrixXd& C, bool boot) {
++                           const MatrixXd& G, const MatrixXd& C, bool boot, int nt) {
+   const int S = G.cols(), q = C.cols(), p0 = UX0.cols(), n = Uy.size();
+   const ArrayXd lam = lam_.array();
+   MatrixXd Y1(n, 1); Y1.col(0) = Uy;
+@@ -192,28 +205,29 @@
+ 
+   Rcpp::NumericMatrix out(S, 7);   // l_geno, l_interact, df, beta, se, l_boot_geno, l_boot_interact
+   std::fill(out.begin(), out.end(), NA_REAL);
++  Eigen::Map<MatrixXd> O(out.begin(), S, 7);   // written from threads: plain memory, no R API
+   std::vector<MatrixXd> b1(blocks.begin(), blocks.begin() + 1);
+ 
+   // genotype and interaction models on the data, all SNPs per grid point
+-  MatrixXd V1 = grid_values(UX0, b1, Y1, lam, S);
+-  MatrixXd V2 = q ? grid_values(UX0, blocks, Y1, lam, S) : MatrixXd();
++  MatrixXd V1 = grid_values(UX0, b1, Y1, lam, S, nt);
++  MatrixXd V2 = q ? grid_values(UX0, blocks, Y1, lam, S, nt) : MatrixXd();
+   std::vector<Fit> f1(S);
+-  for (int s = 0; s < S; ++s) {
+-    out(s, 2) = df[s];
++  par_for(S, nt, [&](int s) {
++    O(s, 2) = df[s];
+     MatrixXd X1 = X1_of(s);
+     VectorXd v1 = V1.row(s).transpose(); f1[s] = refine(X1, Uy, lam, v1.data(), argmax(v1.data())); ok_nested(f1[s], f0);
+-    if (!f1[s].ok) continue;
+-    out(s, 0) = f1[s].value;
++    if (!f1[s].ok) return;
++    O(s, 0) = f1[s].value;
+     ArrayXd w = (f1[s].s2k * lam + f1[s].s2).inverse();
+     MatrixXd Xw = (X1.array().colwise() * w).matrix();
+     MatrixXd Vb = (Xw.transpose() * X1).inverse();
+     VectorXd bh = Vb * (Xw.transpose() * Uy);
+-    out(s, 3) = bh[p0] / gsd[s]; out(s, 4) = std::sqrt(Vb(p0, p0)) / gsd[s];
++    O(s, 3) = bh[p0] / gsd[s]; O(s, 4) = std::sqrt(Vb(p0, p0)) / gsd[s];
+     if (df[s] > 0) {
+       VectorXd v2 = V2.row(s).transpose(); Fit f2 = refine(X2_of(s), Uy, lam, v2.data(), argmax(v2.data())); ok_nested(f2, f1[s]);
+-      if (f2.ok) out(s, 1) = f2.value;
++      if (f2.ok) O(s, 1) = f2.value;
+     }
+-  }
++  });
+   if (!boot) return Rcpp::List::create(Rcpp::Named("l0") = f0.value, Rcpp::Named("res") = out);
+ 
+   // bootstrap: one simulated y per SNP, drawn in SNP order like the R code
+@@ -224,28 +238,29 @@
+     for (int i = 0; i < n; ++i) Yb(i, s) = std::sqrt(f1[s].s2k * lam[i] + f1[s].s2) * R::norm_rand();
+     Yb.col(s) += X1_of(s) * f1[s].b;
+   }
+-  MatrixXd W0 = grid_values(UX0, {}, Yb, lam, S), W1 = grid_values(UX0, b1, Yb, lam, S);
+-  MatrixXd W2 = q ? grid_values(UX0, blocks, Yb, lam, S) : MatrixXd();
+-  for (int s = 0; s < S; ++s) {
+-    if (!f1[s].ok) continue;
++  // grids and refits in parallel only after every draw, so R's RNG is consumed in the same order
++  MatrixXd W0 = grid_values(UX0, {}, Yb, lam, S, nt), W1 = grid_values(UX0, b1, Yb, lam, S, nt);
++  MatrixXd W2 = q ? grid_values(UX0, blocks, Yb, lam, S, nt) : MatrixXd();
++  par_for(S, nt, [&](int s) {
++    if (!f1[s].ok) return;
+     VectorXd y = Yb.col(s), v;
+     v = W0.row(s).transpose(); Fit g0 = refine(UX0, y, lam, v.data(), argmax(v.data()));
+-    if (!g0.ok) continue;
++    if (!g0.ok) return;
+     v = W1.row(s).transpose(); Fit g1 = refine(X1_of(s), y, lam, v.data(), argmax(v.data())); ok_nested(g1, g0);
+-    if (!g1.ok) continue;
+-    out(s, 5) = g1.value;
++    if (!g1.ok) return;
++    O(s, 5) = g1.value;
+     if (df[s] > 0) {
+       v = W2.row(s).transpose(); Fit g2 = refine(X2_of(s), y, lam, v.data(), argmax(v.data())); ok_nested(g2, g1);
+-      if (g2.ok) out(s, 6) = g2.value;
++      if (g2.ok) O(s, 6) = g2.value;
+     }
+-  }
++  });
+   return Rcpp::List::create(Rcpp::Named("l0") = f0.value, Rcpp::Named("res") = out);
+ }
+ 
+-extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot) {
++extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, SEXP threads) {
+   BEGIN_RCPP
+   return fit_gene(Rcpp::as<MatrixXd>(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
+-                  Rcpp::as<MatrixXd>(G), Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot));
++                  Rcpp::as<MatrixXd>(G), Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), std::max(1, Rcpp::as<int>(threads)));
+   END_RCPP
+ }
+ 
+--- src/init.cpp	2026-11-12 14:28:51
++++ bench/proto/parallel/pkg/src/init.cpp	2026-11-13 07:11:15
+@@ -8,11 +8,11 @@
+ #include <Rversion.h>
+ 
+ 
+-extern "C" SEXP suez_fit_gene(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
++extern "C" SEXP suez_fit_gene(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_fit_models(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ 
+ static const R_CallMethodDef CallEntries[] = {
+-  {"suez_fit_gene", (DL_FUNC) &suez_fit_gene, 7},
++  {"suez_fit_gene", (DL_FUNC) &suez_fit_gene, 8},
+   {"suez_fit_models", (DL_FUNC) &suez_fit_models, 8},
+   {NULL, NULL, 0}
+ };

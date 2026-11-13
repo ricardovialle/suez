@@ -1,0 +1,1 @@
+CXX17FLAGS = -O1 -g -Wall -Wextra -Wno-unused-parameter -Wno-ignored-attributes -D_GLIBCXX_ASSERTIONS

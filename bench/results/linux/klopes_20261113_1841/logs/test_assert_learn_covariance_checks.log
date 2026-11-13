@@ -1,0 +1,8 @@
+eigen solver: lapack 
+PASS factor condition: converged  
+PASS factor condition: noise and same-individual variances (noise 0.499 vs 0.5, same_ind 0.296 vs 0.3, factor 1.70 vs 2) 
+PASS factor condition: cov_suez is a PSD samples x samples matrix  
+PASS continuous condition: converged  
+PASS continuous condition: noise and same-individual variances (noise 0.497 vs 0.5, same_ind 0.298 vs 0.3, factor 1.94 vs 2) 
+PASS continuous condition: cov_suez is a PSD samples x samples matrix  
+0 failure(s)

@@ -1,0 +1,4 @@
+N	eigen_cpp	lapack	dense	dvalues	dproj	R	BLAS	LAPACK	suez	threads	sysname	machine
+1000	0.261	0.212	0.207	0	0	R version 4.5.3 (2026-03-11)	/pastel/Github_scripts/PARDoS_GWAS/eqtl_smk/tests/.pixi/envs/default/lib/libmkl_rt.so.3	/pastel/Github_scripts/PARDoS_GWAS/eqtl_smk/tests/.pixi/envs/default/lib/libmkl_rt.so.3	0.5	unset	Linux	x86_64
+2000	1.182	1.014	1.122	0	0	R version 4.5.3 (2026-03-11)	/pastel/Github_scripts/PARDoS_GWAS/eqtl_smk/tests/.pixi/envs/default/lib/libmkl_rt.so.3	/pastel/Github_scripts/PARDoS_GWAS/eqtl_smk/tests/.pixi/envs/default/lib/libmkl_rt.so.3	0.5	unset	Linux	x86_64
+5000	54.491	54.215	NA	0	0	R version 4.5.3 (2026-03-11)	/pastel/Github_scripts/PARDoS_GWAS/eqtl_smk/tests/.pixi/envs/default/lib/libmkl_rt.so.3	/pastel/Github_scripts/PARDoS_GWAS/eqtl_smk/tests/.pixi/envs/default/lib/libmkl_rt.so.3	0.5	unset	Linux	x86_64

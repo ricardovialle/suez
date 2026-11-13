@@ -1,0 +1,108 @@
+Loading required package: Rcpp
+suez 0.3  N 1000  genes 20  snps 50  interaction 0  elapsed 0.73 s  user 0.72 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 0  elapsed 0.67 s  user 0.67 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 0  elapsed 0.62 s  user 0.62 s
+Loading required package: Rcpp
+suez 0.3  N 1000  genes 20  snps 50  interaction 0  elapsed 0.73 s  user 0.72 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 0  elapsed 0.68 s  user 0.68 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 0  elapsed 0.63 s  user 0.62 s
+Loading required package: Rcpp
+suez 0.3  N 1000  genes 20  snps 50  interaction 0  elapsed 0.73 s  user 0.73 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 0  elapsed 0.68 s  user 0.68 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 0  elapsed 0.63 s  user 0.63 s
+Loading required package: Rcpp
+suez 0.3  N 1000  genes 20  snps 50  interaction 1  elapsed 1.69 s  user 1.68 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 1  elapsed 1.31 s  user 1.31 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 1  elapsed 1.20 s  user 1.19 s
+Loading required package: Rcpp
+suez 0.3  N 1000  genes 20  snps 50  interaction 1  elapsed 1.69 s  user 1.68 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 1  elapsed 1.30 s  user 1.29 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 1  elapsed 1.19 s  user 1.18 s
+Loading required package: Rcpp
+suez 0.3  N 1000  genes 20  snps 50  interaction 1  elapsed 1.67 s  user 1.66 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 1  elapsed 1.31 s  user 1.31 s
+Loading required package: Rcpp
+suez 0.5  N 1000  genes 20  snps 50  interaction 1  elapsed 1.20 s  user 1.19 s
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 0  elapsed 1.89 s  user 1.88 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 2.08 s  user 2.07 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 1.62 s  user 1.62 s
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 0  elapsed 1.91 s  user 1.90 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 2.09 s  user 2.08 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 1.63 s  user 1.62 s
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 0  elapsed 1.89 s  user 1.88 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 2.11 s  user 2.10 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 1.64 s  user 1.64 s
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 1  elapsed 4.21 s  user 4.19 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 4.15 s  user 4.13 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 3.00 s  user 2.98 s
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 1  elapsed 4.09 s  user 4.07 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 4.17 s  user 4.15 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 3.02 s  user 3.01 s
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 1  elapsed 4.23 s  user 4.21 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 4.18 s  user 4.16 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 3.02 s  user 3.00 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 0  elapsed 8.40 s  user 7.79 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 8.63 s  user 8.59 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 6.33 s  user 6.30 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 0  elapsed 8.39 s  user 7.79 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 8.58 s  user 8.53 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 6.27 s  user 6.24 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 0  elapsed 8.48 s  user 7.86 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 8.67 s  user 8.63 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 6.31 s  user 6.28 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 1  elapsed 17.62 s  user 16.97 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 21.19 s  user 17.68 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 12.48 s  user 11.25 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 1  elapsed 17.26 s  user 16.62 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 21.07 s  user 17.56 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 12.53 s  user 11.33 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 1  elapsed 17.82 s  user 17.13 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 22.23 s  user 18.48 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 12.45 s  user 11.19 s

@@ -1,0 +1,13 @@
+# make <src>_timed.cpp with section timers (profiling only)
+import sys
+src = sys.argv[1]; s = open(src).read()
+s = s.replace('static int STATS[4];', 'static int STATS[4];\n#include <chrono>\nstatic double TT[8];\nstatic double now(){return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count();}\n// [[Rcpp::export]]\nRcpp::NumericVector timers(bool reset){Rcpp::NumericVector v(TT,TT+8); if(reset) for(auto&x:TT)x=0; return v;}')
+s = s.replace('  const int S = G.cols(), q = C.cols(), p0 = UX0.cols(), n = Uy.size();\n  const ArrayXd lam', '  const int S = G.cols(), q = C.cols(), p0 = UX0.cols(), n = Uy.size(); double t0 = now();\n  const ArrayXd lam')
+s = s.replace('  const MatrixXd& UG = blocks[0];\n', '  TT[0]+=now()-t0; t0=now();\n  const MatrixXd& UG = blocks[0];\n',1)
+s = s.replace('  for (int s = 0; s < S; ++s) compress(GR, lam, Zfull(s, Uy), R[s]);\n', '  t0=now();\n  for (int s = 0; s < S; ++s) compress(GR, lam, Zfull(s, Uy), R[s]);\n  TT[1]+=now()-t0; t0=now();\n')
+s = s.replace('  MatrixXd SM = grid_sums(gr, R);\n', '  MatrixXd SM = grid_sums(gr, R);\n  TT[2]+=now()-t0; t0=now();\n')
+s = s.replace('  for (int s = 0; s < S; ++s) compress(GR, lam, Zfull(s, Yb.col(s)), R[s]);\n  SM = grid_sums(gr, R);', '  TT[4]+=now()-t0; t0=now();\n  for (int s = 0; s < S; ++s) compress(GR, lam, Zfull(s, Yb.col(s)), R[s]);\n  TT[1]+=now()-t0; t0=now();\n  SM = grid_sums(gr, R);\n  TT[2]+=now()-t0; t0=now();')
+s = s.replace('  if (!boot) return', '  TT[3]+=now()-t0; t0=now();\n  if (!boot) return')
+s = s.replace('    MatrixXd V; grid3(', '    double tg=now(); MatrixXd V; grid3(').replace('MatrixXd V; grid3(SM, s, Uy, V);', 'MatrixXd V; grid3(SM, s, Uy, V); TT[5]+=now()-tg;').replace('MatrixXd V; grid3(SM, s, y, V);', 'MatrixXd V; grid3(SM, s, y, V); TT[5]+=now()-tg;')
+s = s.replace('  return Rcpp::List::create(Rcpp::Named("l0") = f0.value, Rcpp::Named("res") = out);\n}\n\n// [[Rcpp::export]]', '  TT[6]+=now()-t0;\n  return Rcpp::List::create(Rcpp::Named("l0") = f0.value, Rcpp::Named("res") = out);\n}\n\n// [[Rcpp::export]]')
+open(src.replace('.cpp', '_timed.cpp'), 'w').write(s)

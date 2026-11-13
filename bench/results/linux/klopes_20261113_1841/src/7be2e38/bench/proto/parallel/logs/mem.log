@@ -1,0 +1,54 @@
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+          used (Mb) gc trigger  (Mb) limit (Mb) max used (Mb)
+Ncells 1423629 76.1    2370988 126.7         NA  1423629 76.1
+Vcells 5656842 43.2   10146329  77.5      16384  5656842 43.2
+Checkpoint dir: 
+Performing initial eigendecomposition...
+RESULT	33.818	33.610	0.094	60199
+baseline	M	cores=1	procs=1	sum_rss_mb=352.891	sum_footprint_mb=356
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+          used (Mb) gc trigger  (Mb) limit (Mb) max used (Mb)
+Ncells 1423629 76.1    2370988 126.7         NA  1423629 76.1
+Vcells 5656842 43.2   10146329  77.5      16384  5656842 43.2
+Checkpoint dir: 
+Performing initial eigendecomposition...
+RESULT	8.762	45.909	0.591	60199
+baseline	M	cores=8	procs=9	sum_rss_mb=1931.58	sum_footprint_mb=2126
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+          used (Mb) gc trigger  (Mb) limit (Mb) max used (Mb)
+Ncells 1423629 76.1    2370908 126.7         NA  1423629 76.1
+Vcells 5656842 43.2   10146329  77.5      16384  5656842 43.2
+Checkpoint dir: 
+Performing initial eigendecomposition...
+RESULT	12.223	49.914	0.622	60199
+par_thr8	M	cores=1	procs=1	sum_rss_mb=385.781	sum_footprint_mb=343
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+          used (Mb) gc trigger  (Mb) limit (Mb) max used (Mb)
+Ncells 1423629 76.1    2370988 126.7         NA  1423629 76.1
+Vcells 5656842 43.2   10146329  77.5      16384  5656842 43.2
+Checkpoint dir: 
+Performing initial eigendecomposition...
+RESULT	34.939	34.690	0.069	60199
+baseline	M	cores=1	procs=1	sum_rss_mb=365.953	sum_footprint_mb=343
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+          used (Mb) gc trigger  (Mb) limit (Mb) max used (Mb)
+Ncells 1423629 76.1    2370988 126.7         NA  1423629 76.1
+Vcells 5656842 43.2   10146329  77.5      16384  5656842 43.2
+Checkpoint dir: 
+Performing initial eigendecomposition...
+RESULT	8.203	44.593	0.532	60199
+baseline	M	cores=8	procs=9	sum_rss_mb=2122.5	sum_footprint_mb=2102
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+          used (Mb) gc trigger  (Mb) limit (Mb) max used (Mb)
+Ncells 1423629 76.1    2370908 126.7         NA  1423629 76.1
+Vcells 5656842 43.2   10146329  77.5      16384  5656842 43.2
+Checkpoint dir: 
+Performing initial eigendecomposition...
+RESULT	12.428	49.403	0.575	60199
+par_thr8	M	cores=1	procs=1	sum_rss_mb=388.562	sum_footprint_mb=349

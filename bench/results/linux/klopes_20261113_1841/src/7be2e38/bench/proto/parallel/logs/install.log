@@ -1,0 +1,26 @@
+* installing *source* package ‘suez’ ...
+** this is package ‘suez’ version ‘0.4’
+** using staged installation
+** libs
+specified C++17
+using C++ compiler: ‘Apple clang version 21.0.0 (clang-2100.4.1.1)’
+using C++17
+using SDK: ‘MacOSX27.2.sdk’
+installing to /Users/rvialle/suez/bench/lib/par_threads/00LOCK-pkg/00new/suez/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+Warning: package ‘Rcpp’ was built under R version 4.6.1
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+Warning: package ‘Rcpp’ was built under R version 4.6.1
+** testing if installed package keeps a record of temporary installation path
+* DONE (suez)

@@ -1,0 +1,13 @@
+impl	dataset	step	cores	rep	wall_s	user_s	sys_s	cpu_util	n_tests	maxrss_mb	peak_footprint_mb	blocks_in	blocks_out	tree_rss_mb
+r8_fix	M_miss	step2	1	t	4.469	4.78	0.04	1.08	30049	204.8	177.5	0	0	205
+r10_r	M_miss	step2	1	t	2.719	3.04	0.04	1.13	30049	207.0	184.6	0	0	207
+r8_fix	M_dense	step2	1	t	6.947	7.48	0.05	1.08	148125	365.1	310.6	0	0	365
+r10_r	M_dense	step2	1	t	6.413	6.94	0.05	1.09	148125	387.4	373.0	0	0	388
+r8_fix	M_miss	step2	1	t	4.476	4.80	0.04	1.08	30049	204.8	177.5	0	0	205
+r10_r	M_miss	step2	1	t	2.716	3.04	0.03	1.13	30049	207.4	185.0	0	0	207
+r8_fix	M_dense	step2	1	t	7.013	7.56	0.05	1.09	148125	377.5	323.0	0	0	378
+r10_r	M_dense	step2	1	t	6.453	6.98	0.05	1.09	148125	387.5	373.1	0	0	388
+r8_fix	M_miss	step2	1	t	4.480	4.80	0.04	1.08	30049	205.0	177.7	0	0	205
+r10_r	M_miss	step2	1	t	2.724	3.05	0.03	1.13	30049	207.2	184.7	0	0	207
+r8_fix	M_dense	step2	1	t	6.951	7.48	0.05	1.08	148125	365.3	310.9	0	0	366
+r10_r	M_dense	step2	1	t	6.428	6.96	0.05	1.09	148125	388.2	373.7	0	0	389

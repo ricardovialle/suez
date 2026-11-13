@@ -1,0 +1,6 @@
+M rows 12010  identical 1 vs 2 cores: TRUE  1 vs 4 cores: TRUE 
+M S3 (non-matrix) genotype path: same rows TRUE  max |diff| vs chunked 3.07639e-07 
+M permute: rows 12010  identical 1 vs 4 cores: TRUE 
+M_dense rows 58950  identical 1 vs 2 cores: TRUE  1 vs 4 cores: TRUE 
+M_dense S3 (non-matrix) genotype path: same rows TRUE  max |diff| vs chunked 3.511834e-07 
+M_dense permute: rows 58950  identical 1 vs 4 cores: TRUE 
