@@ -131,6 +131,20 @@ lambda = function(p) median(qchisq(p, 1, lower.tail = FALSE), na.rm = TRUE) / qc
 c(geno = lambda(res$p_geno), interact = lambda(res$p_interact))
 ```
 
+A QQ plot shows the same thing across the whole distribution: points on the diagonal are null tests, and
+true effects rise above it at the top right.
+
+```{r qq, fig.width = 7, fig.height = 3.5}
+qq = function(p, main) {
+  p = sort(p[!is.na(p)]); e = -log10(ppoints(length(p)))
+  plot(e, -log10(p), pch = 19, cex = 0.4, xlab = "expected -log10 p", ylab = "observed -log10 p", main = main)
+  abline(0, 1, col = "grey50")
+}
+par(mfrow = c(1, 2))
+qq(res$p_geno, "genotype (p_geno)")
+qq(res$p_interact, "genotype x condition (p_interact)")
+```
+
 Because the data are simulated, we can compare the calls with the planted effects:
 
 ```{r truth}
@@ -145,6 +159,23 @@ variance differ between conditions, and genotype x condition tests are sensitive
 treat calls near the FDR threshold with care when the inflation factor is above 1.
 
 ## 7. Plot a response eQTL
+
+All cis-SNPs of the top response gene, with the gene body in grey: the interaction signal peaks at one SNP.
+
+```{r regional, fig.width = 7, fig.height = 3.5}
+top = reqtl[1, ]
+d = res[res$gene == top$gene, ]
+x = snploc$pos[match(d$cis_snp, snploc$snpid)] / 1e6
+y = -log10(cbind(d$p_geno, d$p_interact))
+plot(x, y[, 2], pch = 17, col = "tomato", ylim = c(0, max(y) * 1.05), xlab = "chr22 position (Mb)",
+     ylab = "-log10 p", main = paste(top$gene, "cis-SNPs"))
+points(x, y[, 1], pch = 19, col = "grey50")
+gene_body = unlist(geneloc[geneloc$geneid == top$gene, c("left", "right")]) / 1e6
+rect(gene_body[1], 0, gene_body[2], max(y) * 0.03, col = "grey70", border = NA)
+legend("topright", c("genotype x condition", "genotype"), pch = c(17, 19), col = c("tomato", "grey50"), bty = "n")
+```
+
+Expression at the top SNP, by genotype and condition:
 
 ```{r plot}
 top = reqtl[1, ]
@@ -214,6 +245,40 @@ The per-ancestry effects match the simulation (AFR only, EUR only, both, or an A
 `p_het` separates the ancestry-specific eQTLs from the shared ones. The standard model on the pooled
 genotype, `map_interaction_qtl(logcpm_a, la$dosage$AFR + la$dosage$EUR, ...)`, finds 6 of the 8 EUR-only
 eQTLs at the same threshold, against 8 of 8 here: the EUR minority is diluted when ancestries are pooled.
+
+The two ancestry effects at the lead SNP of every gene with an eQTL: AFR-only eQTLs lie on the x axis,
+EUR-only ones on the y axis and shared ones on the diagonal.
+
+```{r la-betas, fig.width = 5, fig.height = 5}
+lead = do.call(rbind, lapply(split(res_a, res_a$gene), function(d) d[which.min(d$p_geno), ]))
+lead = lead[lead$p_geno < 1e-3, ]
+type = truth_a$type[match(lead$gene, truth_a$gene_id)]
+type[is.na(type)] = "none planted"
+cols = c("AFR eQTL" = "#c9822b", "EUR eQTL" = "#4f9c9a", "shared eQTL" = "grey20",
+         "AFR response eQTL" = "#7a4a9e", "none planted" = "grey75")
+lim = range(c(lead$beta_AFR, lead$beta_EUR), na.rm = TRUE)
+plot(lead$beta_AFR, lead$beta_EUR, pch = 19, col = cols[type], xlim = lim, ylim = lim,
+     xlab = "beta_AFR (per ALT allele on AFR haplotypes)", ylab = "beta_EUR (per ALT allele on EUR haplotypes)",
+     main = "Lead SNP of each eGene")
+abline(h = 0, v = 0, lty = 3); abline(0, 1, col = "grey60")
+legend("right", names(cols), pch = 19, col = cols, bty = "n", cex = 0.8)
+```
+
+An AFR-only response eQTL: expression rises with the ALT alleles carried on AFR haplotypes, in treated
+samples only. The raw EUR panel even slopes down in treated samples, because individuals with more EUR
+haplotypes carry fewer AFR ones; the model separates the two through the local-ancestry term, and the
+estimated EUR response (`beta_interact_EUR`) is close to 0.
+
+```{r la-response, fig.width = 7, fig.height = 3.5}
+r = truth_a[truth_a$type == "AFR response eQTL", ][1, ]
+par(mfrow = c(1, 2))
+for (a in c("AFR", "EUR")) {
+  dose = factor(la$dosage[[a]][r$snp, samples_a$individual], levels = 0:2)
+  boxplot(split(logcpm_a[r$gene_id, ], interaction(dose, samples_a$condition)),
+          col = rep(c("grey80", "tomato"), each = 3), names = rep(0:2, 2), ylab = "log2 CPM",
+          xlab = "ALT alleles (control | treated)", main = paste(r$snp, "on", a, "haplotypes"))
+}
+```
 At a SNP that only tags the causal variant, LD that differs between ancestries can also make effects look
 different, so fine-map before interpreting `p_het` at non-lead SNPs.
 
