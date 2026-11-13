@@ -257,7 +257,9 @@ ancestry-a haplotypes, six nested models are fitted (each also includes the cond
 | `l_boot_interact_null`, `l_boot_interact` | bootstrap under M1c (`permutation_approach = "boot"`): `2 * (l_boot_interact - l_boot_interact_null)` is a null draw of the response LR |
 
 - **Same answers as Tractor**: with one sample per individual, no relatedness and the default kernel, the
-  ancestry-specific betas, SEs and p-values equal Tractor's `run_tractor.R` linear model (tested to 1e-13).
+  ancestry-specific betas, SEs and p-values equal Tractor's `run_tractor.R` linear model (tested to 1e-13,
+  and on the [Tractor tutorial](https://atkinson-lab.github.io/Tractor-tutorial/) data: 61 ASW individuals,
+  chr22, phased with Beagle and local ancestry from FLARE, same top AFR hit and p-values on every SNP).
   suez adds the random effect (repeated samples, kinship, hidden confounders), the response tests, the
   joint and heterogeneity tests, and more than one condition.
 - **Use a GRM.** A GRM in step 1 (preferably leaving out the tested chromosome) does not absorb the
@@ -266,8 +268,8 @@ ancestry-a haplotypes, six nested models are fitted (each also includes the cond
   pairs). Add global ancestry as a fixed covariate as well.
 - **One condition**: with a single value of `anno$condition` (e.g. `condition = 1`), suez maps eQTLs
   only (no interaction terms), as a Tractor GWAS with a random effect.
-- **Rare ancestries**: an ancestry's terms are dropped for a SNP with fewer than 5 ALT alleles on that
-  ancestry (its columns are `NA` and the degrees of freedom shrink). Ancestry-specific tests need many
+- **Rare ancestries**: an ancestry's terms are dropped for a SNP with fewer than 5 copies of either allele
+  on that ancestry's haplotypes (its columns are `NA` and the degrees of freedom shrink). Ancestry-specific tests need many
   haplotypes of that ancestry: in simulations with 300 individuals (33% of haplotypes from the minor
   ancestry), a response effect of 0.6 SD per allele present only in the minor ancestry was found 45% of
   the time at p < 1e-4, against 6% by the standard (pooled genotype) suez test.

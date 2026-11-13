@@ -96,12 +96,14 @@ set.seed(23)
 ni = 200; th3 = matrix(rep(c(0.5, 0.3, 0.2), each = ni), ni)
 la3 = sim_la(ni, 3, 4, th3)
 la3$dosage$anc2[4, ] = 0; la3$dosage$anc2[4, which(la3$hapcount$anc2[4, ] > 0)[1:2]] = 1   # 2 ALT alleles on anc2
+la3$dosage$anc0[3, ] = la3$hapcount$anc0[3, ]                                                # every anc0 haplotype ALT
 y3 = 1.0 * la3$dosage$anc1[1, ] + rnorm(ni); Y3 = rbind(gC = y3); colnames(Y3) = paste0("I", 1:ni)
 r3 = map_interaction_qtl(Y3, NULL, data.frame(geneid = "gC", chr = "1", left = 1000, right = 1001), snploc[1:4, ],
                          data.frame(individual = paste0("I", 1:ni), condition = 1), normalization_approach = "none",
                          cisdist = 100, local_ancestry = la3, permutation_approach = "none")
 check("three ancestries: joint df 3, heterogeneity df 2", r3$df_geno[1] == 3 && r3$df_het[1] == 2 && r3$p_geno[1] < 1e-3)
 check("ancestry with < 5 ALT alleles dropped", r3$df_geno[4] == 2 && is.na(r3$beta_anc2[4]) && !is.na(r3$beta_anc0[4]))
+check("ancestry with < 5 REF alleles dropped (collinear with LA)", r3$df_geno[3] == 2 && is.na(r3$beta_anc0[3]) && is.finite(r3$p_geno[3]) && r3$p_geno[3] > 0)
 
 td = file.path(tempdir(), "tractor_files"); dir.create(td, showWarnings = FALSE)
 for (a in 0:1) for (type in c("dosage", "hapcount")) {

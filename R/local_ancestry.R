@@ -85,7 +85,9 @@ la_gene = function(gene, D, H, anno, C, U, lambda, Uy, UX0, boot, maf_threshold)
   if (!any(keep)) return(NULL)
   D = lapply(D, function(m) m[keep, , drop = FALSE]); H = lapply(H, function(m) m[keep, , drop = FALSE])
   ui = unique(ind)
-  present = sapply(D, function(m) rowSums(m[, ui, drop = FALSE]) >= 5)   # SNPs x k: >= 5 ALT alleles on that ancestry
+  # SNPs x k: >= 5 copies of each allele on that ancestry's haplotypes (with all of them ALT, G_a = LA_a: collinear)
+  present = sapply(seq_len(k), function(a) { alt = rowSums(D[[a]][, ui, drop = FALSE])
+    alt >= 5 & rowSums(H[[a]][, ui, drop = FALSE]) - alt >= 5 })
   if (!is.matrix(present)) present = matrix(present, nrow = 1)
   Gs = lapply(seq_len(k), function(a) { g = t(D[[a]][, ind, drop = FALSE]); g[, !present[, a]] = 0; g })   # samples x S
   Ls = lapply(H[-k], function(m) t(m[, ind, drop = FALSE]))

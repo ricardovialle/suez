@@ -123,7 +123,8 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' attributed to the SNP), `p_interact_het` (M2 vs M2s). Per ancestry: `af_*`, `laprop_*`, and GLS
 #' `beta_*`, `se_*`, `p_*` (Wald, M1, per ALT allele; SE on the residual df and a t reference, as Tractor) and, for one interaction column,
 #' `beta_interact_*`, `se_interact_*`, `p_interact_*` (Wald, M2). An ancestry's terms are dropped for a
-#' SNP with fewer than 5 ALT alleles on that ancestry (its columns are NA, and the df shrink).
+#' SNP with fewer than 5 copies of either allele on that ancestry's haplotypes (its columns are NA,
+#' and the df shrink).
 #' The bootstrap simulates under M1c: `l_boot_interact_null`, `l_boot_interact`.
 #' Differences between ancestries at a SNP that only tags the causal variant can reflect LD that
 #' differs between ancestries rather than different effects.

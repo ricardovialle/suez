@@ -13,10 +13,11 @@ Local-ancestry (Tractor-style) eQTL and response-eQTL mapping for admixed sample
   df), eQTL effects differ between ancestries (`p_het`), any ancestry-specific response (`p_interact`, with
   local ancestry x condition in the null), responses differ (`p_interact_het`), and per-ancestry Wald
   estimates (`beta_<anc>`, `p_<anc>`, `beta_interact_<anc>`, ...). Works for any number of ancestries;
-  an ancestry with fewer than 5 ALT alleles at a SNP is dropped for that SNP. Bootstrap under the
+  an ancestry with fewer than 5 copies of either allele at a SNP is dropped for that SNP. Bootstrap under the
   no-response model.
 - With one sample per individual and the default kernel, the per-ancestry betas, SEs and p-values equal
-  Tractor's `run_tractor.R` linear model (Wald SEs on the residual degrees of freedom with a t reference).
+  Tractor's `run_tractor.R` linear model (Wald SEs on the residual degrees of freedom with a t reference),
+  also on the Tractor tutorial data (61 ASW individuals, chr22, four linear phenotypes).
 - **`covariates`**: fixed covariates (e.g. global ancestry, PCs, age, sex) added to every model, in both
   modes.
 - A `condition` with a single value maps eQTLs without interaction tests (it was an error for a factor).
