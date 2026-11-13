@@ -153,6 +153,13 @@ sc = lapply(c(1, 1e6, 1e-6), function(f) map_interaction_qtl(Y, G, geneloc, snpl
 dsc = max(sapply(sc[-1], function(r) max(abs(as.matrix(r[c("l0", "l_geno", "l_interact")]) - as.matrix(sc[[1]][c("l0", "l_geno", "l_interact")])))))
 check("kernel scaled by 1e6 and 1e-6: same log-likelihoods", dsc < 1e-6, sprintf("(max |dl| %.2g)", dsc))
 
+# eigen solver (options(suez.eigen_solver)): Eigen's and LAPACK's bases differ only inside tied eigenvalues
+es = lapply(c("eigen", "lapack"), function(s) { op = options(suez.eigen_solver = s); on.exit(options(op))
+  map_interaction_qtl(Y, G, geneloc, snploc, anno, sample_kernel = K, normalization_approach = "none",
+                      permutation_approach = "none", cisdist = 100) })
+des = max(abs(as.matrix(es[[1]][c("l0", "l_geno", "l_interact")]) - as.matrix(es[[2]][c("l0", "l_geno", "l_interact")])))
+check("Eigen and LAPACK eigen solvers: same log-likelihoods", des < 1e-8, sprintf("(max |dl| %.2g)", des))
+
 # errors
 check("non-PSD kernel refused", grepl("not positive semi-definite",
       errmsg(map_interaction_qtl(Y, G, geneloc, snploc, anno, sample_kernel = K - 3 * diag(N),
@@ -163,6 +170,11 @@ Y1 = matrix(rnorm(2 * length(one_rep)), 2, dimnames = list(c("g1", "g2"), paste0
 check("unidentifiable residual variance refused", grepl("not identifiable",
       errmsg(map_interaction_qtl(Y1, G, geneloc, snploc, a1, normalization_approach = "none",
                                  permutation_approach = "none", cisdist = 100))))
+
+e1 = suez:::kernel_contrast_eigen(K); G1 = matrix(rbinom(N * 3, 2, 0.3), N) * 1.0; G1[2, 2] = NaN
+check("non-finite genotypes refused (no sort on NaN)", grepl("non-finite", errmsg(.Call(suez:::suez_fit_gene,
+      e1$vectors, e1$values, drop(crossprod(e1$vectors, rnorm(N))), crossprod(e1$vectors, matrix(1, N, 1)),
+      G1, matrix(0, N, 0), FALSE))))
 
 cat(fails, "failure(s)\n")
 if (fails > 0) stop(fails, " check(s) failed")

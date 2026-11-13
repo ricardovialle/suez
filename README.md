@@ -301,6 +301,11 @@ Rough timings on an Apple M5 (suez 0.5, one core, bootstrap on; `bench/REPORT.md
 20,000 tests per second with 400 samples and the default kernel (M: 60,000 tests in 2.8 s), about 3,700 per
 second with a dense GRM at 1,000 samples, and step 1 takes a few seconds for 200-400 samples whatever the
 number of genes. With 8 forked workers expect about 4x on Apple silicon (its efficiency cores are slower).
+These timings used R's reference BLAS/LAPACK. The kernel's eigen-decomposition uses LAPACK through `eigen()`
+when R links an optimised BLAS/LAPACK (OpenBLAS, MKL, Accelerate/vecLib, BLIS, FlexiBLAS, ATLAS) and Eigen's
+solver otherwise; `options(suez.eigen_solver = "eigen")` or `"lapack"` forces one. Data fits are the same
+either way; bootstrap draws for a given seed depend on the solver (same distribution). Linux checks and
+timings: `bench/linux/run_checks.sh`.
 
 ## Tests
 

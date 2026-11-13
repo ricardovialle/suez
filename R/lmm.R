@@ -13,9 +13,13 @@
 # (N x N-1, Q an orthonormal basis of the complement of 1). Refuses a kernel
 # that is not positive semi-definite. Q is the Householder reflection
 # H = I - 2 u u' of qr(1) without its first column, so Q'KQ = (HKH)[-1, -1] and
-# QV = H [0; V] cost O(N^2) instead of dense products; the symmetric eigen-
-# decomposition is Eigen's (src/lmm.cpp), ~5-9x faster than eigen() with R's
-# reference LAPACK at N = 1000-2000.
+# QV = H [0; V] cost O(N^2) instead of dense products. The symmetric eigen-
+# decomposition (eigen_solver()) is Eigen's (src/lmm.cpp), 2x faster than R's
+# reference LAPACK at N = 1000-2000, or LAPACK through eigen() when R links an
+# optimised BLAS/LAPACK: with OpenBLAS (1 thread) 4x faster than Eigen's at
+# N = 2000 and 6.6x at N = 5000 (bench/proto/round11). Inside tied eigenvalues
+# the two give different bases: data fits are identical, bootstrap draws for a
+# given seed differ (same distribution).
 kernel_contrast_eigen = function(K) {
   K = as.matrix(K)
   stopifnot(nrow(K) == ncol(K), is_symmetric(K, tol = 1e-8))
@@ -23,13 +27,24 @@ kernel_contrast_eigen = function(K) {
   u = -qr.Q(qr(matrix(1, n, 1)))[, 1]; u[1] = u[1] + 1; u = u / sqrt(sum(u^2))
   K = K - 2 * outer(drop(K %*% u), u)          # K H
   K = K - 2 * outer(u, drop(crossprod(u, K)))  # H K H
-  e = .Call(suez_eigen_sym, K[-1, -1, drop = FALSE])
+  e = if (eigen_solver() == "lapack") eigen(K[-1, -1, drop = FALSE], symmetric = TRUE)
+      else .Call(suez_eigen_sym, K[-1, -1, drop = FALSE])
   rm(K)
   if (min(e$values) < -1e-6 * max(abs(e$values)))
     stop("sample_kernel is not positive semi-definite (min eigenvalue ",
          signif(min(e$values), 3), ").", call. = FALSE)
   V = rbind(0, e$vectors)
   list(vectors = V - 2 * outer(u, drop(crossprod(u, V))), values = pmax(e$values, 0))
+}
+
+# options(suez.eigen_solver = "auto" | "eigen" | "lapack"). auto: LAPACK when R's BLAS or LAPACK (symlinks
+# resolved, e.g. Debian alternatives) is an optimised library, else Eigen's solver (R's reference LAPACK).
+eigen_solver = function() {
+  s = match.arg(getOption("suez.eigen_solver", "auto"), c("auto", "eigen", "lapack"))
+  if (s != "auto") return(s)
+  libs = c(La_library(), tryCatch(extSoftVersion()[["BLAS"]], error = function(e) ""))
+  libs = suppressWarnings(normalizePath(libs[nzchar(libs)], mustWork = FALSE))
+  if (any(grepl("openblas|mkl|accelerate|veclib|blis|flexiblas|atlas", libs, ignore.case = TRUE))) "lapack" else "eigen"
 }
 
 # isSymmetric(unname(K), tol) (all.equal: mean relative difference over the unequal entries), one column

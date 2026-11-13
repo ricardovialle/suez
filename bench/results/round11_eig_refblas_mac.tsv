@@ -1,0 +1,4 @@
+N	eigen_cpp	lapack	dense	dvalues	dproj	R	BLAS	LAPACK	suez	threads	sysname	machine
+500	0.054	0.0930000000000001	0.224	9.42169482720716e-14	2.21767049168875e-14	R version 4.6.0 (2026-04-24)	/Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib	/Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib	0.5	unset	Darwin	arm64
+1000	0.384	0.685	1.869	2.14479752142363e-13	7.76462227847219e-15	R version 4.6.0 (2026-04-24)	/Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib	/Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib	0.5	unset	Darwin	arm64
+2000	2.881	5.555	15.315	4.05821564024333e-13	7.59670104599763e-14	R version 4.6.0 (2026-04-24)	/Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib	/Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib	0.5	unset	Darwin	arm64
