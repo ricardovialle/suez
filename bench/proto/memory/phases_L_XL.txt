@@ -1,0 +1,18 @@
+== L
+library(suez)                RSS  131.0 MB  R heap max since last   89.1 MB  now   49.3 MB
+readRDS data                 RSS  189.2 MB  R heap max since last  113.2 MB  now  110.8 MB
+  input 1.2 Mb, genotype 59.3 Mb, kernel 0 Mb
+quantile_normalize           RSS  200.2 MB  R heap max since last  132.4 MB  now  112.0 MB
+default kernel (outer)       RSS  227.0 MB  R heap max since last  138.8 MB  now  119.7 MB
+kernel_contrast_eigen        RSS  278.8 MB  R heap max since last  181.5 MB  now  127.7 MB
+map_interaction_qtl (whole)  RSS  334.2 MB  R heap max since last  279.6 MB  now  135.2 MB
+  result 59949 rows, 7.1 Mb (124 bytes/row)
+== XL
+library(suez)                RSS  129.0 MB  R heap max since last   89.1 MB  now   49.3 MB
+readRDS data                 RSS  175.0 MB  R heap max since last   99.8 MB  now   97.4 MB
+  input 1 Mb, genotype 46.7 Mb, kernel 0 Mb
+quantile_normalize           RSS  185.4 MB  R heap max since last  113.9 MB  now   98.5 MB
+default kernel (outer)       RSS  261.8 MB  R heap max since last  174.8 MB  now  129.0 MB
+kernel_contrast_eigen        RSS  322.3 MB  R heap max since last  312.5 MB  now  159.9 MB
+map_interaction_qtl (whole)  RSS  408.5 MB  R heap max since last  453.3 MB  now  164.2 MB
+  result 23859 rows, 2.8 Mb (124 bytes/row)

@@ -14,14 +14,29 @@
 # that is not positive semi-definite.
 kernel_contrast_eigen = function(K) {
   K = as.matrix(K)
-  stopifnot(nrow(K) == ncol(K), isSymmetric(unname(K), tol = 1e-8))
+  stopifnot(nrow(K) == ncol(K), is_symmetric(K, tol = 1e-8))
   n = nrow(K)
-  Q = qr.Q(qr(matrix(1, n, 1)), complete = TRUE)[, -1, drop = FALSE]
+  # = qr.Q(qr(1), complete = TRUE)[, -1] (same Householder product, column by column), without the N x N
+  # identity and the complete Q
+  I = matrix(0, n, n - 1); I[cbind(seq_len(n - 1) + 1, seq_len(n - 1))] = 1
+  Q = qr.qy(qr(matrix(1, n, 1)), I); rm(I)
   e = eigen(crossprod(Q, K %*% Q), symmetric = TRUE)
   if (min(e$values) < -1e-6 * max(abs(e$values)))
     stop("sample_kernel is not positive semi-definite (min eigenvalue ",
          signif(min(e$values), 3), ").", call. = FALSE)
   list(vectors = Q %*% e$vectors, values = pmax(e$values, 0))
+}
+
+# isSymmetric(unname(K), tol) (all.equal: mean relative difference over the unequal entries), one column
+# at a time: isSymmetric holds ~4 N x N temporaries.
+is_symmetric = function(K, tol) {
+  d = a = m = 0
+  for (j in seq_len(ncol(K))) {
+    x = K[, j]; y = K[j, ]; u = x != y
+    if (anyNA(u)) return(FALSE)
+    d = d + sum(abs(x[u] - y[u])); a = a + sum(abs(x[u])); m = m + sum(u)
+  }
+  m == 0 || (if (a / m > tol) d / a else d / m) <= tol
 }
 
 # Null directions of the kernel (eigenvalue ~ 0, e.g. contrasts between samples

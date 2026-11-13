@@ -19,7 +19,6 @@
 #' of the covariance (no isotropic noise: pass it as `sample_kernel` to [map_interaction_qtl]), and
 #' `optimized_fit`, the rstan::optimizing result (factors `x_adjustable` are in the contrast basis).
 #' @importFrom stats model.matrix
-#' @import rstan
 #' @import doMC
 #' @export
 learn_covariance = function(input, anno, kinship_matrix=NULL, P=20, same_ind_initial_weight=0.01, kinship_matrix_initial_weight=0.01, ... )
@@ -64,7 +63,7 @@ learn_covariance = function(input, anno, kinship_matrix=NULL, P=20, same_ind_ini
 
   init=list( s_adjustable=sinit[1:P], s=variance_component_weights, x_adjustable=x_adjustable )
 
-  optimized_fit=optimizing(stanmodels$suez_step_1,
+  optimized_fit=rstan::optimizing(stanmodels$suez_step_1,
                            data=dat,
                            init=init,
                            as_vector=F,

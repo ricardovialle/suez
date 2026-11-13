@@ -53,7 +53,10 @@ quantile_normalize_cols=function(input) {
 #' @param input Numeric matrix
 #' @importFrom magrittr %>%
 quantile_normalize=function(input) {
-  apply(input, 1, qqnorm_no_plot) %>% t()
+  # row by row into one result matrix: apply() + t() hold ~6 copies of the input at once
+  out = matrix(0, nrow(input), ncol(input), dimnames = dimnames(input))
+  for (i in seq_len(nrow(input))) out[i, ] = qqnorm_no_plot(input[i, ])
+  out
 }
 
 get_cis_geno <- function(genotype, chrom, left, right, snploc, genome_build, ...){ UseMethod('get_cis_geno') }
@@ -135,7 +138,6 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' genotype effect per ALT allele and its SE at the fitted variances), and for
 #' `permutation_approach = "boot"` `l_boot_geno` and `l_boot_interact` (one parametric bootstrap draw
 #' under the genotype model: 2 * (l_boot_interact - l_boot_geno) is a null draw of the interaction LR).
-#' @importFrom rstan optimizing
 #' @import doMC
 #' @useDynLib suez, .registration = TRUE
 #' @export
@@ -180,14 +182,18 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   rownames(geneloc)=geneloc$geneid
 
   if (is.null(sample_kernel)) {
-    sample_kernel=outer(anno$individual,anno$individual,"==")
-    class(sample_kernel)="numeric"
+    # same individual: Z Z' for the samples x individuals indicator Z (outer() builds two N^2 vectors of ids)
+    Z = matrix(0, nrow(anno), length(unique(anno$individual)))
+    Z[cbind(seq_len(nrow(anno)), match(anno$individual, unique(anno$individual)))] = 1
+    sample_kernel = tcrossprod(Z)
+    rm(Z)
   }
 
   cat("Performing initial eigendecomposition...\n")
   eig=kernel_contrast_eigen(sample_kernel) # N-1 contrasts orthogonal to the intercept
   U=eig$vectors
   lambda=eig$values
+  sample_kernel=NULL   # not used below: frees the default kernel (N x N) during the gene loop
 
   # GxE multipliers: the numeric condition (one column), or indicators of the non-reference levels;
   # genotype x column j is the interaction term j (as in model.matrix(~ geno:condition))

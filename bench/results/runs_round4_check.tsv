@@ -1,0 +1,7 @@
+impl	dataset	step	cores	rep	wall_s	user_s	sys_s	cpu_util	n_tests	maxrss_mb	peak_footprint_mb	blocks_in	blocks_out	tree_rss_mb
+r4_lean	S	step2	1	0	3.400	3.70	0.04	1.10	19942	191.5	176.8	0	0	191
+r4_lean	M_grm	step2	1	0	9.374	9.67	0.07	1.04	30049	204.2	172.5	0	0	204
+r4_lean	M_fac3	step2	1	0	21.983	22.22	0.10	1.02	30049	241.7	227.1	0	0	242
+r4_lean	LA	step2	1	0	10.321	10.63	0.08	1.04	9950	224.7	210.0	0	0	225
+r4_lean	M_lc	step2	1	0	10.225	10.52	0.08	1.04	30049	203.2	180.4	0	0	203
+baseline	M_lc	step2	1	0	9.521	10.35	0.09	1.10	30049	344.6	328.7	0	0	339

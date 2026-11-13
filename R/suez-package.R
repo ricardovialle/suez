@@ -8,9 +8,8 @@
 #' @useDynLib suez, .registration = TRUE
 #' @import methods
 #' @import Rcpp
-#' @import rstantools
+#' @importFrom rstantools rstan_config
 #' @import doMC
-#' @importFrom rstan optimizing
 #' @importFrom foreach foreach %do% %dopar%
 #' @importFrom magrittr %>%
 #' @importFrom dplyr bind_rows

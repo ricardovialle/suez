@@ -162,7 +162,7 @@ static bool standardize(Eigen::Ref<VectorXd> x, double& sd) {
 // U: samples x contrasts; G: samples x SNPs (genotypes); C: samples x q interaction multipliers (the
 // numeric condition, or indicators of the non-reference levels). Returns l0 and an S x 7 matrix:
 // l_geno, l_interact, df_interact, beta_geno, se_geno (per allele), l_boot_geno, l_boot_interact.
-static Rcpp::List fit_gene(const MatrixXd& U, const VectorXd& lam_, const VectorXd& Uy, const MatrixXd& UX0,
+static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, const VectorXd& Uy, const MatrixXd& UX0,
                            const MatrixXd& G, const MatrixXd& C, bool boot) {
   const int S = G.cols(), q = C.cols(), p0 = UX0.cols(), n = Uy.size();
   const ArrayXd lam = lam_.array();
@@ -244,7 +244,8 @@ static Rcpp::List fit_gene(const MatrixXd& U, const VectorXd& lam_, const Vector
 
 extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot) {
   BEGIN_RCPP
-  return fit_gene(Rcpp::as<MatrixXd>(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
+  return fit_gene(Rcpp::as<Eigen::Map<MatrixXd>>(U),   // U (N x N-1) used in place, not copied per gene
+                  Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
                   Rcpp::as<MatrixXd>(G), Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot));
   END_RCPP
 }
@@ -262,7 +263,7 @@ static MatrixXd design(const MatrixXd& UX0, const std::vector<MatrixXd>& B, int 
   return X;
 }
 
-static Rcpp::List fit_models(const MatrixXd& U, const VectorXd& lam_, const VectorXd& Uy, const MatrixXd& UX0,
+static Rcpp::List fit_models(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, const VectorXd& Uy, const MatrixXd& UX0,
                              Rcpp::List cols, Rcpp::List models, int boot_null, int boot_alt) {
   const int n = Uy.size(), p0 = UX0.cols(), M = models.size();
   const ArrayXd lam = lam_.array();
@@ -322,7 +323,7 @@ static Rcpp::List fit_models(const MatrixXd& U, const VectorXd& lam_, const Vect
 extern "C" SEXP suez_fit_models(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP cols, SEXP models,
                                 SEXP boot_null, SEXP boot_alt) {
   BEGIN_RCPP
-  return fit_models(Rcpp::as<MatrixXd>(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
+  return fit_models(Rcpp::as<Eigen::Map<MatrixXd>>(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
                     Rcpp::List(cols), Rcpp::List(models), Rcpp::as<int>(boot_null), Rcpp::as<int>(boot_alt));
   END_RCPP
 }

@@ -1,0 +1,2 @@
+L_grm l0=1.7e-13 l_geno=3.4e-13 l_interact=3.4e-13 df=0 beta=2e-09 se=1.2e-09 l_boot_geno=7.6e-07 l_boot_interact=7.5e-07 rel_beta=1.9e-06 rel_se=1.5e-08 na_mismatch=0 dbeta/se= 2.641568e-08 
+M_lc l0=4.3e-13 l_geno=7.2e-13 l_interact=6.8e-13 df=0 beta=1.5e-09 se=2.4e-09 l_boot_geno=2.2e-07 l_boot_interact=2.1e-07 rel_beta=8e-07 rel_se=2.3e-08 na_mismatch=0 dbeta/se= 1.991309e-08 
