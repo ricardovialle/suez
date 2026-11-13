@@ -89,3 +89,17 @@ End-to-end (bench/validate_all.sh, bench/results/validate_r6_p9.txt): all 18 dat
 tests/ 30/30 PASS. Scouting wall (1 core, 1 rep): S 4.8x, M 5.6x, L 4.9x, XL 2.15x, M_grm 3.0x, M_learn 4.9x,
 M_num 2.8x, M_fac3 5.6x, M_eqtl 1.6x, M_cov 6.5x, M_miss 2.6x, M_dense 6.9x, S_rare 6.7x, LA 5.4x;
 peak RSS 0.59-0.94x. Authoritative repeated benchmarks: final round.
+
+## Round 7 — kernel_contrast_eigen at large N (bottleneck after round 6: 95% of XL, 60% of L)
+Profile (bench/profile_e2e.R, r6_p9): XL eigen() 12.7 s + O(n^3) Q'KQ and QV products 7.4 s.
+Prototypes (bench/proto/round7/eig_bench.R, GRM-like K): base 2.58 s (n = 1000) / 23.1 s (n = 2000);
+Householder projection 0.01/0.02 s; R eigen() on HKH 0.65/13.2 s; Eigen SelfAdjointEigenSolver 0.26/2.48 s.
+Eigenvalues agree to 7e-13; projectors on distinct eigenvalues to 2e-15.
+Integrated (Householder + Eigen solver, .Call suez_eigen_sym). Consequence: inside tied eigenvalues the
+basis differs, so the bootstrap draws for a given seed change (data fits are basis-invariant).
+Validation (bench/results/validate_r7_eig.txt, validate_boot_r7_eig.txt): data l <= 8e-12, beta/se,
+NA/df, lead SNPs, significant sets and eGenes identical on all 18 datasets; bootstrap null LR distribution
+vs baseline KS p 0.11-0.98 (M_unbal 0.012; 17 tests), quantiles to q99.9 matching. tests/ 30/30 PASS.
+Wall vs r6 (1 rep): XL 2.68x, L 1.27x, L_grm 1.22x, M_fac3 1.27x, M_unbal 1.25x, others 1.0-1.14x.
+Accepted as a documented reproducibility change (same bootstrap distribution, different draws per seed).
+History cleanup: sourceCpp .cache artifacts (475 MB) removed from the branch's commits.

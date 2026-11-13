@@ -11,20 +11,25 @@
 
 # Eigen-decomposition of K restricted to the contrasts: vectors = Q V
 # (N x N-1, Q an orthonormal basis of the complement of 1). Refuses a kernel
-# that is not positive semi-definite.
+# that is not positive semi-definite. Q is the Householder reflection
+# H = I - 2 u u' of qr(1) without its first column, so Q'KQ = (HKH)[-1, -1] and
+# QV = H [0; V] cost O(N^2) instead of dense products; the symmetric eigen-
+# decomposition is Eigen's (src/lmm.cpp), ~5-9x faster than eigen() with R's
+# reference LAPACK at N = 1000-2000.
 kernel_contrast_eigen = function(K) {
   K = as.matrix(K)
   stopifnot(nrow(K) == ncol(K), is_symmetric(K, tol = 1e-8))
   n = nrow(K)
-  # = qr.Q(qr(1), complete = TRUE)[, -1] (same Householder product, column by column), without the N x N
-  # identity and the complete Q
-  I = matrix(0, n, n - 1); I[cbind(seq_len(n - 1) + 1, seq_len(n - 1))] = 1
-  Q = qr.qy(qr(matrix(1, n, 1)), I); rm(I)
-  e = eigen(crossprod(Q, K %*% Q), symmetric = TRUE)
+  u = -qr.Q(qr(matrix(1, n, 1)))[, 1]; u[1] = u[1] + 1; u = u / sqrt(sum(u^2))
+  K = K - 2 * outer(drop(K %*% u), u)          # K H
+  K = K - 2 * outer(u, drop(crossprod(u, K)))  # H K H
+  e = .Call(suez_eigen_sym, K[-1, -1, drop = FALSE])
+  rm(K)
   if (min(e$values) < -1e-6 * max(abs(e$values)))
     stop("sample_kernel is not positive semi-definite (min eigenvalue ",
          signif(min(e$values), 3), ").", call. = FALSE)
-  list(vectors = Q %*% e$vectors, values = pmax(e$values, 0))
+  V = rbind(0, e$vectors)
+  list(vectors = V - 2 * outer(u, drop(crossprod(u, V))), values = pmax(e$values, 0))
 }
 
 # isSymmetric(unname(K), tol) (all.equal: mean relative difference over the unequal entries), one column

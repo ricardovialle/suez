@@ -673,3 +673,14 @@ extern "C" SEXP suez_fit_models(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP col
                     Rcpp::List(cols), Rcpp::List(models), Rcpp::as<int>(boot_null), Rcpp::as<int>(boot_alt));
   END_RCPP
 }
+
+// Symmetric eigen-decomposition (R/lmm.R kernel_contrast_eigen), values in decreasing order as eigen().
+extern "C" SEXP suez_eigen_sym(SEXP A) {
+  BEGIN_RCPP
+  const Eigen::Map<MatrixXd> M = Rcpp::as<Eigen::Map<MatrixXd>>(A);
+  Eigen::SelfAdjointEigenSolver<MatrixXd> es(M);
+  if (es.info() != Eigen::Success) Rcpp::stop("eigen-decomposition of the sample kernel failed");
+  return Rcpp::List::create(Rcpp::Named("values") = VectorXd(es.eigenvalues().reverse()),
+                            Rcpp::Named("vectors") = MatrixXd(es.eigenvectors().rowwise().reverse()));
+  END_RCPP
+}

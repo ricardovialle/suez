@@ -7,3 +7,4 @@ src/stan_files/*.hpp
 bench/results/out/
 bench/proto/*/pkg*/
 bench/proto/*/out/
+bench/**/.cache/
