@@ -13,7 +13,7 @@
 // The grid evaluates all h at once (moments x grid weights, a GEMM) and solves the per-SNP normal equations by
 // the Schur complement on the shared X0 block. Where the normal equations cancel, values are recomputed from
 // direct residuals. SNPs are processed in blocks (rotation, moments, grid, fits, bootstrap), so memory does not
-// grow with the moments of a whole gene. Bootstrap normals are drawn in SNP and contrast order, as in p0.
+// grow with the moments of a whole gene. Bootstrap normals are drawn in SNP and contrast order, as in suez 0.4.
 #include <RcppEigen.h>
 #include <algorithm>
 #include <cmath>
@@ -24,7 +24,7 @@ static const double NEG_INF = -std::numeric_limits<double>::infinity();
 static const double POS_INF = std::numeric_limits<double>::infinity();
 static const double L10 = 2.302585092994046;   // log(10)
 
-// h grid as p0: h = 0, x = log10(h / (1 - h)) uniform on [-5, 5] (80 points), h = 1.
+// h grid as suez 0.4: h = 0, x = log10(h / (1 - h)) uniform on [-5, 5] (80 points), h = 1.
 static std::vector<double> make_grid() {
   const int nx = 80; const double xl = 5;
   std::vector<double> h(1, 0.0);
@@ -33,7 +33,7 @@ static std::vector<double> make_grid() {
 }
 static const std::vector<double> HS = make_grid();
 static const int NG = HS.size();
-static const int MAX_PEAKS = 3;   // local maxima of the grid refined per fit (as p0)
+static const int MAX_PEAKS = 3;   // local maxima of the grid refined per fit (as suez 0.4)
 
 // Thresholds (why each value):
 // Non-null eigenvalues within this relative spread share one weight: |w(lam) - w(lam_g)| / w <= h |dlam| / d
@@ -51,10 +51,10 @@ static const double TAYLOR_TOL = 1e-13;
 // recomputed from direct residuals (reviewer: near-perfect fits).
 static const double CANCEL_GRID = 1e-10;
 // Profile (Newton values, final values): g = coef . moments has relative error ~ eps sum|terms| / g; below 1e-3
-// (error >~ 2e-13) it switches to direct residuals, as p0 always does.
+// (error >~ 2e-13) it switches to direct residuals, as suez 0.4 always does.
 static const double CANCEL_PROF = 1e-3;
-// Schur pivot (relative to the column's own weighted norm) below which the per-SNP system is solved by p0's
-// LDLT on the full matrix (collinear SNP / interaction / covariates: p0's pseudo-solve).
+// Schur pivot (relative to the column's own weighted norm) below which the per-SNP system is solved by 0.4's
+// LDLT on the full matrix (collinear SNP / interaction / covariates: 0.4's pseudo-solve).
 static const double SCHUR_PIVOT = 1e-10;
 // SNPs per block: the per-SNP moments (rows x pairs x block doubles) are kept near MOMENT_BYTES, so memory does
 // not grow with covariates x eigenvalue groups (30 covariates, GRM: ~100 pairs x ~200 rows -> ~25 SNPs), with
@@ -99,7 +99,7 @@ struct Spectrum {
   }
   int R() const { return rows.size(); }
   int nnull_rows() const { return n0 ? K + 1 : 0; }
-  // p0's any(d <= 0): d is linear in lam, so its extremes decide
+  // 0.4's any(d <= 0): d is linear in lam, so its extremes decide
   bool is_bad(double h) const { return !(h * lmin + (1 - h) > 0 && h * lmax + (1 - h) > 0); }
   MatrixXd permute(const MatrixXd& M) const { MatrixXd P(M.rows(), M.cols()); for (int i = 0; i < n; ++i) P.row(i) = M.row(perm[i]); return P; }
   // moments of the pair (u, v) on every row
@@ -173,7 +173,7 @@ struct GridW {
       bad[i] = sp.is_bad(HS[i]);
       if (bad[i]) { A.row(i).setZero(); continue; }
       sp.weights(HS[i], false, W[i]); A.row(i) = W[i].a.matrix().transpose();
-      logdet[i] = (HS[i] * lam + (1 - HS[i])).log().sum();   // as p0
+      logdet[i] = (HS[i] * lam + (1 - HS[i])).log().sum();   // as suez 0.4
     }
   }
 };
@@ -230,12 +230,14 @@ static Model make_model(const Block& bl, int s, const std::vector<int>& cols) {
   return m;
 }
 
-// LDLT (pivoted, as p0) whose solve treats a column as absent when its pivot is negligible relative to its own
-// weighted norm (D_i / A_ii < COLLINEAR: the column is a combination of the earlier ones to ~1e-12). p0's
+// LDLT (pivoted, as suez 0.4) whose solve treats a column as absent when its pivot is negligible relative to its own
+// weighted norm (D_i / A_ii < COLLINEAR: 1 - R^2 of the column on the earlier ones below 1e-14). 0.4's
 // LDLT only drops exactly zero pivots; for duplicated / collinear columns its pivot is exactly zero or rounding
 // noise, and with noise b runs to ~1/eps along the null direction and the residual loses its digits. The
-// ratio is scale-free, so badly scaled but independent columns (raw-scale covariates) are untouched.
-static const double COLLINEAR = 1e-12;
+// ratio is scale-free, so badly scaled but independent columns (raw-scale covariates) are untouched. 1e-14 (not
+// 1e-12): at 1 - R^2 = 1e-12 0.4 is still exact and a larger tolerance dropped real information
+// (bench/proto/review/cand/collinear_sweep.R).
+static const double COLLINEAR = 1e-14;
 struct PinvLDLT {
   Eigen::LDLT<MatrixXd> L; VectorXd d0;
   void compute(const MatrixXd& A) {
@@ -252,10 +254,17 @@ struct PinvLDLT {
     for (int i = m - 1; i >= 0; --i) std::swap(x[i], x[T.coeff(i)]);
   }
   VectorXd solve(const VectorXd& rhs) const { VectorXd x; solve(rhs, x); return x; }
+  std::vector<int> kept() const {   // original indices of the columns whose pivot is kept, increasing
+    const auto& T = L.transpositionsP(); const VectorXd& D = L.vectorD(); const int m = D.size();
+    std::vector<int> p(m), k; for (int i = 0; i < m; ++i) p[i] = i;
+    for (int i = 0; i < m; ++i) std::swap(p[i], p[T.coeff(i)]);
+    for (int i = 0; i < m; ++i) if (std::fabs(D[i]) > COLLINEAR * std::fabs(d0[i]) && D[i] != 0) k.push_back(p[i]);
+    std::sort(k.begin(), k.end()); return k;
+  }
 };
 
 // ---------------------------------------------------------------- profile likelihood (Newton, final values)
-// As p0: f = -(n/2) log(g/n) - (1/2) sum log d - n/2, with g = r'Wr, f' and f'' from Q1 = sum c w^2 r^2,
+// As suez 0.4: f = -(n/2) log(g/n) - (1/2) sum log d - n/2, with g = r'Wr, f' and f'' from Q1 = sum c w^2 r^2,
 // Q2 = sum c^2 w^3 r^2 - Xv'A^-1 Xv, Xv = X' diag(c w^2) r, the trace terms sum c w and sum c^2 w^2.
 // Sums come from the pair moments (MM' x row weights); r'Dr = coef . (MM' D) with coef the quadratic form of
 // r = y - Xb in the pairs; with direct residuals where that cancels.
@@ -315,7 +324,7 @@ struct Profile {
 
 struct Fit { double value = NAN, s2k = NAN, s2 = NAN; VectorXd b; bool ok = false; };
 
-// Safeguarded Newton in x = log10(delta) around grid point `best`, as p0.
+// Safeguarded Newton in x = log10(delta) around grid point `best`, as suez 0.4.
 static std::pair<double, double> newton(Profile& P, const Model& m, const double* v, int best) {
   const double XCAP = 12;
   auto X_of = [&](double h) { return h <= 0 ? -XCAP : h >= 1 ? XCAP : std::max(-XCAP, std::min(XCAP, std::log10(h / (1 - h)))); };
@@ -364,9 +373,9 @@ static Fit refine(Profile& P, const Model& m, const double* v) {
 
 // ---------------------------------------------------------------- grid values
 // V (S x NG) for each model of `models` (block-column indices added to X0; a zero column is left out for that
-// SNP as in p0). R = moments x grid weights; the null group's direct sums are added at grid points where its
+// SNP as in suez 0.4). R = moments x grid weights; the null group's direct sums are added at grid points where its
 // expansion does not hold. Normal equations by the Schur complement on X0 (A00^-1 per grid point, shared),
-// the k x k remainder by Cholesky; LDLT on the full system (p0) for a small pivot; direct residuals where
+// the k x k remainder by Cholesky; LDLT on the full system (suez 0.4) for a small pivot; direct residuals where
 // rss / y'Wy < CANCEL_GRID.
 struct X0Grid { std::vector<MatrixXd> A0i; };
 static X0Grid x0_grid(const Spectrum& sp, const GridW& gw, const MatrixXd& X0, const MatrixXd& MX0) {
@@ -450,7 +459,7 @@ static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const
           for (int r = j + 1; r < kk; ++r) { double x = Sc[r * k + j]; for (int l = 0; l < j; ++l) x -= Sc[r * k + l] * Sc[j * k + l]; Sc[r * k + j] = x / ljj; }
           double x = u[j]; for (int l = 0; l < j; ++l) x -= Sc[j * k + l] * u[l]; u[j] = x / ljj; rss -= u[j] * u[j];
         }
-        if (full) {   // p0's LDLT on the full system (pseudo-solve for collinear columns)
+        if (full) {   // 0.4's LDLT on the full system (pseudo-solve for collinear columns)
           const int p = p0 + kk; MatrixXd A(p, p); VectorXd rhs(p);
           auto cix = [&](int e) { return e < p0 ? e : p0 + mb[e - p0]; };
           for (int e = 0; e < p; ++e) { rhs[e] = M(i, s, cix(e), iy); for (int f = 0; f < p; ++f) A(e, f) = M(i, s, cix(e), cix(f)); }
@@ -495,9 +504,17 @@ static bool standardize(Eigen::Ref<VectorXd> x, double& sd) {
   x /= sd; return true;
 }
 
-// beta and se as p0: (X'W'X)^-1 by LU with W' = W / s at the optimum (A = X'WX of the fit in P)
-static void beta_se(const Profile& P, int j, double& beta, double& se) {
-  MatrixXd Vb = (P.A / P.s).inverse(); VectorXd bh = Vb * (P.rhs / P.s); beta = bh[j]; se = std::sqrt(Vb(j, j));
+// beta and se as suez 0.4: (X'W'X)^-1 by LU with W' = W / s at the optimum (A = X'WX of the fit in P)
+// GLS estimates and SEs at the fit: (X'WX)^-1 by LU on the columns the pivoted LDLT keeps; a column dropped as
+// collinear gets NA (0.4 inverted the singular matrix: NaN, or se = 0 for identified terms when e.g. an
+// ancestry is absent at the locus and the local-ancestry columns are collinear).
+static void wald(const Profile& P, VectorXd& beta, VectorXd& se) {
+  const int m = P.A.rows(); PinvLDLT L; L.compute(P.A); const std::vector<int> k = L.kept(); const int nk = k.size();
+  beta = se = VectorXd::Constant(m, NA_REAL);
+  MatrixXd Ak(nk, nk); VectorXd rk(nk);
+  for (int i = 0; i < nk; ++i) { rk[i] = P.rhs[k[i]]; for (int j = 0; j < nk; ++j) Ak(i, j) = P.A(k[i], k[j]); }
+  const MatrixXd Vb = (Ak / P.s).inverse(); const VectorXd b = Vb * (rk / P.s);
+  for (int i = 0; i < nk; ++i) { beta[k[i]] = b[i]; se[k[i]] = std::sqrt(Vb(i, i)); }
 }
 
 // ---------------------------------------------------------------- fit_gene (suez_fit_gene)
@@ -549,7 +566,7 @@ static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, 
         VectorXd v1 = VV[0].row(sl).transpose(); f1[sl] = refine(PR, make_model(bd, sl, cols1()), v1.data()); ok_nested(f1[sl], f0);
         if (!f1[sl].ok) continue;
         out(s, 0) = f1[sl].value;
-        double be, se; beta_se(PR, p0, be, se); out(s, 3) = be / gsd[s]; out(s, 4) = se / gsd[s];
+        VectorXd be, se; wald(PR, be, se); out(s, 3) = be[p0] / gsd[s]; out(s, 4) = se[p0] / gsd[s];
         if (df[s] > 0) {
           VectorXd v2 = VV[1].row(sl).transpose(); Fit f2 = refine(PR, make_model(bd, sl, cols2(s)), v2.data()); ok_nested(f2, f1[sl]);
           if (f2.ok) out(s, 1) = f2.value;
@@ -557,7 +574,7 @@ static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, 
       }
     }
     if (!boot) continue;
-    // bootstrap: one y per SNP, drawn in SNP order and in the original contrast order (as p0)
+    // bootstrap: one y per SNP, drawn in SNP order and in the original contrast order (as suez 0.4)
     MatrixXd Yb = MatrixXd::Zero(n, sb);
     for (int sl = 0; sl < sb; ++sl) {
       const Fit& f = f1[sl]; if (!f.ok) continue;
@@ -641,9 +658,9 @@ static Rcpp::List fit_models(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_
           VectorXd v = V[m].row(sl).transpose(); Fit f = refine(PR, make_model(bd, sl, c), v.data());
           if (!f.ok) continue;
           ll(s, m) = f.value;
-          const MatrixXd Vb = (PR.A / PR.s).inverse();   // as src/lmm.cpp: (X'W'X)^-1 by LU
-          for (size_t k = 0; k < use.size(); ++k) { beta[m](s, use[k]) = f.b[p0 + k]; se[m](s, use[k]) = std::sqrt(Vb(p0 + k, p0 + k)); }
-          if (m == boot_null) {   // SNP order within this block; blocks in order: p0's draw sequence
+          VectorXd be, sev; wald(PR, be, sev);
+          for (size_t k = 0; k < use.size(); ++k) { beta[m](s, use[k]) = be[p0 + k]; se[m](s, use[k]) = sev[p0 + k]; }
+          if (m == boot_null) {   // SNP order within this block; blocks in order: 0.4's draw sequence
             for (int i = 0; i < n; ++i) Yb(pos[i], sl) = std::sqrt(f.s2k * lam[i] + f.s2) * R::norm_rand();
             for (size_t a = 0; a < c.size(); ++a) Yb.col(sl) += f.b[a] * Eigen::Map<const VectorXd>(bd.col(c[a], sl), n);
           }

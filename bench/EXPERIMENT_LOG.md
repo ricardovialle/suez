@@ -103,3 +103,17 @@ vs baseline KS p 0.11-0.98 (M_unbal 0.012; 17 tests), quantiles to q99.9 matchin
 Wall vs r6 (1 rep): XL 2.68x, L 1.27x, L_grm 1.22x, M_fac3 1.27x, M_unbal 1.25x, others 1.0-1.14x.
 Accepted as a documented reproducibility change (same bootstrap distribution, different draws per seed).
 History cleanup: sourceCpp .cache artifacts (475 MB) removed from the branch's commits.
+
+## Round 8 — reviewer's required fixes to p9 (final review, bench/proto/review/cand/)
+1. COLLINEAR pivot tolerance 1e-12 -> 1e-14 (collinear_sweep.R: 1e-12 dropped real information at
+   1 - R^2 = 1e-12, l off by 0.019; 1e-14 exact there; still drops at 1 - R^2 = 1e-14, declared as a numerical
+   rank tolerance for degenerate designs).
+2. beta/se on the columns the pivoted LDLT keeps, NA for dropped columns (0.4 and p9 inverted a singular
+   X'WX: NaN, or se = 0 / p = 0 in p9 for identified local-ancestry terms when an ancestry is absent).
+   rankdef_beta.R: beta/se = identified fit to 1e-11 (no NaN); la_edge.R case D: main effects equal 0.4, the
+   interaction SEs 0.4 reported as NaN are now finite; all LA cases data l <= 9.4e-13.
+3. Comments say "suez 0.4" instead of "p0".
+New regression tests: kernel x1e6 / x1e-6 invariance (model_checks.R), absent third ancestry equals the
+two-ancestry fit (local_ancestry_checks.R; fails on 0.4, passes now). tests/: 32 PASS.
+r8 vs r7: EQUIVALENT on all 18 datasets incl. bootstrap (validate_r8_vs_r7.txt); vs baseline: data columns
+within tolerance, 0 NA mismatches (validate_r8_fix.txt).

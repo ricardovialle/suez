@@ -138,6 +138,13 @@ db = sapply(seq_len(nrow(rb)), function(i) {
 check("bimodal likelihood: the higher of two near-equal peaks is found",
       all(db[1, ] == 2) && max(abs(db[2:3, ])) < 1e-6, sprintf("(max |dl| %.2g)", max(abs(db[2:3, ]))))
 
+# kernel scale: the likelihood is invariant (only delta = s2k / s2 moves), including optima pushed beyond the
+# grid's |log10 delta| <= 5 and zero eigenvalues with near-zero rounding noise (h -> 1)
+sc = lapply(c(1, 1e6, 1e-6), function(f) map_interaction_qtl(Y, G, geneloc, snploc, anno, sample_kernel = f * K,
+  normalization_approach = "none", permutation_approach = "none", cisdist = 100))
+dsc = max(sapply(sc[-1], function(r) max(abs(as.matrix(r[c("l0", "l_geno", "l_interact")]) - as.matrix(sc[[1]][c("l0", "l_geno", "l_interact")])))))
+check("kernel scaled by 1e6 and 1e-6: same log-likelihoods", dsc < 1e-6, sprintf("(max |dl| %.2g)", dsc))
+
 # errors
 check("non-PSD kernel refused", grepl("not positive semi-definite",
       errmsg(map_interaction_qtl(Y, G, geneloc, snploc, anno, sample_kernel = K - 3 * diag(N),

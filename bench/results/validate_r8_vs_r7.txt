@@ -1,0 +1,397 @@
+=== S
+== validate r7_eig_S_step2_c1_r0.rds vs r8_fix_S_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 19942           0     19942       0       0          NA          0
+          l_geno 19942           0     19942       0       0          NA          0
+      l_interact 19942           0     19942       0       0          NA          0
+          p_geno 19942           0     19942       0       0           0         NA
+     df_interact 19942           0     19942       0       0          NA          0
+      p_interact 19942           0     19942       0       0           0         NA
+       beta_geno 19942           0     19942       0       0          NA          0
+         se_geno 19942           0     19942       0       0          NA          0
+     l_boot_geno 19942           0     19942       0       0          NA          0
+ l_boot_interact 19942           0     19942       0       0          NA          0
+ p_interact_boot 19942           0     19942       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   200       200       200            1               1 p<0.001:16/16/16 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+      p_interact   200       200       200            1               1 p<0.001:22/22/22 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   200       200       200            1               1 p<0.001:17/17/17 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M
+== validate r7_eig_M_step2_c1_r0.rds vs r8_fix_M_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 60199           0     60199       0       0          NA          0
+          l_geno 60199           0     60199       0       0          NA          0
+      l_interact 60199           0     60199       0       0          NA          0
+          p_geno 60199           0     60199       0       0           0         NA
+     df_interact 60199           0     60199       0       0          NA          0
+      p_interact 60199           0     60199       0       0           0         NA
+       beta_geno 60199           0     60199       0       0          NA          0
+         se_geno 60199           0     60199       0       0          NA          0
+     l_boot_geno 60199           0     60199       0       0          NA          0
+ l_boot_interact 60199           0     60199       0       0          NA          0
+ p_interact_boot 60199           0     60199       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   300       300       300            1               1 p<0.001:76/76/76 p<1e-05:6/6/6 p<1e-08:0/0/0       5/5/5
+      p_interact   300       300       300            1               1 p<0.001:66/66/66 p<1e-05:2/2/2 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   300       300       300            1               1 p<0.001:57/57/57 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== L
+== validate r7_eig_L_step2_c1_r0.rds vs r8_fix_L_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 59949           0     59949       0       0          NA          0
+          l_geno 59949           0     59949       0       0          NA          0
+      l_interact 59949           0     59949       0       0          NA          0
+          p_geno 59949           0     59949       0       0           0         NA
+     df_interact 59949           0     59949       0       0          NA          0
+      p_interact 59949           0     59949       0       0           0         NA
+       beta_geno 59949           0     59949       0       0          NA          0
+         se_geno 59949           0     59949       0       0          NA          0
+     l_boot_geno 59949           0     59949       0       0          NA          0
+ l_boot_interact 59949           0     59949       0       0          NA          0
+ p_interact_boot 59949           0     59949       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:80/80/80 p<1e-05:8/8/8 p<1e-08:3/3/3       7/7/7
+      p_interact   150       150       150            1               1 p<0.001:51/51/51 p<1e-05:2/2/2 p<1e-08:0/0/0       1/1/1
+ p_interact_boot   150       150       150            1               1 p<0.001:33/33/33 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== XL
+== validate r7_eig_XL_step2_c1_r0.rds vs r8_fix_XL_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 23859           0     23859       0       0          NA          0
+          l_geno 23859           0     23859       0       0          NA          0
+      l_interact 23859           0     23859       0       0          NA          0
+          p_geno 23859           0     23859       0       0           0         NA
+     df_interact 23859           0     23859       0       0          NA          0
+      p_interact 23859           0     23859       0       0           0         NA
+       beta_geno 23859           0     23859       0       0          NA          0
+         se_geno 23859           0     23859       0       0          NA          0
+     l_boot_geno 23859           0     23859       0       0          NA          0
+ l_boot_interact 23859           0     23859       0       0          NA          0
+ p_interact_boot 23859           0     23859       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno    60        60        60            1               1 p<0.001:42/42/42 p<1e-05:8/8/8 p<1e-08:3/3/3       9/9/9
+      p_interact    60        60        60            1               1 p<0.001:25/25/25 p<1e-05:5/5/5 p<1e-08:1/1/1       4/4/4
+ p_interact_boot    60        60        60            1               1 p<0.001:20/20/20 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_grm
+== validate r7_eig_M_grm_step2_c1_r0.rds vs r8_fix_M_grm_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 30049           0     30049       0       0          NA          0
+          l_geno 30049           0     30049       0       0          NA          0
+      l_interact 30049           0     30049       0       0          NA          0
+          p_geno 30049           0     30049       0       0           0         NA
+     df_interact 30049           0     30049       0       0          NA          0
+      p_interact 30049           0     30049       0       0           0         NA
+       beta_geno 30049           0     30049       0       0          NA          0
+         se_geno 30049           0     30049       0       0          NA          0
+     l_boot_geno 30049           0     30049       0       0          NA          0
+ l_boot_interact 30049           0     30049       0       0          NA          0
+ p_interact_boot 30049           0     30049       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:43/43/43 p<1e-05:5/5/5 p<1e-08:0/0/0       3/3/3
+      p_interact   150       150       150            1               1 p<0.001:23/23/23 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:18/18/18 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_learn
+== validate r7_eig_M_learn_step2_c1_r0.rds vs r8_fix_M_learn_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 30049           0     30049       0       0          NA          0
+          l_geno 30049           0     30049       0       0          NA          0
+      l_interact 30049           0     30049       0       0          NA          0
+          p_geno 30049           0     30049       0       0           0         NA
+     df_interact 30049           0     30049       0       0          NA          0
+      p_interact 30049           0     30049       0       0           0         NA
+       beta_geno 30049           0     30049       0       0          NA          0
+         se_geno 30049           0     30049       0       0          NA          0
+     l_boot_geno 30049           0     30049       0       0          NA          0
+ l_boot_interact 30049           0     30049       0       0          NA          0
+ p_interact_boot 30049           0     30049       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:65/65/65 p<1e-05:7/7/7 p<1e-08:0/0/0       6/6/6
+      p_interact   150       150       150            1               1 p<0.001:11/11/11 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:10/10/10 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_num
+== validate r7_eig_M_num_step2_c1_r0.rds vs r8_fix_M_num_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 30049           0     30049       0       0          NA          0
+          l_geno 30049           0     30049       0       0          NA          0
+      l_interact 30049           0     30049       0       0          NA          0
+          p_geno 30049           0     30049       0       0           0         NA
+     df_interact 30049           0     30049       0       0          NA          0
+      p_interact 30049           0     30049       0       0           0         NA
+       beta_geno 30049           0     30049       0       0          NA          0
+         se_geno 30049           0     30049       0       0          NA          0
+     l_boot_geno 30049           0     30049       0       0          NA          0
+ l_boot_interact 30049           0     30049       0       0          NA          0
+ p_interact_boot 30049           0     30049       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:54/54/54 p<1e-05:3/3/3 p<1e-08:0/0/0       0/0/0
+      p_interact   150       150       150            1               1 p<0.001:46/46/46 p<1e-05:2/2/2 p<1e-08:1/1/1       2/2/2
+ p_interact_boot   150       150       150            1               1 p<0.001:47/47/47 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_fac3
+== validate r7_eig_M_fac3_step2_c1_r0.rds vs r8_fix_M_fac3_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 30049           0     30049       0       0          NA          0
+          l_geno 30049           0     30049       0       0          NA          0
+      l_interact 30049           0     30049       0       0          NA          0
+          p_geno 30049           0     30049       0       0           0         NA
+     df_interact 30049           0     30049       0       0          NA          0
+      p_interact 30049           0     30049       0       0           0         NA
+       beta_geno 30049           0     30049       0       0          NA          0
+         se_geno 30049           0     30049       0       0          NA          0
+     l_boot_geno 30049           0     30049       0       0          NA          0
+ l_boot_interact 30049           0     30049       0       0          NA          0
+ p_interact_boot 30049           0     30049       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:65/65/65 p<1e-05:8/8/8 p<1e-08:1/1/1       9/9/9
+      p_interact   150       150       150            1               1 p<0.001:30/30/30 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:30/30/30 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_eqtl
+== validate r7_eig_M_eqtl_step2_c1_r0.rds vs r8_fix_M_eqtl_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 30049           0     30049       0       0          NA          0
+          l_geno 30049           0     30049       0       0          NA          0
+      l_interact     0           0         0      NA      NA          NA          0
+          p_geno 30049           0     30049       0       0           0         NA
+     df_interact 30049           0     30049       0       0          NA          0
+      p_interact     0           0         0      NA      NA           0         NA
+       beta_geno 30049           0     30049       0       0          NA          0
+         se_geno 30049           0     30049       0       0          NA          0
+     l_boot_geno 30049           0     30049       0       0          NA          0
+ l_boot_interact     0           0         0      NA      NA          NA          0
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+          p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+     p_geno   150       150       150            1               1 p<0.001:39/39/39 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact     0         0       150          Inf              NA    p<0.001:0/0/0 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_cov
+== validate r7_eig_M_cov_step2_c1_r0.rds vs r8_fix_M_cov_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 30049           0     30049       0       0          NA          0
+          l_geno 30049           0     30049       0       0          NA          0
+      l_interact 30049           0     30049       0       0          NA          0
+          p_geno 30049           0     30049       0       0           0         NA
+     df_interact 30049           0     30049       0       0          NA          0
+      p_interact 30049           0     30049       0       0           0         NA
+       beta_geno 30049           0     30049       0       0          NA          0
+         se_geno 30049           0     30049       0       0          NA          0
+     l_boot_geno 30049           0     30049       0       0          NA          0
+ l_boot_interact 30049           0     30049       0       0          NA          0
+ p_interact_boot 30049           0     30049       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:41/41/41 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+      p_interact   150       150       150            1               1 p<0.001:35/35/35 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:23/23/23 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_miss
+== validate r7_eig_M_miss_step2_c1_r0.rds vs r8_fix_M_miss_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 30049           0     30049       0       0          NA          0
+          l_geno 30049           0     30049       0       0          NA          0
+      l_interact 30049           0     30049       0       0          NA          0
+          p_geno 30049           0     30049       0       0           0         NA
+     df_interact 30049           0     30049       0       0          NA          0
+      p_interact 30049           0     30049       0       0           0         NA
+       beta_geno 30049           0     30049       0       0          NA          0
+         se_geno 30049           0     30049       0       0          NA          0
+     l_boot_geno 30049           0     30049       0       0          NA          0
+ l_boot_interact 30049           0     30049       0       0          NA          0
+ p_interact_boot 30049           0     30049       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:55/55/55 p<1e-05:3/3/3 p<1e-08:2/2/2       3/3/3
+      p_interact   150       150       150            1               1 p<0.001:43/43/43 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:33/33/33 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_dense
+== validate r7_eig_M_dense_step2_c1_r0.rds vs r8_fix_M_dense_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column      n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 148125           0    148125       0       0          NA          0
+          l_geno 148125           0    148125       0       0          NA          0
+      l_interact 148125           0    148125       0       0          NA          0
+          p_geno 148125           0    148125       0       0           0         NA
+     df_interact 148125           0    148125       0       0          NA          0
+      p_interact 148125           0    148125       0       0           0         NA
+       beta_geno 148125           0    148125       0       0          NA          0
+         se_geno 148125           0    148125       0       0          NA          0
+     l_boot_geno 148125           0    148125       0       0          NA          0
+ l_boot_interact 148125           0    148125       0       0          NA          0
+ p_interact_boot 148125           0    148125       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                             sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:161/161/161 p<1e-05:4/4/4 p<1e-08:0/0/0       2/2/2
+      p_interact   150       150       150            1               1 p<0.001:150/150/150 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:148/148/148 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== S_rare
+== validate r7_eig_S_rare_step2_c1_r0.rds vs r8_fix_S_rare_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 19104           0     19104       0       0          NA          0
+          l_geno 19104           0     19104       0       0          NA          0
+      l_interact 19104           0     19104       0       0          NA          0
+          p_geno 19104           0     19104       0       0           0         NA
+     df_interact 19104           0     19104       0       0          NA          0
+      p_interact 19104           0     19104       0       0           0         NA
+       beta_geno 19104           0     19104       0       0          NA          0
+         se_geno 19104           0     19104       0       0          NA          0
+     l_boot_geno 19104           0     19104       0       0          NA          0
+ l_boot_interact 19104           0     19104       0       0          NA          0
+ p_interact_boot 19104           0     19104       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   200       200       200            1               1 p<0.001:26/26/26 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+      p_interact   200       200       200            1               1 p<0.001:26/26/26 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   200       200       200            1               1 p<0.001:18/18/18 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== LA
+== validate r7_eig_LA_step2_c1_r0.rds vs r8_fix_LA_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+               column    n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+                   l0 9950           0      9950 0.00e+00 0.00e+00          NA          0
+               l_geno 9950           0      9950 0.00e+00 0.00e+00          NA          0
+        l_geno_shared 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+      l_interact_null 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+           l_interact 9950           0      9950 0.00e+00 0.00e+00          NA          0
+    l_interact_shared 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+              df_geno 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+               p_geno 9950           0      9950 0.00e+00 0.00e+00    0.00e+00         NA
+               df_het 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+                p_het 9946           0      9946 0.00e+00 0.00e+00    0.00e+00         NA
+          df_interact 9950           0      9950 0.00e+00 0.00e+00          NA          0
+           p_interact 9950           0      9950 0.00e+00 0.00e+00    0.00e+00         NA
+       p_interact_het 9946           0      9946 0.00e+00 0.00e+00    0.00e+00         NA
+              af_anc0 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+          laprop_anc0 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+            beta_anc0 9950           0      3006 2.22e-16 4.18e-13          NA         NA
+              se_anc0 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+               p_anc0 9950           0      5686 5.55e-16 1.11e-14    5.33e-15         NA
+   beta_interact_anc0 9950           0      1049 8.33e-16 8.27e-12          NA         NA
+     se_interact_anc0 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+      p_interact_anc0 9950           0      2310 2.44e-15 1.65e-14    7.11e-15         NA
+              af_anc1 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+          laprop_anc1 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+            beta_anc1 9946           0      2962 2.22e-16 8.75e-13          NA         NA
+              se_anc1 9946           0      9946 0.00e+00 0.00e+00          NA         NA
+               p_anc1 9946           0      5550 7.77e-16 6.56e-15    3.11e-15         NA
+   beta_interact_anc1 9946           0       869 1.55e-15 3.37e-12          NA         NA
+     se_interact_anc1 9946           0      9946 0.00e+00 0.00e+00          NA         NA
+      p_interact_anc1 9946           0      1785 3.33e-15 1.58e-14    6.66e-15         NA
+ l_boot_interact_null 9950           0      9950 0.00e+00 0.00e+00          NA          0
+      l_boot_interact 9950           0      9950 0.00e+00 0.00e+00          NA          0
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+              p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+         p_geno   100       100       100            1               1 p<0.001:36/36/36 p<1e-05:9/9/9 p<1e-08:3/3/3    13/13/13
+     p_interact   100       100       100            1               1 p<0.001:15/15/15 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+          p_het   100       100       100            1               1 p<0.001:14/14/14 p<1e-05:4/4/4 p<1e-08:0/0/0       4/4/4
+ p_interact_het   100       100       100            1               1 p<0.001:14/14/14 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== L_grm
+== validate r7_eig_L_grm_step2_c1_r0.rds vs r8_fix_L_grm_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 39899           0     39899       0       0          NA          0
+          l_geno 39899           0     39899       0       0          NA          0
+      l_interact 39899           0     39899       0       0          NA          0
+          p_geno 39899           0     39899       0       0           0         NA
+     df_interact 39899           0     39899       0       0          NA          0
+      p_interact 39899           0     39899       0       0           0         NA
+       beta_geno 39899           0     39899       0       0          NA          0
+         se_geno 39899           0     39899       0       0          NA          0
+     l_boot_geno 39899           0     39899       0       0          NA          0
+ l_boot_interact 39899           0     39899       0       0          NA          0
+ p_interact_boot 39899           0     39899       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   100       100       100            1               1 p<0.001:68/68/68 p<1e-05:7/7/7 p<1e-08:5/5/5       7/7/7
+      p_interact   100       100       100            1               1 p<0.001:49/49/49 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   100       100       100            1               1 p<0.001:41/41/41 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_unbal
+== validate r7_eig_M_unbal_step2_c1_r0.rds vs r8_fix_M_unbal_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 30049           0     30049       0       0          NA          0
+          l_geno 30049           0     30049       0       0          NA          0
+      l_interact 30049           0     30049       0       0          NA          0
+          p_geno 30049           0     30049       0       0           0         NA
+     df_interact 30049           0     30049       0       0          NA          0
+      p_interact 30049           0     30049       0       0           0         NA
+       beta_geno 30049           0     30049       0       0          NA          0
+         se_geno 30049           0     30049       0       0          NA          0
+     l_boot_geno 30049           0     30049       0       0          NA          0
+ l_boot_interact 30049           0     30049       0       0          NA          0
+ p_interact_boot 30049           0     30049       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:50/50/50 p<1e-05:1/1/1 p<1e-08:0/0/0       1/1/1
+      p_interact   150       150       150            1               1 p<0.001:33/33/33 p<1e-05:1/1/1 p<1e-08:0/0/0       1/1/1
+ p_interact_boot   150       150       150            1               1 p<0.001:40/40/40 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_lc
+== validate r7_eig_M_lc_step2_c1_r0.rds vs r8_fix_M_lc_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 30049           0     30049       0       0          NA          0
+          l_geno 30049           0     30049       0       0          NA          0
+      l_interact 30049           0     30049       0       0          NA          0
+          p_geno 30049           0     30049       0       0           0         NA
+     df_interact 30049           0     30049       0       0          NA          0
+      p_interact 30049           0     30049       0       0           0         NA
+       beta_geno 30049           0     30049       0       0          NA          0
+         se_geno 30049           0     30049       0       0          NA          0
+     l_boot_geno 30049           0     30049       0       0          NA          0
+ l_boot_interact 30049           0     30049       0       0          NA          0
+ p_interact_boot 30049           0     30049       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:43/43/43 p<1e-05:4/4/4 p<1e-08:1/1/1       3/3/3
+      p_interact   150       150       150            1               1 p<0.001:29/29/29 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:27/27/27 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== HS
+== validate r7_eig_HS_step2_c1_r0.rds vs r8_fix_HS_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical max_abs max_rel max_dlog10p n_over_tol
+              l0 19950           0     19950       0       0          NA          0
+          l_geno 19950           0     19950       0       0          NA          0
+      l_interact 19950           0     19950       0       0          NA          0
+          p_geno 19950           0     19950       0       0           0         NA
+     df_interact 19950           0     19950       0       0          NA          0
+      p_interact 19950           0     19950       0       0           0         NA
+       beta_geno 19950           0     19950       0       0          NA          0
+         se_geno 19950           0     19950       0       0          NA          0
+     l_boot_geno 19950           0     19950       0       0          NA          0
+ l_boot_interact 19950           0     19950       0       0          NA          0
+ p_interact_boot 19950           0     19950       0       0           0         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                                sig egenes_fdr5
+          p_geno   200       200       200            1               1 p<0.001:78/78/78 p<1e-05:30/30/30 p<1e-08:17/17/17    26/26/26
+      p_interact   200       200       200            1               1    p<0.001:49/49/49 p<1e-05:11/11/11 p<1e-08:5/5/5    10/10/10
+ p_interact_boot   200       200       200            1               1       p<0.001:37/37/37 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 

@@ -105,6 +105,19 @@ check("three ancestries: joint df 3, heterogeneity df 2", r3$df_geno[1] == 3 && 
 check("ancestry with < 5 ALT alleles dropped", r3$df_geno[4] == 2 && is.na(r3$beta_anc2[4]) && !is.na(r3$beta_anc0[4]))
 check("ancestry with < 5 REF alleles dropped (collinear with LA)", r3$df_geno[3] == 2 && is.na(r3$beta_anc0[3]) && is.finite(r3$p_geno[3]) && r3$p_geno[3] > 0)
 
+# third ancestry absent at the locus: the local-ancestry columns are collinear (hapcounts sum to 2); the
+# genotype effects stay identified and equal those of the two-ancestry model
+la4 = sim_la(ni, 2, 4, cbind(rep(0.6, ni), rep(0.4, ni)))
+for (m in c("dosage", "hapcount")) { la4[[m]]$anc2 = la4[[m]]$anc0 * 0 }
+y4 = 0.8 * la4$dosage$anc0[1, ] + rnorm(ni); Y4 = rbind(gD = y4); colnames(Y4) = paste0("I", 1:ni)
+fit4 = function(la) map_interaction_qtl(Y4, NULL, data.frame(geneid = "gD", chr = "1", left = 1000, right = 1001), snploc[1:4, ],
+  data.frame(individual = paste0("I", 1:ni), condition = 1), normalization_approach = "none", cisdist = 100,
+  local_ancestry = la, permutation_approach = "none")
+r4 = fit4(la4); r2a = fit4(list(dosage = la4$dosage[1:2], hapcount = la4$hapcount[1:2]))
+check("absent third ancestry: identified genotype effects equal the two-ancestry fit",
+      all(is.finite(r4$se_anc0)) && all(r4$se_anc0 > 0) && max(abs(r4$beta_anc0 - r2a$beta_anc0)) < 1e-8 &&
+        max(abs(r4$l_geno - r2a$l_geno)) < 1e-8, sprintf("(max |dbeta| %.2g)", max(abs(r4$beta_anc0 - r2a$beta_anc0))))
+
 td = file.path(tempdir(), "tractor_files"); dir.create(td, showWarnings = FALSE)
 for (a in 0:1) for (type in c("dosage", "hapcount")) {
   m = la2[[type]][[a + 1]]
