@@ -1,7 +1,10 @@
 # Peak RAM of one fit_gene call with many covariates, a GRM (many eigenvalue groups) and a large cis window.
 #   /usr/bin/time -l Rscript bench/proto/review/cand/mem_covs.R <impl.cpp|baseline> <n_cov> <S>
-source("bench/proto/harness.R"); a = commandArgs(TRUE)
-f = if (a[1] == "baseline") baseline_fit else { e = new.env(); Rcpp::sourceCpp(a[1], env = e); e$fit_gene_proto }
+# (impl "lib:<dir>" = an installed build's .Call; use it for RAM: sourceCpp's compiler child inflates maxrss)
+a = commandArgs(TRUE)
+if (startsWith(a[1], "lib:")) { suppressPackageStartupMessages(library(suez, lib.loc = sub("^lib:", "", a[1])))
+  f = function(...) .Call("suez_fit_gene", ..., PACKAGE = "suez") } else { source("bench/proto/harness.R")
+  f = if (a[1] == "baseline") baseline_fit else { e = new.env(); Rcpp::sourceCpp(a[1], env = e); e$fit_gene_proto } }
 nc = as.integer(a[2]); S = as.integer(a[3]); set.seed(1); ni = 200; ind = rep(1:ni, each = 2); N = 2 * ni
 Z = matrix(rbinom(ni * 2000, 2, 0.3), ni); Z = scale(Z[, apply(Z, 2, sd) > 0]); K = (tcrossprod(Z) / ncol(Z))[ind, ind]
 eig = suez:::kernel_contrast_eigen(K); cond = rep(c(0, 1), ni)

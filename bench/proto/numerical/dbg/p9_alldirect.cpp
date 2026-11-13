@@ -2,9 +2,9 @@
 // p9: combined numerical candidate (p7 + reviewer round-3 changes). Same model, grid, peaks and Newton steps as
 // src/lmm.cpp; only how the weighted sums are formed changes.
 //
-// Model on rotated data: Uy = UX b + e, e ~ N(0, diag(s (h lam + 1 - h))). Every quantity the fits need is a
+// Model on rotated data: Uy = UX b + e, e ~ N(0, diag(s (h lam + (1 - h)))). Every quantity the fits need is a
 // weighted sum over contrasts t, sum_t f(h, lam_t) u_t v_t, with f = w = 1 / d, c w^2 or c^2 w^3 (c = lam - 1,
-// d = h lam + 1 - h). Contrasts are grouped by eigenvalue ("rows" below) so these become sum_r f_r(h) M_r(u, v)
+// d = h lam + (1 - h)). Contrasts are grouped by eigenvalue ("rows" below) so these become sum_r f_r(h) M_r(u, v)
 // with moments M_r computed once per gene / SNP:
 //  * non-null eigenvalues tied within a relative 1e-12 share one weight (taken at the group mean);
 //  * the null group (eigen-decomposition noise around 0) is kept exact: f(c + delta) is expanded in delta to
@@ -50,7 +50,7 @@ static const double TAYLOR_TOL = 1e-13;
 // Grid: rss = y'Wy - rhs'b loses all digits when rss / y'Wy approaches eps; below 1e-10 the grid value is
 // recomputed from direct residuals (reviewer: near-perfect fits).
 static const double CANCEL_GRID = 1e-10;
-// Profile (Newton values, final values): the quadratic form keeps relative error ~ eps y'Wy / g; below 1e-3
+// Profile (Newton values, final values): g = coef . moments has relative error ~ eps sum|terms| / g; below 1e-3
 // (error >~ 2e-13) it switches to direct residuals, as p0 always does.
 static const double CANCEL_PROF = 2;
 // Schur pivot (relative to the column's own weighted norm) below which the per-SNP system is solved by p0's
@@ -108,23 +108,23 @@ struct Spectrum {
   }
   // null contrast t's exact weights at h
   void null_w(int t, double h, double& w, double& wb, double& we) const {
-    const double cl = lamnull[t] - 1; w = 1 / (h * lamnull[t] + 1 - h); wb = cl * w * w; we = cl * wb * cl * w;
+    const double cl = lamnull[t] - 1; w = 1 / (h * lamnull[t] + (1 - h)); wb = cl * w * w; we = cl * wb * cl * w;
   }
   void weights(double h, bool derivs, Weights& W) const {
     const int R_ = R(), nr = nnull_rows();
     W.a.setZero(R_); W.b.setZero(R_); W.e.setZero(R_); W.T1 = W.T2 = W.LD = 0; W.null_ok = true;
     for (int r = nr; r < R_; ++r) {
-      const double lg = rows[r].lam, d = h * lg + 1 - h, w = 1 / d, cg = lg - 1, cnt = rows[r].t1 - rows[r].t0;
+      const double lg = rows[r].lam, d = h * lg + (1 - h), w = 1 / d, cg = lg - 1, cnt = rows[r].t1 - rows[r].t0;
       W.a[r] = w; W.LD += cnt * std::log(d);
       if (derivs) { W.b[r] = cg * w * w; W.e[r] = cg * cg * w * w * w; W.T1 += cnt * cg * w; W.T2 += cnt * cg * w * cg * w; }
     }
     if (!n0) return;
-    const double d = h * c + 1 - h;
+    const double d = h * c + (1 - h);
     W.null_ok = dmax == 0 || std::pow(h * dmax / d, KN + 1) <= TAYLOR_TOL;
     if (!W.null_ok) {   // sum the null contrasts one by one (callers add their pair sums directly)
       for (int t = 0; t < n0; ++t) {
         double w, wb, we; null_w(t, h, w, wb, we); const double cl = lamnull[t] - 1;
-        W.LD += std::log(h * lamnull[t] + 1 - h); W.T1 += cl * w; W.T2 += cl * w * cl * w;
+        W.LD += std::log(h * lamnull[t] + (1 - h)); W.T1 += cl * w; W.T2 += cl * w * cl * w;
       }
       return;
     }
@@ -256,7 +256,9 @@ struct Profile {
       for (int a = 0; a < p; ++a) { coef[pidx(a, p, Nm)] = -2 * b[a]; for (int e = a; e < p; ++e) coef[pidx(a, e, Nm)] = (a == e ? 1 : 2) * b[a] * b[e]; }
     } else b.resize(0);
     double g = coef.dot(MW.col(0));
-    const bool direct = !(g > CANCEL_PROF * MW(pidx(p, p, Nm), 0));
+    // the terms of g can be large with opposite signs: near-perfect fits, or b huge along a null direction of a
+    // rank-deficient X (LDLT pseudo-solve); measure the cancellation against the sum of |terms|
+    const bool direct = !(g > CANCEL_PROF * coef.cwiseAbs().dot(MW.col(0).cwiseAbs()));
     if (direct) {
       r = Eigen::Map<const ArrayXd>(m.z[p], n);
       for (int a = 0; a < p; ++a) r -= b[a] * Eigen::Map<const ArrayXd>(m.z[a], n);

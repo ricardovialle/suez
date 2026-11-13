@@ -79,3 +79,13 @@ with each kernel):
 | M | 7.53 / 4.27 s | 3.1e-4 | 0.0025 | 0.0026 | 100% | 0.9999992 |
 Peak RAM (memory specialist): S 372 -> 326 MB, M 686 -> 431 MB, L 2.77 -> 1.12 GB.
 tests/learn_covariance_checks.R: 6/6 PASS. Accepted as a numerical (not methodological) change, documented.
+
+## Round 6 — combined candidate p9 (numerical specialist, reviewer's combination), integrated
+p9_combined.cpp -> src/lmm.cpp (suez_fit_gene and suez_fit_models on one engine). Kernel level (interleaved):
+1.9x (M_eqtl) .. 8.1x (M_fac3) vs p0, ~0.83x of p7's speed; mem_covs 325 MB vs baseline 326 MB (p7 2.6 GB);
+extreme_cases <= 1.8e-10 from exact (baseline 2.7e-10); LA fit_models ll 1.7e-13, 7.4x.
+End-to-end (bench/validate_all.sh, bench/results/validate_r6_p9.txt): all 18 datasets EQUIVALENT
+(data ll <= 1e-9, boot ll <= 1e-5, beta/se 1e-6, identical NA/df, identical lead SNPs and significant sets);
+tests/ 30/30 PASS. Scouting wall (1 core, 1 rep): S 4.8x, M 5.6x, L 4.9x, XL 2.15x, M_grm 3.0x, M_learn 4.9x,
+M_num 2.8x, M_fac3 5.6x, M_eqtl 1.6x, M_cov 6.5x, M_miss 2.6x, M_dense 6.9x, S_rare 6.7x, LA 5.4x;
+peak RSS 0.59-0.94x. Authoritative repeated benchmarks: final round.

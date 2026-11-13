@@ -7,7 +7,8 @@
 # difference there is not a bug by itself, but must be listed in the candidate's report.
 source("bench/proto/harness.R")
 a = commandArgs(TRUE); cand = if (length(a)) a[1] else "bench/proto/p0_baseline.cpp"
-Rcpp::sourceCpp(cand)
+# "lib:<dir>" = an installed build, run out of process by run_lib.R (its results are fetched per case below)
+if (startsWith(cand, "lib:")) fit_gene_proto = NULL else Rcpp::sourceCpp(cand)
 
 std = function(x) (x - mean(x)) / sd(x)
 # a prepare()-like list from a kernel, sample annotation, samples x SNPs genotypes and expression vectors
@@ -108,10 +109,13 @@ P = cases$default_kernel_balanced; P$boot = FALSE; add("no_bootstrap", P)
 
 options(width = 200)
 tol = c(l = 1e-6, rel = 1e-6)
+ext = NULL
+if (startsWith(cand, "lib:")) { fi = tempfile(fileext = ".rds"); fo = tempfile(fileext = ".rds"); saveRDS(cases, fi)
+  system2("Rscript", c("bench/proto/review/run_lib.R", sub("^lib:", "", cand), fi, fo)); ext = readRDS(fo) }
 res = do.call(rbind, lapply(names(cases), function(nm) {
   P = cases[[nm]]
   run1 = function(f) tryCatch(run_impl(f, P), error = function(e) e)
-  b = run1(baseline_fit); c = run1(fit_gene_proto)
+  b = run1(baseline_fit); c = if (is.null(ext)) run1(fit_gene_proto) else ext[[nm]]
   if (inherits(b, "error") || inherits(c, "error")) {
     same = inherits(b, "error") && inherits(c, "error")
     return(data.frame(case = nm, kind = tag[[nm]], max_dl = NA, rel_beta = NA, rel_se = NA, df = NA, na_mismatch = NA,

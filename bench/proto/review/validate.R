@@ -11,7 +11,11 @@
 #   a, b: result tables (data.frame or path to RDS from bench/bench.sh / bench/run.R), or harness_table()
 #   of a bench/proto/harness.R run_impl() output, so kernel-level prototypes are validated the same way.
 
-TOL = list(abs_ll = 1e-6, rel_beta = 1e-6)   # CONTEXT.md tolerances
+# Acceptance rule set after round 1 (bench/EXPERIMENT_LOG.md): data log-likelihoods 1e-9; bootstrap
+# log-likelihoods 1e-5 (the baseline moves them by up to 7.6e-7 under a 1e-15 perturbation of y); beta
+# and se relative 1e-6, beta relative to max(|beta|, se)
+TOL = list(abs_ll = 1e-9, abs_ll_boot = 1e-5, rel_beta = 1e-6)
+BOOT_COLS = c("l_boot_geno", "l_boot_interact", "l_boot_interact_null")
 LL_COLS = c("l0", "l_geno", "l_interact", "l_boot_geno", "l_boot_interact", "l_boot_interact_null")
 
 read_tab = function(x) { if (is.character(x)) x = readRDS(x); as.data.frame(x, stringsAsFactors = FALSE) }
@@ -59,7 +63,7 @@ validate = function(a, b, truth = NULL, label = "", thresholds = c(1e-3, 1e-5, 1
     if (cn == "beta_geno" && !is.null(a$se_geno)) den = pmax(den, a$se_geno[ok], na.rm = TRUE)   # beta ~ 0: relative to its se
     rel = ifelse(d == 0, 0, d / den)
     lp = if (startsWith(cn, "p_")) max(c(0, abs(log10(x[ok]) - log10(y[ok]))[x[ok] > 0 & y[ok] > 0])) else NA
-    tol_fail = if (cn %in% LL_COLS) sum(d > TOL$abs_ll) else if (cn %in% c("beta_geno", "se_geno")) sum(rel > TOL$rel_beta) else
+    tol_fail = if (cn %in% BOOT_COLS) sum(d > TOL$abs_ll_boot) else if (cn %in% LL_COLS) sum(d > TOL$abs_ll) else if (cn %in% c("beta_geno", "se_geno")) sum(rel > TOL$rel_beta) else
       if (cn == "df_interact") sum(d != 0) else NA
     data.frame(column = cn, n = sum(ok), na_mismatch = sum(is.na(x) != is.na(y)), identical = sum(d == 0),
                max_abs = if (any(ok)) max(d) else NA, max_rel = if (any(ok)) max(rel) else NA,

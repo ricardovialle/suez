@@ -2,9 +2,9 @@
 // p9: combined numerical candidate (p7 + reviewer round-3 changes). Same model, grid, peaks and Newton steps as
 // src/lmm.cpp; only how the weighted sums are formed changes.
 //
-// Model on rotated data: Uy = UX b + e, e ~ N(0, diag(s (h lam + 1 - h))). Every quantity the fits need is a
+// Model on rotated data: Uy = UX b + e, e ~ N(0, diag(s (h lam + (1 - h)))). Every quantity the fits need is a
 // weighted sum over contrasts t, sum_t f(h, lam_t) u_t v_t, with f = w = 1 / d, c w^2 or c^2 w^3 (c = lam - 1,
-// d = h lam + 1 - h). Contrasts are grouped by eigenvalue ("rows" below) so these become sum_r f_r(h) M_r(u, v)
+// d = h lam + (1 - h)). Contrasts are grouped by eigenvalue ("rows" below) so these become sum_r f_r(h) M_r(u, v)
 // with moments M_r computed once per gene / SNP:
 //  * non-null eigenvalues tied within a relative 1e-12 share one weight (taken at the group mean);
 //  * the null group (eigen-decomposition noise around 0) is kept exact: f(c + delta) is expanded in delta to
@@ -50,14 +50,16 @@ static const double TAYLOR_TOL = 1e-13;
 // Grid: rss = y'Wy - rhs'b loses all digits when rss / y'Wy approaches eps; below 1e-10 the grid value is
 // recomputed from direct residuals (reviewer: near-perfect fits).
 static const double CANCEL_GRID = 1e-10;
-// Profile (Newton values, final values): the quadratic form keeps relative error ~ eps y'Wy / g; below 1e-3
+// Profile (Newton values, final values): g = coef . moments has relative error ~ eps sum|terms| / g; below 1e-3
 // (error >~ 2e-13) it switches to direct residuals, as p0 always does.
 static const double CANCEL_PROF = 1e-3;
 // Schur pivot (relative to the column's own weighted norm) below which the per-SNP system is solved by p0's
 // LDLT on the full matrix (collinear SNP / interaction / covariates: p0's pseudo-solve).
 static const double SCHUR_PIVOT = 1e-10;
-// SNPs per block: bounds the moments (rows x pairs x block) and the rotated block, with GEMMs still wide.
-static const int SNP_BLOCK = 128;
+// SNPs per block: the per-SNP moments (rows x pairs x block doubles) are kept near MOMENT_BYTES, so memory does
+// not grow with covariates x eigenvalue groups (30 covariates, GRM: ~100 pairs x ~200 rows -> ~25 SNPs), with
+// blocks of 16..256 SNPs so the GEMMs stay wide.
+static const double MOMENT_BYTES = 4 << 20;
 
 static inline int pidx(int a, int b, int N) { if (a > b) std::swap(a, b); return a * N - a * (a - 1) / 2 + (b - a); }
 
@@ -72,6 +74,7 @@ struct Spectrum {
   std::vector<int> perm; std::vector<Row> rows;
   std::vector<std::vector<double>> dpow;         // dpow[k][t] = delta_t^k, t < n0 (null contrasts come first)
   std::vector<double> lamnull; double P[KN + 1] = {0};   // exact null eigenvalues; power sums of delta
+  ArrayXd glam, gcnt;                                     // non-null rows: eigenvalue and size
 
   explicit Spectrum(const ArrayXd& lam) : n(lam.size()), perm(lam.size()) {
     for (int i = 0; i < n; ++i) perm[i] = i;
@@ -91,6 +94,8 @@ struct Spectrum {
       while (u < n && lam[perm[u]] - l0 <= GROUP_RTOL * l0) sum += lam[perm[u++]];
       rows.push_back({t, u, 0, sum / (u - t)}); t = u;
     }
+    const int nr = nnull_rows(), m = R() - nr; glam.resize(m); gcnt.resize(m);
+    for (int r = 0; r < m; ++r) { glam[r] = rows[nr + r].lam; gcnt[r] = rows[nr + r].t1 - rows[nr + r].t0; }
   }
   int R() const { return rows.size(); }
   int nnull_rows() const { return n0 ? K + 1 : 0; }
@@ -108,23 +113,24 @@ struct Spectrum {
   }
   // null contrast t's exact weights at h
   void null_w(int t, double h, double& w, double& wb, double& we) const {
-    const double cl = lamnull[t] - 1; w = 1 / (h * lamnull[t] + 1 - h); wb = cl * w * w; we = cl * wb * cl * w;
+    const double cl = lamnull[t] - 1; w = 1 / (h * lamnull[t] + (1 - h)); wb = cl * w * w; we = cl * wb * cl * w;
   }
   void weights(double h, bool derivs, Weights& W) const {
     const int R_ = R(), nr = nnull_rows();
     W.a.setZero(R_); W.b.setZero(R_); W.e.setZero(R_); W.T1 = W.T2 = W.LD = 0; W.null_ok = true;
-    for (int r = nr; r < R_; ++r) {
-      const double lg = rows[r].lam, d = h * lg + 1 - h, w = 1 / d, cg = lg - 1, cnt = rows[r].t1 - rows[r].t0;
-      W.a[r] = w; W.LD += cnt * std::log(d);
-      if (derivs) { W.b[r] = cg * w * w; W.e[r] = cg * cg * w * w * w; W.T1 += cnt * cg * w; W.T2 += cnt * cg * w * cg * w; }
+    if (R_ > nr) {   // non-null groups, vectorised (Eigen's log)
+      const int m = R_ - nr; const ArrayXd d = h * glam + (1 - h), w = d.inverse();
+      W.a.tail(m) = w; W.LD += (gcnt * d.log()).sum();
+      if (derivs) { const ArrayXd cw = (glam - 1) * w; W.b.tail(m) = cw * w; W.e.tail(m) = cw * cw * w;
+                    W.T1 += (gcnt * cw).sum(); W.T2 += (gcnt * cw.square()).sum(); }
     }
     if (!n0) return;
-    const double d = h * c + 1 - h;
+    const double d = h * c + (1 - h);
     W.null_ok = dmax == 0 || std::pow(h * dmax / d, KN + 1) <= TAYLOR_TOL;
     if (!W.null_ok) {   // sum the null contrasts one by one (callers add their pair sums directly)
       for (int t = 0; t < n0; ++t) {
         double w, wb, we; null_w(t, h, w, wb, we); const double cl = lamnull[t] - 1;
-        W.LD += std::log(h * lamnull[t] + 1 - h); W.T1 += cl * w; W.T2 += cl * w * cl * w;
+        W.LD += std::log(h * lamnull[t] + (1 - h)); W.T1 += cl * w; W.T2 += cl * w * cl * w;
       }
       return;
     }
@@ -224,6 +230,30 @@ static Model make_model(const Block& bl, int s, const std::vector<int>& cols) {
   return m;
 }
 
+// LDLT (pivoted, as p0) whose solve treats a column as absent when its pivot is negligible relative to its own
+// weighted norm (D_i / A_ii < COLLINEAR: the column is a combination of the earlier ones to ~1e-12). p0's
+// LDLT only drops exactly zero pivots; for duplicated / collinear columns its pivot is exactly zero or rounding
+// noise, and with noise b runs to ~1/eps along the null direction and the residual loses its digits. The
+// ratio is scale-free, so badly scaled but independent columns (raw-scale covariates) are untouched.
+static const double COLLINEAR = 1e-12;
+struct PinvLDLT {
+  Eigen::LDLT<MatrixXd> L; VectorXd d0;
+  void compute(const MatrixXd& A) {
+    L.compute(A); d0 = A.diagonal();
+    const auto& T = L.transpositionsP(); for (int i = 0; i < T.size(); ++i) std::swap(d0[i], d0[T.coeff(i)]);
+  }
+  void solve(const VectorXd& rhs, VectorXd& x) const {   // x = A^+ rhs (no allocation once x has its size)
+    x = rhs; const auto& T = L.transpositionsP(); const int m = x.size();
+    for (int i = 0; i < m; ++i) std::swap(x[i], x[T.coeff(i)]);
+    L.matrixL().solveInPlace(x);
+    const VectorXd& D = L.vectorD();
+    for (int i = 0; i < m; ++i) x[i] = std::fabs(D[i]) > COLLINEAR * std::fabs(d0[i]) && D[i] != 0 ? x[i] / D[i] : 0;
+    L.matrixU().solveInPlace(x);
+    for (int i = m - 1; i >= 0; --i) std::swap(x[i], x[T.coeff(i)]);
+  }
+  VectorXd solve(const VectorXd& rhs) const { VectorXd x; solve(rhs, x); return x; }
+};
+
 // ---------------------------------------------------------------- profile likelihood (Newton, final values)
 // As p0: f = -(n/2) log(g/n) - (1/2) sum log d - n/2, with g = r'Wr, f' and f'' from Q1 = sum c w^2 r^2,
 // Q2 = sum c^2 w^3 r^2 - Xv'A^-1 Xv, Xv = X' diag(c w^2) r, the trace terms sum c w and sum c^2 w^2.
@@ -231,7 +261,7 @@ static Model make_model(const Block& bl, int s, const std::vector<int>& cols) {
 // r = y - Xb in the pairs; with direct residuals where that cancels.
 struct Profile {
   const Spectrum& sp; const int n; Weights W; MatrixXd AB, MW, A; VectorXd b, rhs, coef, Xv, tmp; ArrayXd r;
-  Eigen::LDLT<MatrixXd> L; double s = NAN;
+  PinvLDLT L; double s = NAN;
   explicit Profile(const Spectrum& s_) : sp(s_), n(s_.n) {}
   double operator()(const Model& m, double h, double* f1 = nullptr, double* f2 = nullptr) {
     const MatrixXd& MM = m.MM; const int Nm = m.z.size(), p = Nm - 1, nc = f1 ? 3 : 1, P2 = MM.cols();
@@ -239,7 +269,7 @@ struct Profile {
     sp.weights(h, f1 != nullptr, W);
     AB.resize(sp.R(), 3); MW.resize(P2, 3);   // fixed shapes: no reallocation between value-only and derivative calls
     AB.col(0) = W.a.matrix(); if (f1) { AB.col(1) = W.b.matrix(); AB.col(2) = W.e.matrix(); }
-    MW.leftCols(nc).noalias() = MM.transpose() * AB.leftCols(nc);
+    if (f1) MW.noalias() = MM.transpose() * AB; else MW.col(0).noalias() = MM.transpose() * AB.col(0);
     if (!W.null_ok)
       for (int t = 0; t < sp.n0; ++t) {
         double w[3]; sp.null_w(t, h, w[0], w[1], w[2]);
@@ -252,11 +282,13 @@ struct Profile {
     if (p) {
       A.resize(p, p); rhs.resize(p);
       for (int a = 0; a < p; ++a) { rhs[a] = MW(pidx(a, p, Nm), 0); for (int e = 0; e <= a; ++e) A(a, e) = A(e, a) = MW(pidx(e, a, Nm), 0); }
-      L.compute(A); b = L.solve(rhs);
+      L.compute(A); L.solve(rhs, b);
       for (int a = 0; a < p; ++a) { coef[pidx(a, p, Nm)] = -2 * b[a]; for (int e = a; e < p; ++e) coef[pidx(a, e, Nm)] = (a == e ? 1 : 2) * b[a] * b[e]; }
     } else b.resize(0);
     double g = coef.dot(MW.col(0));
-    const bool direct = !(g > CANCEL_PROF * MW(pidx(p, p, Nm), 0));
+    // the terms of g can be large with opposite signs: near-perfect fits, or b huge along a null direction of a
+    // rank-deficient X (LDLT pseudo-solve); measure the cancellation against the sum of |terms|
+    const bool direct = !(g > CANCEL_PROF * coef.cwiseAbs().dot(MW.col(0).cwiseAbs()));
     if (direct) {
       r = Eigen::Map<const ArrayXd>(m.z[p], n);
       for (int a = 0; a < p; ++a) r -= b[a] * Eigen::Map<const ArrayXd>(m.z[a], n);
@@ -273,7 +305,7 @@ struct Profile {
         Q1 = coef.dot(MW.col(1)); Q2 = coef.dot(MW.col(2));
         for (int a = 0; a < p; ++a) { double x = MW(pidx(a, p, Nm), 1); for (int e = 0; e < p; ++e) x -= MW(pidx(a, e, Nm), 1) * b[e]; Xv[a] = x; }
       }
-      if (p) { tmp = L.solve(Xv); Q2 -= Xv.dot(tmp); }
+      if (p) { L.solve(Xv, tmp); Q2 -= Xv.dot(tmp); }
       *f1 = 0.5 * n * Q1 / g - 0.5 * W.T1;
       *f2 = -0.5 * n * (2 * Q2 / g - Q1 * Q1 / (g * g)) + 0.5 * W.T2;
     }
@@ -344,7 +376,8 @@ static X0Grid x0_grid(const Spectrum& sp, const GridW& gw, const MatrixXd& X0, c
     if (gw.bad[i]) continue;
     MatrixXd A00(p0, p0);
     for (int a = 0; a < p0; ++a) for (int b = 0; b < p0; ++b) A00(a, b) = gw.W[i].null_ok ? R(pidx(a, b, p0), i) : sp.wsum(gw.W[i], 0, HS[i], X0.col(a).data(), X0.col(b).data());
-    xg.A0i[i] = A00.ldlt().solve(MatrixXd::Identity(p0, p0));
+    PinvLDLT L; L.compute(A00); xg.A0i[i].resize(p0, p0);
+    for (int j = 0; j < p0; ++j) xg.A0i[i].col(j) = L.solve(VectorXd::Unit(p0, j));
   }
   return xg;
 }
@@ -356,13 +389,13 @@ static double grid_direct(const Block& bl, const GridW& gw, int i, int s, const 
   MatrixXd A(p, p); VectorXd rhs(p);
   for (int a = 0; a < p; ++a) { rhs[a] = bl.sp.wsum(W, 0, h, z[a], y); for (int e = 0; e <= a; ++e) A(a, e) = A(e, a) = bl.sp.wsum(W, 0, h, z[a], z[e]); }
   for (int a = 0; a < p; ++a) if (A(a, a) == 0) { A(a, a) = 1; rhs[a] = 0; }
-  VectorXd b = A.ldlt().solve(rhs); ArrayXd r = Eigen::Map<const ArrayXd>(y, n);
+  PinvLDLT L; L.compute(A); VectorXd b = L.solve(rhs); ArrayXd r = Eigen::Map<const ArrayXd>(y, n);
   for (int a = 0; a < p; ++a) r -= b[a] * Eigen::Map<const ArrayXd>(z[a], n);
   return bl.sp.wsum(W, 0, h, r.data(), r.data());
 }
 
 static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const X0Grid& xg, const std::vector<std::vector<int>>& models) {
-  const Spectrum& sp = bl.sp; const int p0 = bl.p0, k = bl.k, iy = bl.iy, S = bl.S, n = sp.n, ny = bl.MY.cols(), nper = bl.nper;
+  const Spectrum& sp = bl.sp; const int p0 = bl.p0, k = bl.k, iy = bl.iy, S = bl.S, n = sp.n, nper = bl.nper;
   const MatrixXd At = gw.A.transpose();
   MatrixXd RY = bl.MY.transpose() * At, RP = bl.Mper.transpose() * At;   // (pairs) x NG
   MatrixXd RX = bl.MX0.transpose() * At;
@@ -380,7 +413,6 @@ static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const
     const int t = pidx(a, b, bl.N);
     return bl.kind[t] == 0 ? RX(bl.slot[t], i) : bl.kind[t] == 1 ? RY(bl.slot[t], i) : RP((size_t)s * nper + bl.slot[t], i);
   };
-  (void)ny;
   std::vector<MatrixXd> V(models.size(), MatrixXd(S, NG));
   std::vector<double> r0(p0), z(p0), u(k), c(k), a(p0 * k), T(p0 * k), Sc(k * k);
   for (int i = 0; i < NG; ++i) {
@@ -423,7 +455,7 @@ static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const
           auto cix = [&](int e) { return e < p0 ? e : p0 + mb[e - p0]; };
           for (int e = 0; e < p; ++e) { rhs[e] = M(i, s, cix(e), iy); for (int f = 0; f < p; ++f) A(e, f) = M(i, s, cix(e), cix(f)); }
           for (int j = 0; j < kk; ++j) if (A(p0 + j, p0 + j) == 0) { A(p0 + j, p0 + j) = 1; rhs[p0 + j] = 0; }
-          rss = yy - rhs.dot(A.ldlt().solve(rhs));
+          PinvLDLT L; L.compute(A); rss = yy - rhs.dot(L.solve(rhs));
         }
         if (!(rss > CANCEL_GRID * yy)) {   // near-perfect fit: direct residuals
           std::vector<int> cols; for (int e = 0; e < p0; ++e) cols.push_back(e);
@@ -502,8 +534,10 @@ static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, 
   std::fill(out.begin(), out.end(), NA_REAL);
   Rcpp::RNGScope rng;
   std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
-  for (int s0 = 0; s0 < S; s0 += SNP_BLOCK) {
-    const int sb = std::min(SNP_BLOCK, S - s0);
+  const int k1 = 1 + q, nper = p0 * k1 + k1 * (k1 + 1) / 2 + k1 + p0 + 1;   // per-SNP pairs of the bootstrap block
+  const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.R() * nper))));
+  for (int s0 = 0; s0 < S; s0 += SB) {
+    const int sb = std::min(SB, S - s0);
     std::vector<MatrixXd> B(1, sp.permute(rotate(U, Gs.middleCols(s0, sb))));
     for (int j = 0; j < q; ++j) B.push_back(sp.permute(rotate(U, Is[j].middleCols(s0, sb))));
     std::vector<Fit> f1(sb);
@@ -551,3 +585,85 @@ static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, 
 // [[Rcpp::export]]
 Rcpp::List fit_gene_proto(Eigen::Map<Eigen::MatrixXd> U, Eigen::VectorXd lambda, Eigen::VectorXd Uy, Eigen::MatrixXd UX0,
                           Eigen::MatrixXd G, Eigen::MatrixXd C, bool boot) { return fit_gene(U, lambda, Uy, UX0, G, C, boot); }
+
+// ---------------------------------------------------------------- fit_models (suez_fit_models, local ancestry)
+// Same engine: the term columns are the blocks of a Block, each model a subset of them (not nested); all
+// models of a SNP block share one set of moments. As src/lmm.cpp: a zero column is left out of that SNP's
+// design (npar), beta / se on the standardized scale (b of the fit, se from (X'W'X)^-1), y simulated per SNP
+// under model boot_null in SNP order, then models boot_null and boot_alt refitted.
+static Rcpp::List fit_models(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
+                             Rcpp::List cols, Rcpp::List models, int boot_null, int boot_alt) {
+  const int n = Uy_.size(), p0 = UX0_.cols(), M = models.size(), nc = cols.size();
+  const ArrayXd lam = lam_.array();
+  const Spectrum sp(lam); const GridW gw(sp, lam); Profile PR(sp);
+  const MatrixXd UX0 = sp.permute(UX0_), Y1 = sp.permute(MatrixXd(Uy_));
+  const MatrixXd MX0 = x0_moments(sp, UX0); const X0Grid xg = x0_grid(sp, gw, UX0, MX0);
+  std::vector<Eigen::Map<const MatrixXd>> C;
+  for (int j = 0; j < nc; ++j) { Rcpp::NumericMatrix m = cols[j]; C.emplace_back(m.begin(), m.nrow(), m.ncol()); }
+  const int S = C[0].cols();
+  std::vector<std::vector<int>> mods(M);
+  for (int m = 0; m < M; ++m) { Rcpp::IntegerVector t = models[m]; mods[m].assign(t.begin(), t.end()); }
+
+  Rcpp::NumericMatrix ll(S, M); Rcpp::IntegerMatrix npar(S, M); std::fill(ll.begin(), ll.end(), NA_REAL);
+  std::vector<Rcpp::NumericMatrix> beta, se;
+  for (int m = 0; m < M; ++m) {
+    beta.emplace_back(S, (int)mods[m].size()); se.emplace_back(S, (int)mods[m].size());
+    std::fill(beta[m].begin(), beta[m].end(), NA_REAL); std::fill(se[m].begin(), se[m].end(), NA_REAL);
+  }
+  Rcpp::NumericMatrix lb(S, 2); std::fill(lb.begin(), lb.end(), NA_REAL);
+  const bool boot = boot_null >= 0;
+  Rcpp::RNGScope rng;
+  std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
+  const int nper = p0 * nc + nc * (nc + 1) / 2 + nc + p0 + 1;
+  const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.R() * nper))));
+  for (int s0 = 0; s0 < S; s0 += SB) {
+    const int sb = std::min(SB, S - s0);
+    std::vector<MatrixXd> B;
+    for (int j = 0; j < nc; ++j) B.push_back(sp.permute(rotate(U, C[j].middleCols(s0, sb))));
+    // design of SNP sl under model m: X0 then the model's nonzero columns (src/lmm.cpp's design())
+    auto design = [&](int m, int sl, std::vector<int>& use) {
+      use.clear(); std::vector<int> c(p0); for (int e = 0; e < p0; ++e) c[e] = e;
+      for (size_t k = 0; k < mods[m].size(); ++k) if (B[mods[m][k]].col(sl).squaredNorm() > 0) { use.push_back(k); c.push_back(p0 + mods[m][k]); }
+      return c;
+    };
+    MatrixXd Yb; if (boot) Yb = MatrixXd::Zero(n, sb);
+    std::vector<int> use;
+    {
+      Block bd(sp, UX0, MX0, B, Y1, sb);
+      std::vector<MatrixXd> V = grid_values(bd, gw, xg, mods);
+      for (int m = 0; m < M; ++m)
+        for (int sl = 0; sl < sb; ++sl) {
+          const int s = s0 + sl; std::vector<int> c = design(m, sl, use); npar(s, m) = use.size();
+          VectorXd v = V[m].row(sl).transpose(); Fit f = refine(PR, make_model(bd, sl, c), v.data());
+          if (!f.ok) continue;
+          ll(s, m) = f.value;
+          const MatrixXd Vb = (PR.A / PR.s).inverse();   // as src/lmm.cpp: (X'W'X)^-1 by LU
+          for (size_t k = 0; k < use.size(); ++k) { beta[m](s, use[k]) = f.b[p0 + k]; se[m](s, use[k]) = std::sqrt(Vb(p0 + k, p0 + k)); }
+          if (m == boot_null) {   // SNP order within this block; blocks in order: p0's draw sequence
+            for (int i = 0; i < n; ++i) Yb(pos[i], sl) = std::sqrt(f.s2k * lam[i] + f.s2) * R::norm_rand();
+            for (size_t a = 0; a < c.size(); ++a) Yb.col(sl) += f.b[a] * Eigen::Map<const VectorXd>(bd.col(c[a], sl), n);
+          }
+        }
+    }
+    if (!boot) continue;
+    Block bb(sp, UX0, MX0, B, Yb, sb);
+    const int mm[2] = {boot_null, boot_alt};
+    std::vector<MatrixXd> W = grid_values(bb, gw, xg, {mods[mm[0]], mods[mm[1]]});
+    for (int a = 0; a < 2; ++a)
+      for (int sl = 0; sl < sb; ++sl) {
+        const int s = s0 + sl; if (ISNAN(ll(s, boot_null))) continue;
+        VectorXd v = W[a].row(sl).transpose(); Fit f = refine(PR, make_model(bb, sl, design(mm[a], sl, use)), v.data());
+        if (f.ok) lb(s, a) = f.value;
+      }
+  }
+  Rcpp::List betas(M), ses(M); for (int m = 0; m < M; ++m) { betas[m] = beta[m]; ses[m] = se[m]; }
+  Rcpp::List res = Rcpp::List::create(Rcpp::Named("ll") = ll, Rcpp::Named("npar") = npar, Rcpp::Named("beta") = betas, Rcpp::Named("se") = ses);
+  if (boot) res["ll_boot"] = lb;
+  return res;
+}
+
+// [[Rcpp::export]]
+Rcpp::List fit_models_proto(Eigen::Map<Eigen::MatrixXd> U, Eigen::VectorXd lambda, Eigen::VectorXd Uy, Eigen::MatrixXd UX0,
+                            Rcpp::List cols, Rcpp::List models, int boot_null, int boot_alt) {
+  return fit_models(U, lambda, Uy, UX0, cols, models, boot_null, boot_alt);
+}
