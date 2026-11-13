@@ -1,0 +1,229 @@
+diff --git a/R/map_interaction_qtl.R b/R/map_interaction_qtl.R
+index 67b5301..e54bb24 100644
+--- a/R/map_interaction_qtl.R
++++ b/R/map_interaction_qtl.R
+@@ -233,8 +233,8 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
+   # one seed per gene, drawn from the caller's RNG: results depend on set.seed() only, not on the cores
+   seeds = sample.int(.Machine$integer.max, length(genes))
+ 
+-  # results are combined once at the end (combining pairwise copies the growing table at every gene)
+-  res = foreach(gene=genes, seed=seeds, .errorhandling=errorhandling) %dopar% {
++  # one gene; rot (optional): raw rotations of the SNPs of its chunk (see below)
++  fit_one = function(gene, seed, rot = NULL) {
+ 
+     set.seed(seed)
+     if (!is.null(checkpoint_dir)){
+@@ -259,6 +259,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
+       return(gene_results)
+     }
+ 
++    rows = NULL
+     geno_here = if (is.matrix(genotype)) {
+       rows = cis_rows(geneloc[gene,"chr"], geneloc[gene,"left"]-cisdist, geneloc[gene,"right"]+cisdist)
+       if (length(rows)) genotype[rows,,drop=F] else NULL
+@@ -276,6 +277,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
+       af = rowMeans(geno_here, na.rm=T)/2 # ALT frequency, on unimputed genotypes
+       mafs = pmin(af, 1 - af)
+       imp_geno = imp_geno[mafs > maf_threshold,,drop=F]
++      rows = rows[mafs > maf_threshold]
+       if (nrow(imp_geno)==0) return(NULL)
+     }
+     
+@@ -288,10 +290,14 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
+     keep = rowSums(imp_geno) >= 5 & colSums(G != rep(G[1, ], each = nrow(G))) > 0   # >= 5 ALT alleles, varies across samples
+     if (!any(keep)) return(NULL)
+     G = G[, keep, drop=F]
++    rows = rows[keep]
+     Uy = drop(crossprod(U, as.numeric(input[gene,])))
+ 
+     if (debug) cat("Fitting", ncol(G), "SNPs...\n")
+-    fit = .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot")   # src/lmm.cpp
++    use_rot = !is.null(rot) && !anyNA(geno_here) && all(rows %in% rot$rows)
++    fit = if (use_rot)
++      .Call(suez_fit_gene_rot, U, lambda, Uy, UX0, G, C, permutation_approach=="boot", rot$RG, rot$RI, match(rows, rot$rows))
++    else .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot")   # src/lmm.cpp
+     m = fit$res
+     gene_results = data.frame(gene=gene, cis_snp=colnames(G), l0=fit$l0, l_geno=m[,1], l_interact=m[,2],
+                               stringsAsFactors=F)
+@@ -313,5 +319,61 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
+ 
+     gene_results
+   }
+-  bind_rows(res)
++
++  # Neighbouring genes share cis SNPs (each SNP is in ~2 windows at 1e5 bp, more for dense genes). With a genotype
++  # matrix, genes are processed in chunks of consecutive genes and each SNP of a chunk is rotated once, from the
++  # individual-level genotypes: U'g = W'g_ind, W = rowsum(U, individual), and U'(g * c_j) with W_j = rowsum(U * c_j).
++  # SNPs are rotated in fixed blocks of 64 consecutive SNPs (by position), so a SNP's rotated column, hence every
++  # result, does not depend on the chunks or the number of cores. Genes with missing genotypes (imputation is per
++  # gene) use the per-gene path, as do the permutation test, a TabixFile genotype and local-ancestry mode.
++  chunked = is.matrix(genotype) && !la_mode && permutation_approach != "permute"
++  if (chunked) {
++    ind_levels = unique(anno$individual)
++    W = c(list(rowsum(U, anno$individual, reorder = FALSE)),
++          lapply(seq_len(ncol(C)), function(j) rowsum(U * C[, j], anno$individual, reorder = FALSE)))
++    W = lapply(W, function(w) { dimnames(w) = NULL; w })
++    blk_key = character(nrow(genotype)); blk_rows = list()   # 64-SNP blocks per chromosome, in position order
++    for (ch in names(by_chr)) { r = unique(geno_row[by_chr[[ch]]]); r = r[!is.na(r)]
++      if (!length(r)) next
++      key = paste(ch, (seq_along(r) - 1L) %/% 64L); blk_key[r] = key
++      blk_rows = c(blk_rows, split(r, factor(key, levels = unique(key)))) }
++    win = lapply(genes, function(g) cis_rows(geneloc[g,"chr"], geneloc[g,"left"]-cisdist, geneloc[g,"right"]+cisdist))
++    names(win) = genes
++    # chunks: consecutive genes by position, at most k genes and ~32 MB of rotated columns
++    cap = max(64, floor(32e6 / (8 * ncol(U) * (1 + ncol(C)))))
++    k = max(1, min(32, ceiling(length(genes) / (4 * foreach::getDoParWorkers()))))
++    o = order(as.character(geneloc[genes, "chr"]), geneloc[genes, "left"])
++    chunks = list(); cur = integer(0); cur_blk = character(0)
++    for (i in o) {
++      b = unique(blk_key[win[[i]]])
++      nb = union(cur_blk, b)
++      if (length(cur) && (length(cur) >= k || 64 * length(nb) > cap || geneloc[genes[i], "chr"] != geneloc[genes[cur[1]], "chr"])) {
++        chunks[[length(chunks) + 1]] = cur; cur = integer(0); nb = b }
++      cur = c(cur, i); cur_blk = nb
++    }
++    if (length(cur)) chunks[[length(chunks) + 1]] = cur
++  } else chunks = as.list(seq_along(genes))
++
++  # results are combined once at the end (combining pairwise copies the growing table at every gene)
++  res = foreach(ch=chunks, .errorhandling=errorhandling) %dopar% {
++    rot = NULL
++    if (chunked) {
++      todo = ch[!sapply(win[ch], function(r) anyNA(genotype[r, , drop=F]))]
++      if (!is.null(checkpoint_dir)) todo = todo[!file.exists(file.path(checkpoint_dir, paste0(genes[todo], ".txt.gz")))]
++      bl = unique(blk_key[unlist(win[todo])])
++      if (length(bl)) {
++        rr = unlist(blk_rows[bl], use.names = FALSE)
++        g = round(genotype[rr, ind_levels, drop=F]); g[is.na(g)] = 0; storage.mode(g) = "double"
++        RR = .Call(suez_rotate_ind, W, t(g), lengths(blk_rows[bl], use.names = FALSE))
++        rot = list(rows = rr, RG = RR[[1]], RI = RR[-1]); rm(RR, g)
++      }
++    }
++    out = lapply(ch, function(i) if (debug) fit_one(genes[i], seeds[i], rot) else
++      tryCatch(fit_one(genes[i], seeds[i], rot), error = function(e) NULL))
++    names(out) = genes[ch]
++    if (!is.null(rot)) { rm(rot); invisible(gc(FALSE)) }   # the chunk's rotations: freed now, not at R's next heap growth
++    out
++  }
++  res = unlist(res, recursive = FALSE)
++  bind_rows(res[intersect(genes, names(res))])
+ }
+diff --git a/src/init.cpp b/src/init.cpp
+index 8c06bb5..bd23a45 100644
+--- a/src/init.cpp
++++ b/src/init.cpp
+@@ -11,11 +11,15 @@
+ extern "C" SEXP suez_fit_gene(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_fit_models(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_eigen_sym(SEXP);
++extern "C" SEXP suez_fit_gene_rot(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
++extern "C" SEXP suez_rotate_ind(SEXP, SEXP, SEXP);
+ 
+ static const R_CallMethodDef CallEntries[] = {
+   {"suez_fit_gene", (DL_FUNC) &suez_fit_gene, 7},
+   {"suez_fit_models", (DL_FUNC) &suez_fit_models, 8},
+   {"suez_eigen_sym", (DL_FUNC) &suez_eigen_sym, 1},
++  {"suez_fit_gene_rot", (DL_FUNC) &suez_fit_gene_rot, 10},
++  {"suez_rotate_ind", (DL_FUNC) &suez_rotate_ind, 3},
+   {NULL, NULL, 0}
+ };
+ 
+diff --git a/src/lmm.cpp b/src/lmm.cpp
+index c131e0d..662f8ee 100644
+--- a/src/lmm.cpp
++++ b/src/lmm.cpp
+@@ -518,8 +518,11 @@ static void wald(const Profile& P, VectorXd& beta, VectorXd& se) {
+ }
+ 
+ // ---------------------------------------------------------------- fit_gene (suez_fit_gene)
++// RG, RI (optional): U'G and U'(G * C[, j]) of the raw columns, precomputed for the gene (map_interaction_qtl
++// rotates the SNPs of neighbouring genes once); a standardized column is then (U'x - mean(x) U'1) / sd(x).
+ static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
+-                           const MatrixXd& G, const MatrixXd& C, bool boot) {
++                           const MatrixXd& G, const MatrixXd& C, bool boot,
++                           const MatrixXd* RG = nullptr, const std::vector<MatrixXd>* RI = nullptr) {
+   const int S = G.cols(), q = C.cols(), p0 = UX0_.cols(), n = Uy_.size();
+   const ArrayXd lam = lam_.array();
+   const Spectrum sp(lam); const GridW gw(sp, lam); Profile PR(sp);
+@@ -533,13 +536,23 @@ static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_,
+     f0 = refine(PR, make_model(b0, 0, c0), V0.data()); }
+   if (!f0.ok) Rcpp::stop("no-genotype model did not converge");
+ 
+-  MatrixXd Gs = G; VectorXd gsd(S);
+-  for (int s = 0; s < S; ++s) standardize(Gs.col(s), gsd[s]);
++  MatrixXd Gs = G; VectorXd gsd(S), gmu(S);
++  for (int s = 0; s < S; ++s) { gmu[s] = G.col(s).mean(); standardize(Gs.col(s), gsd[s]); }
+   std::vector<MatrixXd> Is(q); std::vector<std::vector<bool>> iok(q, std::vector<bool>(S)); VectorXi df = VectorXi::Zero(S);
++  MatrixXd Imu(q, S), Isd(q, S);
+   for (int j = 0; j < q; ++j) {
+     Is[j] = G.array().colwise() * C.col(j).array();
+-    for (int s = 0; s < S; ++s) { double sd; iok[j][s] = standardize(Is[j].col(s), sd); if (!iok[j][s]) Is[j].col(s).setZero(); else ++df[s]; }
++    for (int s = 0; s < S; ++s) { double sd; Imu(j, s) = Is[j].col(s).mean(); iok[j][s] = standardize(Is[j].col(s), sd); Isd(j, s) = sd; if (!iok[j][s]) Is[j].col(s).setZero(); else ++df[s]; }
+   }
++  VectorXd u1; if (RG) u1 = U.colwise().sum().transpose();   // U'1 (~0)
++  auto from_raw = [&](const MatrixXd& R, int s0, int sb, const double* mu, const double* sd, int stride, const std::vector<bool>* ok) {
++    MatrixXd X(n, sb);
++    for (int sl = 0; sl < sb; ++sl) {
++      const int s = s0 + sl;
++      if (ok && !(*ok)[s]) X.col(sl).setZero(); else X.col(sl) = (R.col(s) - mu[s * stride] * u1) / sd[s * stride];
++    }
++    return X;
++  };
+   std::vector<int> all(1 + q); for (int j = 0; j <= q; ++j) all[j] = j;
+   const std::vector<std::vector<int>> mdata = q ? std::vector<std::vector<int>>{{0}, all} : std::vector<std::vector<int>>{{0}};
+   const std::vector<std::vector<int>> mboot = q ? std::vector<std::vector<int>>{{}, {0}, all} : std::vector<std::vector<int>>{{}, {0}};
+@@ -555,8 +568,14 @@ static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_,
+   const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.R() * nper))));
+   for (int s0 = 0; s0 < S; s0 += SB) {
+     const int sb = std::min(SB, S - s0);
+-    std::vector<MatrixXd> B(1, sp.permute(rotate(U, Gs.middleCols(s0, sb))));
+-    for (int j = 0; j < q; ++j) B.push_back(sp.permute(rotate(U, Is[j].middleCols(s0, sb))));
++    std::vector<MatrixXd> B;
++    if (RG) {
++      B.push_back(sp.permute(from_raw(*RG, s0, sb, gmu.data(), gsd.data(), 1, nullptr)));
++      for (int j = 0; j < q; ++j) B.push_back(sp.permute(from_raw((*RI)[j], s0, sb, Imu.data() + j, Isd.data() + j, q, &iok[j])));
++    } else {
++      B.push_back(sp.permute(rotate(U, Gs.middleCols(s0, sb))));
++      for (int j = 0; j < q; ++j) B.push_back(sp.permute(rotate(U, Is[j].middleCols(s0, sb))));
++    }
+     std::vector<Fit> f1(sb);
+     {
+       Block bd(sp, UX0, MX0, B, Y1, sb);
+@@ -607,6 +626,37 @@ extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SE
+   END_RCPP
+ }
+ 
++// Same with the raw rotations given: RG (U'G) and RI (list: U'(G * C[, j])) of the SNPs of a chunk of genes, and
++// idx (1-based) = the columns of this gene's SNPs; used in place (no copy of the chunk matrices).
++extern "C" SEXP suez_fit_gene_rot(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, SEXP RG, SEXP RI, SEXP idx) {
++  BEGIN_RCPP
++  Rcpp::IntegerVector k(idx); Rcpp::List ri(RI);
++  const Eigen::Map<MatrixXd> rg = Rcpp::as<Eigen::Map<MatrixXd>>(RG);
++  auto pick = [&](const Eigen::Map<MatrixXd>& m) { MatrixXd x(m.rows(), k.size()); for (int s = 0; s < k.size(); ++s) x.col(s) = m.col(k[s] - 1); return x; };
++  const MatrixXd g = pick(rg); std::vector<MatrixXd> r;
++  for (int j = 0; j < ri.size(); ++j) r.push_back(pick(Rcpp::as<Eigen::Map<MatrixXd>>(ri[j])));
++  return fit_gene(Rcpp::as<Eigen::Map<MatrixXd>>(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
++                  Rcpp::as<MatrixXd>(G), Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), &g, &r);
++  END_RCPP
++}
++
++// Raw rotations of individual-level genotypes: W[[k]] (individuals x N-1) = rowsum(U * c_k, individual), Gi
++// (individuals x SNPs). Returns the list of W[[k]]' Gi, computed block by block (bs: block sizes): blocks are fixed
++// runs of 64 consecutive SNPs (see map_interaction_qtl), so a SNP's column is always the same product,
++// whatever the chunk of genes it is rotated for.
++extern "C" SEXP suez_rotate_ind(SEXP W, SEXP Gi, SEXP bs) {
++  BEGIN_RCPP
++  Rcpp::List w(W); Rcpp::IntegerVector b(bs); const Eigen::Map<MatrixXd> g = Rcpp::as<Eigen::Map<MatrixXd>>(Gi); Rcpp::List out(w.size());
++  for (int k = 0; k < w.size(); ++k) {
++    const Eigen::Map<MatrixXd> wk = Rcpp::as<Eigen::Map<MatrixXd>>(w[k]);
++    Rcpp::NumericMatrix o(wk.cols(), g.cols()); Eigen::Map<MatrixXd> om(o.begin(), o.nrow(), o.ncol());
++    for (int i = 0, at = 0; i < b.size(); at += b[i++]) om.middleCols(at, b[i]).noalias() = wk.transpose() * g.middleCols(at, b[i]);
++    out[k] = o;
++  }
++  return out;
++  END_RCPP
++}
++
+ // ---------------------------------------------------------------- fit_models (suez_fit_models, local ancestry)
+ // Same engine: the term columns are the blocks of a Block, each model a subset of them (not nested); all
+ // models of a SNP block share one set of moments. As src/lmm.cpp: a zero column is left out of that SNP's

@@ -1,0 +1,6 @@
+== tests/learn_covariance_checks.R
+0 failure(s)
+== tests/local_ancestry_checks.R
+0 failure(s)
+== tests/model_checks.R
+0 failure(s)

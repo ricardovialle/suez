@@ -132,3 +132,14 @@ Profile (bench/profile_e2e.R, r8): easy_impute's svd() = 51% of M_miss; apply(G,
 End-to-end output identical() to r8 on M_miss, M_dense, S_rare, LA, M; tests pass.
 Wall, median of 3 interleaved (bench/results/runs_round10.tsv): M_miss 4.48 -> 2.72 s (1.65x),
 M_dense 6.95 -> 6.43 s (1.08x); peak RSS M_dense 365 -> 388 MB (recheck in the final benchmarks).
+
+## Round 9 result — rotation caching (algorithm specialist): REJECTED / shelved
+Implementation (bench/proto/algorithm/r9/r9_rot_on_f81c6c4.patch): rotation from individual-level genotypes
+(W = rowsum(U, individual)), fixed 64-SNP rotation blocks (Eigen GEMM bits depend on matrix width, so fixed
+blocks keep results independent of chunking/cores), chunks of consecutive genes as the foreach unit, per-gene
+path kept for NA windows, permute, TabixFile and LA. Correct: data l <= 3.4e-13, bootstrap <= 7.5e-7 vs r8,
+identical() across 1/2/4 cores, tests pass.
+Timing vs an exact build of f81c6c4 (3 reps, median): L 0.845, XL 0.860, M_dense 0.835, M 0.985 at 1 core;
+M 1.103 (slower) and M_dense 0.948 at 4 cores; RSS +16..+75 MB (1 core), +94..+155 MB (4-core tree).
+Decision: gains 14-17% only for large-N / dense windows at 1 core, a regression at 4 cores on M, more RAM and
+~120 lines of chunking logic -> disproportionate complexity; kept as a documented option.
