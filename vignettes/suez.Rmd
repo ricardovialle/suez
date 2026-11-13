@@ -11,7 +11,8 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6, fig.height = 3.5)
 ```
 
-This vignette goes from raw RNA-seq counts and a joint-called VCF to eQTL and response-eQTL calls. The
+This vignette goes from raw RNA-seq counts and a joint-called VCF to eQTL and response-eQTL calls, and
+ends with ancestry-specific eQTLs in admixed samples (section 8). The
 example data are simulated: 60 individuals, each sequenced in a control and a treated condition, with 300
 genes and about 3,000 SNPs on chr22.
 
@@ -152,6 +153,69 @@ boxplot(logcpm[top$gene, ] ~ g + samples$condition, col = rep(c("grey80", "tomat
         names = rep(0:2, 2), xlab = paste(top$snp, "ALT alleles (control | treated)"),
         ylab = "log2 CPM", main = top$gene)
 ```
+
+## 8. Admixed samples: local ancestry
+
+In admixed individuals the same allele can have a different effect depending on the ancestry of the
+haplotype that carries it. suez can fit the models of [Tractor](https://github.com/Atkinson-Lab/Tractor):
+each genotype is split into the ALT alleles carried on each ancestry's haplotypes, with local ancestry as a
+covariate. The input is Tractor's per-ancestry files: phase the VCF, infer local ancestry (RFMix2 or
+FLARE), and run Tractor's `extract_tracts.py`. The example cohort is simulated: 150 two-way admixed
+individuals (AFR/EUR, about 75% AFR) in two conditions, 80 genes, with AFR-only, EUR-only and shared eQTLs
+and AFR-only response eQTLs.
+
+```{r la-input}
+adm = function(f) ext(file.path("admixed", f))
+la = read_tractor(sub("\\.anc0\\.dosage\\.txt\\.gz$", "", adm("cohort.anc0.dosage.txt.gz")),
+                  ancestry_names = c("AFR", "EUR"))     # anc0, anc1 as in the local-ancestry calls
+str(la, max.level = 1)
+samples_a = read.delim(adm("samples.tsv"))
+genes_a = read.delim(adm("genes.tsv"))
+counts_a = read.delim(adm("counts.tsv.gz"), row.names = 1, check.names = FALSE)
+dge_a = DGEList(counts_a, group = samples_a$condition)
+logcpm_a = cpm(normLibSizes(dge_a[filterByExpr(dge_a), , keep.lib.sizes = FALSE]), log = TRUE)
+```
+
+Keep the GRM in step 1: it accounts for relatedness and does not absorb ancestry-specific effects. Global
+ancestry (here the mean AFR local ancestry; RFMix's `.Q` file or genotype PCs also work) goes in as a fixed
+covariate.
+
+```{r la-step1, results = "hide"}
+Z = scale(t(la$dosage$AFR + la$dosage$EUR))
+grm_a = tcrossprod(Z) / ncol(Z)
+global = colMeans(la$hapcount$AFR) / 2                   # AFR fraction per individual
+anno_a = data.frame(individual = samples_a$individual, condition = samples_a$condition)
+qq_a = t(apply(logcpm_a, 1, function(x) qnorm((rank(x) - 0.5) / length(x))))
+set.seed(1)
+step1_a = learn_covariance(qq_a, anno_a, kinship_matrix = grm_a, P = 5)
+```
+
+```{r la-step2}
+geneloc_a = data.frame(geneid = genes_a$gene_id, chr = genes_a$chr, left = genes_a$start, right = genes_a$end)
+set.seed(1)
+res_a = map_interaction_qtl(logcpm_a, NULL, geneloc_a, la$snploc, anno_a,
+                            sample_kernel = step1_a$cov_suez, cisdist = 1e5,
+                            local_ancestry = la, covariates = cbind(AFR = global[anno_a$individual]))
+```
+
+Each SNP gets a joint eQTL test (`p_geno`), a test of whether the effects differ between ancestries
+(`p_het`), a response test (`p_interact`), and an effect per ancestry (`beta_AFR`, `beta_EUR`,
+`beta_interact_AFR`, ...). At the planted SNPs:
+
+```{r la-truth}
+truth_a = read.delim(adm("truth.tsv"))
+at = merge(truth_a, res_a, by.x = c("gene_id", "snp"), by.y = c("gene", "cis_snp"))
+aggregate(cbind(beta_AFR, beta_EUR, beta_interact_AFR, beta_interact_EUR) ~ type, at,
+          function(x) round(mean(x), 2))
+aggregate(cbind(eQTL = p_geno < 1e-3, differs = p_het < 0.05, response = p_interact < 1e-3) ~ type, at, mean)
+```
+
+The per-ancestry effects match the simulation (AFR only, EUR only, both, or an AFR-only response), and
+`p_het` separates the ancestry-specific eQTLs from the shared ones. The standard model on the pooled
+genotype, `map_interaction_qtl(logcpm_a, la$dosage$AFR + la$dosage$EUR, ...)`, finds 6 of the 8 EUR-only
+eQTLs at the same threshold, against 8 of 8 here: the EUR minority is diluted when ancestries are pooled.
+At a SNP that only tags the causal variant, LD that differs between ancestries can also make effects look
+different, so fine-map before interpreting `p_het` at non-lead SNPs.
 
 ## Notes
 

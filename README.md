@@ -218,7 +218,8 @@ each ancestry, using local ancestry as in [Tractor](https://github.com/Atkinson-
 al. 2021). The input is Tractor's per-ancestry files: phase the genotypes, infer local ancestry (RFMix2 or
 FLARE), and run Tractor's `extract_tracts.py` (or `extract_tracts_flare.py`). This writes, for each ancestry
 `k`, `<prefix>.anck.dosage.txt` (ALT alleles carried on ancestry-`k` haplotypes) and `<prefix>.anck.hapcount.txt`
-(number of ancestry-`k` haplotypes, 0/1/2).
+(number of ancestry-`k` haplotypes, 0/1/2). A worked example on a simulated admixed cohort is section 8 of
+the [vignette](https://ricardovialle.github.io/suez/doc/suez.html).
 
 ```r
 la = read_tractor("cohort/chr22.phased", ancestry_names = c("AFR", "EUR"))  # dosage, hapcount, snploc
