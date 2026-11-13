@@ -1,5 +1,53 @@
 # Changelog
 
+## 0.5
+
+Performance: step 2 is 1.9-7.4x faster on one core and uses 22-41% less peak RAM; step 1 is 1.6-2.0x faster
+with 11-32% less RAM. Same models, grid, peak refinement and Newton steps; log-likelihoods, p-values,
+effect sizes and SEs agree with 0.4 to 1e-9 or better (18 benchmark datasets, `bench/`). Two documented
+differences: the parametric bootstrap draws for a given seed differ (same distribution), and step 1 converges
+along a slightly different path (~1e-4 relative in `cov_suez`).
+
+#### `map_interaction_qtl` (step 2)
+
+- The profile likelihood is evaluated from moments of contrasts grouped by kernel eigenvalue: tied non-null
+  eigenvalues (within 1e-12 relative) share a weight; the null eigenvalues are kept exact by a Taylor
+  expansion in their rounding-level deviation, checked at every h, with a per-contrast fallback. The grid over
+  h is one matrix product for all grid points and SNPs; Newton uses the same moments and switches to direct
+  residuals where they would cancel. SNPs are processed in blocks of ~4 MB of moments (memory does not grow
+  with covariates x SNPs), and repeated sample rows are rotated once. Local-ancestry models use the same
+  engine (~5x faster).
+- `kernel_contrast_eigen`: the contrast basis is applied as a Householder reflection (O(N^2) instead of dense
+  O(N^3) products) and the eigen-decomposition uses Eigen's symmetric solver: 23 -> 2.5 s at N = 2000. Inside
+  tied eigenvalues the basis differs from `eigen()`'s, so **bootstrap draws (`l_boot_*`) for a given
+  `set.seed()` differ from 0.4**; their distribution is the same (KS tests on 17 datasets) and results remain
+  identical across numbers of cores.
+- Wald estimates (`beta_*`, `se_*`) are computed on the identified columns: a design column that is a
+  combination of the others (1 - R^2 < 1e-14, e.g. local-ancestry counts when an ancestry is absent at the
+  locus) is dropped and its estimate is NA. 0.4 inverted the singular matrix (NaN SEs for identified terms).
+- `easy_impute` reconstructs missing genotypes from the eigen-decomposition of the smaller Gram matrix (2.2x
+  faster, identical imputed genotypes).
+- `U` is passed to C++ without a copy per gene; the default kernel is built as Z Z' and freed after the
+  eigen-decomposition; `quantile_normalize` works row by row (input + 1 copy instead of ~6).
+
+#### `learn_covariance` (step 1)
+
+- The Stan model sums the fixed components as one matrix-vector product and the latent factors as one
+  `tcrossprod`: fewer autodiff nodes, 32-60% less peak RAM at N = 400-1000 and 1.6-2.0x faster. Same
+  objective; the optimiser path differs (`cov_suez` ~1e-4 relative, step-2 -log10 p within 0.003).
+
+#### Package
+
+- rstan is no longer attached at load time (`learn_covariance` calls `rstan::optimizing`): `library(suez)`
+  takes ~130 MB less RAM and ~0.6 s less, and each forked worker ~70 MB less.
+
+#### Tests and benchmarks
+
+- New tests: likelihoods invariant to the kernel scale (x1e6, x1e-6), and an absent third ancestry gives the
+  two-ancestry estimates.
+- `bench/`: simulated workloads, benchmark harness, specialist prototypes, experiment log and results
+  (`bench/REPORT.md`).
+
 ## 0.4
 
 Local-ancestry (Tractor-style) eQTL and response-eQTL mapping for admixed samples.

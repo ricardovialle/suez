@@ -14,7 +14,7 @@ unscale = function(x) {
 easy_impute=function(geno, prop_var=0.95) {
   temp=t(scale(t(geno)))
   miss=is.na(geno)
-  temp[miss]=0
+  temp[is.na(temp)]=0   # missing calls, and rows that are constant among their calls (0/0 after scaling)
   # temp = U D V': the rank-k reconstruction U_k D_k V_k' is the projection of temp on U_k (or of temp' on
   # V_k), so only the eigen-decomposition of the smaller Gram matrix is needed (~2x faster than svd())
   wide=nrow(temp) <= ncol(temp)

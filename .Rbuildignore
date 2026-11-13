@@ -6,3 +6,5 @@ cleanup*
 ^CHANGELOG\.md$
 ^doc$
 ^data-raw$
+^bench$
+^\.gitignore$

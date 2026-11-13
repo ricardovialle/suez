@@ -143,3 +143,15 @@ Timing vs an exact build of f81c6c4 (3 reps, median): L 0.845, XL 0.860, M_dense
 M 1.103 (slower) and M_dense 0.948 at 4 cores; RSS +16..+75 MB (1 core), +94..+155 MB (4-core tree).
 Decision: gains 14-17% only for large-N / dense windows at 1 core, a regression at 4 cores on M, more RAM and
 ~120 lines of chunking logic -> disproportionate complexity; kept as a documented option.
+
+## Final review and validation
+Reviewer (final candidate): stable and maintainable; one blocking regression from round 10 — easy_impute
+zeroed only missing entries, so a SNP constant among its calls (NaN after scale()) made the gene fail and be
+silently dropped (debug = FALSE). Fixed (temp[is.na(temp)] = 0, as 0.4); regression test added (fails on the
+buggy build, passes on 0.4 and 0.5); imputation identical to 0.4 on all of the reviewer's edge shapes.
+Final serial benchmark (bench/final_bench.sh 3; bench/results/final_summary.tsv): step 2 1.9-7.4x at 1 core,
+peak RSS -22..-41%; step 1 1.6-1.9x, -11..-32%; 8 cores 6.5x (M) / 8.9x (M_dense) with -27..-35% tree RAM.
+The fix does not change any benchmark output (identical() on 9 datasets), so these timings stand.
+End-to-end equivalence of the final build (bench/results/equivalence_final2.tsv): all 18 datasets PASS.
+Reproducible: identical() across 3 runs and 1/2/4/8 cores. tests/ 33 PASS; R CMD check: environment WARNING only.
+Report: bench/REPORT.md.

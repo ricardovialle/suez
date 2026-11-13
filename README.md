@@ -297,10 +297,10 @@ random seed from your R session, so after `set.seed()` the results are the same 
 and either backend. For genome-wide runs on a cluster, you can also split genes across jobs (e.g. by
 chromosome) by subsetting `geneloc`.
 
-Rough timings on an Apple M5: step 1 takes a few seconds for 200 samples, whatever the number of genes;
-step 2 with the bootstrap processes about 4,500 tests per second per core with 200 samples (measured
-with 1 million SNPs in `snploc`; about 1,400 with 500 samples). A genome-wide run of 10^8 gene x SNP tests
-is then roughly 6 core-hours.
+Rough timings on an Apple M5 (suez 0.5, one core, bootstrap on; `bench/REPORT.md`): step 2 runs about
+20,000 tests per second with 400 samples and the default kernel (M: 60,000 tests in 2.8 s), about 3,700 per
+second with a dense GRM at 1,000 samples, and step 1 takes a few seconds for 200-400 samples whatever the
+number of genes. With 8 forked workers expect about 4x on Apple silicon (its efficiency cores are slower).
 
 ## Tests
 

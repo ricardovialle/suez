@@ -102,6 +102,14 @@ rm_ = map_interaction_qtl(Y[1, , drop = FALSE], Gm, geneloc, snploc, anno, sampl
 check("maf_threshold drops low-MAF SNPs coded either way", !any(c(s_hi, s_lo) %in% rm_$cis_snp) &&
         all(setdiff(rownames(G)[1:n_snp], c(s_hi, s_lo)) %in% rm_$cis_snp))
 
+# missing genotypes, including a SNP constant among its calls (NaN after scaling): imputed, the gene is kept
+Gi = G; Gi[cbind(sample(nrow(G), 30, TRUE), sample(nd, 30, TRUE))] = NA
+s_mono = rownames(G)[2]; Gi[s_mono, ] = 0L; Gi[s_mono, 1:3] = NA
+ri = map_interaction_qtl(Y[1, , drop = FALSE], Gi, geneloc, snploc, anno, sample_kernel = K, normalization_approach = "none",
+                         permutation_approach = "none", cisdist = 100)
+check("missing genotypes imputed, gene with a monomorphic SNP with missing calls kept",
+      nrow(ri) == n_snp - 1 && !s_mono %in% ri$cis_snp && !anyNA(ri$l_geno))
+
 # bimodal likelihood in h: two peaks of near-equal height, the higher one on either side, so a fit
 # that refines only the best grid point lands on the wrong peak in one of the two genes
 exact_ml = function(UX, Uy, lam) {                         # dense log-delta grid, every local max refined
