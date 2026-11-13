@@ -155,3 +155,42 @@ The fix does not change any benchmark output (identical() on 9 datasets), so the
 End-to-end equivalence of the final build (bench/results/equivalence_final2.tsv): all 18 datasets PASS.
 Reproducible: identical() across 3 runs and 1/2/4/8 cores. tests/ 33 PASS; R CMD check: environment WARNING only.
 Report: bench/REPORT.md.
+
+## Round 11 — review from a downstream user (eqtl_smk) on OpenBLAS; large N; Linux
+Trigger: eqtl_smk's benchmark (suez 0.3 -> 0.5, its pixi R 4.5.3 with OpenBLAS) had identical results but its
+5000-donor point slower (57 -> 65-103 s). Every earlier round used R's reference BLAS/LAPACK and clang on macOS;
+the Linux machines run GCC/libstdc++ and OpenBLAS. Scripts and builds: bench/proto/round11/ (bench/lib/ob_*).
+1. kernel_contrast_eigen's solver (round 7) depends on the LAPACK. GRM-like K, seconds
+   (bench/results/round11_eig_*.tsv; lapack = same Householder projection + eigen()):
+   | N | ref LAPACK: Eigen / lapack | OpenBLAS 1 thread: Eigen / lapack | OpenBLAS default threads: Eigen / lapack |
+   | 1000 | 0.38 / 0.69 | 0.39 / 0.12 | 0.40 / 0.20 |
+   | 2000 | 2.88 / 5.56 | 2.93 / 0.67 | 2.93 / 0.72 |
+   | 5000 | - | 38.1 / 5.7 | 38.2 / 6.0 |
+   Eigenvalues agree to 6e-13, leading projectors to 2e-13. Integrated: eigen_solver() (R/lmm.R) uses LAPACK when R's
+   BLAS or LAPACK (symlinks resolved) is OpenBLAS/MKL/Accelerate/vecLib/BLIS/FlexiBLAS/ATLAS, else Eigen's;
+   options(suez.eigen_solver) overrides. Unmeasured: reference LAPACK over a fast BLAS (e.g. macOS vecLib BLAS),
+   classified as optimised. Bootstrap draws per seed change wherever LAPACK is now chosen (as in round 7).
+2. suez_fit_gene slower than 0.3 at large N (bench/proto/round11/fit_bench.R, 20 genes x 50 SNPs, GRM-like K,
+   OpenBLAS 1 thread, 3 interleaved reps; bench/results/round11_fit_summary_mac_openblas.tsv), speed-up vs 0.3:
+   | N | cis 0.5 / r11 | interaction 0.5 / r11 |
+   | 1000 | 1.3 / 1.4 (1 rep) | 1.4 / 1.5 (1 rep) |
+   | 2000 | 1.00 / 1.21 | 1.07 / 1.44 |
+   | 5000 | 0.89 / 1.37 | 0.79 / 1.45 |
+   Cause: the genotypes were rotated inside the moment blocks, whose width is max(16, 4 MB / (8 R nper)) = 16 SNPs at
+   N = 5000, so U (N x N-1, 200 MB) was streamed from memory once per 16 SNPs. Fix: rotate_all() rotates every
+   column once per gene in fixed 256-column chunks (suez_fit_gene and suez_fit_models). Outputs vs 0.5 <= 3e-11,
+   vs 0.3 <= 1.7e-9, identical NA patterns.
+3. Linux-only risk: rotate() sorts sample rows with a comparator built on < and !=; a NaN in G or a term breaks
+   strict weak ordering (undefined behaviour; libstdc++'s unguarded partition can read out of bounds, libc++ on
+   macOS usually does not crash). map_interaction_qtl always imputes; direct .Call users (eqtl_smk) do not have to.
+   Now refused with an error. New tests (model_checks.R): Eigen vs LAPACK solvers same log-likelihoods
+   (3e-10 reference, 1.8e-9 OpenBLAS), NaN genotypes refused. tests/: 35 PASS with both R setups.
+4. bench/linux/run_checks.sh (+ README): environment record, build, tests also under -D_GLIBCXX_ASSERTIONS
+   -Wall -Wextra, solver timings at 1/default threads, fit timings vs 0.3/0.5. Dry-run on macOS OK; not yet run
+   on Linux.
+End-to-end, reference R (solver = Eigen, so this checks the rotation change): r11 vs 0.5 (final2) identical() on
+17 of 18 datasets, L_grm bootstrap l within 6.3e-7; validate.R EQUIVALENT on all 18
+(bench/results/validate_r11_vs_final2.txt). Vs the 0.4 baseline (validate_r11_ref.txt) the verdicts are the same
+as 0.5's own (bootstrap draws, round 7).
+Not checked here: GCC builds (no GCC on this Mac), R CMD check, end-to-end equivalence and the bootstrap
+distribution with the LAPACK solver chosen (round 7 did both for the Eigen basis change).

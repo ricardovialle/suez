@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased (round 11: BLAS/LAPACK and large-N review)
+
+- `kernel_contrast_eigen` picks its eigen solver from the BLAS/LAPACK R links to (`options(suez.eigen_solver =
+  "auto" | "eigen" | "lapack")`): 0.5 always used Eigen's solver, measured only against R's reference LAPACK
+  (where it is 2x faster). With OpenBLAS, LAPACK is 4.4x faster at N = 2000 and 6.6x at N = 5000 (one thread;
+  38 -> 6 s). Data fits identical; **bootstrap draws for a given seed change** where LAPACK is now used.
+- `suez_fit_gene` / `suez_fit_models` rotate all SNPs of a gene at once (256-column chunks) instead of per
+  moment block: at large N the blocks are 16 SNPs wide and each re-read the N x N-1 eigenvector matrix (200 MB at
+  N = 5000), which made 0.5 slower than 0.3 there. Same results to rounding (<= 3e-11).
+- Non-finite genotype or term values are refused in C++ (they broke `std::sort`'s ordering: undefined
+  behaviour, a possible crash with GCC's libstdc++). `map_interaction_qtl` already imputes; direct callers of
+  `suez_fit_gene` (e.g. eqtl_smk) are protected now.
+- `bench/linux/run_checks.sh`: build + tests (also with libstdc++ assertions) + eigen and fit timings vs 0.3/0.5.
+
 ## 0.5
 
 Performance: step 2 is 1.9-7.4x faster on one core and uses 22-41% less peak RAM; step 1 is 1.6-2.0x faster

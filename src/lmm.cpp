@@ -485,6 +485,8 @@ static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const
 static MatrixXd rotate(const Eigen::Map<MatrixXd>& U, const MatrixXd& M) {
   const int N = M.rows(), S = M.cols();
   if (S == 0) return MatrixXd(U.cols(), 0);
+  // NaN breaks the sort's strict weak ordering (undefined behaviour; libstdc++ can read out of bounds)
+  if (!M.allFinite()) Rcpp::stop("non-finite genotype or term values (impute missing genotypes first)");
   const MatrixXd Mt = M.transpose();
   std::vector<int> ord(N); for (int i = 0; i < N; ++i) ord[i] = i;
   auto less = [&](int a, int b) { const double *x = Mt.col(a).data(), *y = Mt.col(b).data();
@@ -496,6 +498,16 @@ static MatrixXd rotate(const Eigen::Map<MatrixXd>& U, const MatrixXd& M) {
   MatrixXd UZ = MatrixXd::Zero(U.cols(), nc), Mu(nc, S);
   for (int i = 0; i < N; ++i) { UZ.col(cls[i]) += U.row(i).transpose(); Mu.row(cls[i]) = M.row(i); }
   return UZ * Mu;
+}
+
+// U'M for all columns at once, in fixed 256-column chunks (independent of the moment block size). Rotating inside
+// the moment blocks re-read U once per block: at N = 5000 the blocks are 16 SNPs wide and U is 200 MB.
+static MatrixXd rotate_all(const Eigen::Map<MatrixXd>& U, const MatrixXd& M) {
+  MatrixXd R(U.cols(), M.cols());
+  for (int c0 = 0; c0 < M.cols(); c0 += 256) {
+    const int w = std::min(256, (int)M.cols() - c0); R.middleCols(c0, w) = rotate(U, M.middleCols(c0, w));
+  }
+  return R;
 }
 
 static bool standardize(Eigen::Ref<VectorXd> x, double& sd) {
@@ -553,10 +565,12 @@ static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, 
   std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
   const int k1 = 1 + q, nper = p0 * k1 + k1 * (k1 + 1) / 2 + k1 + p0 + 1;   // per-SNP pairs of the bootstrap block
   const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.R() * nper))));
+  std::vector<MatrixXd> RG(1, rotate_all(U, Gs));
+  for (int j = 0; j < q; ++j) RG.push_back(rotate_all(U, Is[j]));
   for (int s0 = 0; s0 < S; s0 += SB) {
     const int sb = std::min(SB, S - s0);
-    std::vector<MatrixXd> B(1, sp.permute(rotate(U, Gs.middleCols(s0, sb))));
-    for (int j = 0; j < q; ++j) B.push_back(sp.permute(rotate(U, Is[j].middleCols(s0, sb))));
+    std::vector<MatrixXd> B;
+    for (int j = 0; j <= q; ++j) B.push_back(sp.permute(RG[j].middleCols(s0, sb)));
     std::vector<Fit> f1(sb);
     {
       Block bd(sp, UX0, MX0, B, Y1, sb);
@@ -637,10 +651,11 @@ static Rcpp::List fit_models(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_
   std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
   const int nper = p0 * nc + nc * (nc + 1) / 2 + nc + p0 + 1;
   const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.R() * nper))));
+  std::vector<MatrixXd> RC; for (int j = 0; j < nc; ++j) RC.push_back(rotate_all(U, C[j]));
   for (int s0 = 0; s0 < S; s0 += SB) {
     const int sb = std::min(SB, S - s0);
     std::vector<MatrixXd> B;
-    for (int j = 0; j < nc; ++j) B.push_back(sp.permute(rotate(U, C[j].middleCols(s0, sb))));
+    for (int j = 0; j < nc; ++j) B.push_back(sp.permute(RC[j].middleCols(s0, sb)));
     // design of SNP sl under model m: X0 then the model's nonzero columns (src/lmm.cpp's design())
     auto design = [&](int m, int sl, std::vector<int>& use) {
       use.clear(); std::vector<int> c(p0); for (int e = 0; e < p0; ++e) c[e] = e;
