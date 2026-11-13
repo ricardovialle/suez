@@ -435,7 +435,7 @@ static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const
         const std::vector<int>& mb = models[mi]; const int kk = mb.size();
         double rss = yy - q; bool full = false;
         for (int j = 0; j < kk; ++j) {
-          const int cj = p0 + mb[j]; double* aj = &a[j * p0]; double* Tj = &T[j * p0];
+          const int cj = p0 + mb[j]; double* aj = a.data() + j * p0; double* Tj = T.data() + j * p0;   // not &a[..]: p0 can be 0 (empty vector)
           for (int e = 0; e < p0; ++e) aj[e] = M(i, s, e, cj);
           for (int e = 0; e < p0; ++e) { double x = 0; for (int f = 0; f < p0; ++f) x += Ai[e + f * p0] * aj[f]; Tj[e] = x; }
           c[j] = M(i, s, cj, iy);
@@ -443,12 +443,12 @@ static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const
         }
         for (int j = 0; j < kk; ++j) {
           if (Sc[j * k + j] == 0) { for (int l = 0; l < j; ++l) Sc[j * k + l] = 0; Sc[j * k + j] = 1; u[j] = 0; continue; }   // absent column
-          const double* aj = &a[j * p0]; double x = c[j];
+          const double* aj = a.data() + j * p0; double x = c[j];
           for (int e = 0; e < p0; ++e) x -= aj[e] * z[e];
           u[j] = x;
           for (int l = 0; l <= j; ++l) {
             if (Sc[l * k + l] == 0) continue;
-            const double* Tl = &T[l * p0]; double y = 0; for (int e = 0; e < p0; ++e) y += aj[e] * Tl[e]; Sc[j * k + l] -= y;
+            const double* Tl = T.data() + l * p0; double y = 0; for (int e = 0; e < p0; ++e) y += aj[e] * Tl[e]; Sc[j * k + l] -= y;
           }
         }
         for (int j = 0; j < kk; ++j) {   // Cholesky of the Schur complement, forward solve, rss -= |L^-1 u|^2

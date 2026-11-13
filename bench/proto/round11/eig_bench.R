@@ -10,6 +10,7 @@ lib <- args[1]; out <- args[2]
 Ns <- if (length(args) > 2) as.integer(args[-(1:2)]) else c(500L, 1000L, 2000L, 5000L)
 library(suez, lib.loc = lib)
 kce <- utils::getFromNamespace("kernel_contrast_eigen", "suez")
+options(suez.eigen_solver = "eigen")   # eigen_cpp column = Eigen's solver; auto would pick LAPACK on an optimised BLAS
 
 householder_lapack <- function(K) {          # kernel_contrast_eigen with eigen() in place of suez_eigen_sym
   n <- nrow(K)
