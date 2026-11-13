@@ -68,3 +68,14 @@ Integrated mem_lean2 into the repo (lazy rstan, lean kernel_contrast_eigen/is_sy
 row loop, Z Z' default kernel, U as Eigen::Map). tests/: 30 PASS, 0 FAIL. End-to-end output identical() to
 baseline on S, M_grm, M_fac3, LA, M_lc. Peak RSS 1 core: S 323 -> 192 MB, M_lc 345 -> 203 MB.
 mem_stan (step 1, -37% RAM, 1.9x faster on M, ~1e-4 relative change of the optimum) held for separate evaluation.
+
+## Round 5 — step 1 Stan model (memory specialist's mem_stan), evaluated separately
+Same model and objective (log density at the baseline optimum identical to 1e-10); fewer autodiff nodes
+(one matrix-vector product for the fixed components, one tcrossprod for the factors). NOT bit-identical:
+L-BFGS takes a different path. bench/stan_downstream.R (learn_covariance P = 10, then step 2 on 40 genes
+with each kernel):
+| data | step-1 time base / new | cov_suez max rel diff | max d(-log10 p_geno) | max d(-log10 p_interact) | lead SNP same | Spearman |
+| S | 1.61 / 1.06 s | 1.4e-4 | 0.0018 | 0.0013 | 100% | 0.9999996 |
+| M | 7.53 / 4.27 s | 3.1e-4 | 0.0025 | 0.0026 | 100% | 0.9999992 |
+Peak RAM (memory specialist): S 372 -> 326 MB, M 686 -> 431 MB, L 2.77 -> 1.12 GB.
+tests/learn_covariance_checks.R: 6/6 PASS. Accepted as a numerical (not methodological) change, documented.
