@@ -1,10 +1,5 @@
 
 
-#' Consistent implementation of diag
-fix_diag=function(x) {
-  if(length(x)==1) matrix(x) else diag(x)
-}
-
 unscale = function(x) {
   x = sweep(x, 1, attr(x, "scaled:scale"), "*")
   sweep(x, 1, attr(x, "scaled:center"), "+")
@@ -17,17 +12,19 @@ unscale = function(x) {
 #'
 #' @return Complete genotype matrix.
 easy_impute=function(geno, prop_var=0.95) {
-  temp=geno
   temp=t(scale(t(geno)))
-  temp[is.na(temp)]=0
-  s=svd(temp)
-  v=s$d^2/sum(s$d^2)
-  to_use=cumsum(v)<prop_var
-  s$d[!to_use]=0.0
-  recon=s$u %*% fix_diag(s$d) %*% t(s$v)
-  temp[is.na(geno)]=recon[is.na(geno)]
+  miss=is.na(geno)
+  temp[miss]=0
+  # temp = U D V': the rank-k reconstruction U_k D_k V_k' is the projection of temp on U_k (or of temp' on
+  # V_k), so only the eigen-decomposition of the smaller Gram matrix is needed (~2x faster than svd())
+  wide=nrow(temp) <= ncol(temp)
+  e=.Call(suez_eigen_sym, if (wide) tcrossprod(temp) else crossprod(temp))
+  v=pmax(e$values, 0); v=v/sum(v)
+  W=e$vectors[, seq_len(sum(cumsum(v)<prop_var)), drop=F]
+  recon=if (wide) W %*% crossprod(W, temp) else (temp %*% W) %*% t(W)
+  temp[miss]=recon[miss]
   temp=unscale(temp)
-  stopifnot(max(abs(temp[!is.na(geno)]-geno[!is.na(geno)]))<1e-10)
+  stopifnot(max(abs(temp[!miss]-geno[!miss]))<1e-10)
   temp=round(temp)
   class(temp)="integer"
   temp
@@ -288,7 +285,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
 
     G = t(imp_geno[, anno$individual, drop=F])                     # samples x SNPs
     storage.mode(G) = "double"
-    keep = rowSums(imp_geno) >= 5 & apply(G, 2, sd) > 0            # >= 5 ALT alleles, varies across samples
+    keep = rowSums(imp_geno) >= 5 & colSums(G != rep(G[1, ], each = nrow(G))) > 0   # >= 5 ALT alleles, varies across samples
     if (!any(keep)) return(NULL)
     G = G[, keep, drop=F]
     Uy = drop(crossprod(U, as.numeric(input[gene,])))

@@ -80,7 +80,7 @@ std_cols = function(M) {   # centre and scale; a constant column becomes 0 (= te
 la_gene = function(gene, D, H, anno, C, U, lambda, Uy, UX0, boot, maf_threshold) {
   k = length(D); anc = names(D); ind = anno$individual; q = ncol(C)
   Gt = Reduce(`+`, D)[, unique(ind), drop = FALSE]             # SNPs x individuals, total ALT dosage
-  keep = rowSums(Gt) >= 5 & apply(Gt, 1, sd) > 0
+  keep = rowSums(Gt) >= 5 & rowSums(Gt != Gt[, 1]) > 0   # >= 5 ALT alleles, not constant
   if (maf_threshold > 0) { af = rowMeans(Gt) / 2; keep = keep & pmin(af, 1 - af) > maf_threshold }
   if (!any(keep)) return(NULL)
   D = lapply(D, function(m) m[keep, , drop = FALSE]); H = lapply(H, function(m) m[keep, , drop = FALSE])

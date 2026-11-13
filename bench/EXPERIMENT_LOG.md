@@ -117,3 +117,18 @@ New regression tests: kernel x1e6 / x1e-6 invariance (model_checks.R), absent th
 two-ancestry fit (local_ancestry_checks.R; fails on 0.4, passes now). tests/: 32 PASS.
 r8 vs r7: EQUIVALENT on all 18 datasets incl. bootstrap (validate_r8_vs_r7.txt); vs baseline: data columns
 within tolerance, 0 NA mismatches (validate_r8_fix.txt).
+
+## Round 9 (in progress, algorithm specialist) — rotation caching across overlapping cis windows
+Rotation share of C++ time after round 8 (bench/proto/round8/rot_share.R): S 17%, M 28%, L 53%, L_grm 25%,
+M_dense 29%, XL 71%.
+
+## Round 10 — R-side per-gene costs (coordinator)
+Profile (bench/profile_e2e.R, r8): easy_impute's svd() = 51% of M_miss; apply(G, 2, sd) = 10% of M_dense.
+- easy_impute through the eigen-decomposition of the smaller Gram matrix (rank-k reconstruction = projection
+  on the leading eigenvectors): 2.88 -> 1.30 s on all 150 M_miss windows, 0 of 119,501 imputed genotypes
+  differ (bench/proto/round10/impute_bench.R); identical on wide/tall/tiny shapes.
+- apply(G, 2, sd) > 0 -> exact non-constant test (colSums(G != first row)); same in local-ancestry mode.
+- fix_diag (unused) removed.
+End-to-end output identical() to r8 on M_miss, M_dense, S_rare, LA, M; tests pass.
+Wall, median of 3 interleaved (bench/results/runs_round10.tsv): M_miss 4.48 -> 2.72 s (1.65x),
+M_dense 6.95 -> 6.43 s (1.08x); peak RSS M_dense 365 -> 388 MB (recheck in the final benchmarks).
