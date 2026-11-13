@@ -1,0 +1,72 @@
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 0  elapsed 1.85 s  user 1.84 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 2.12 s  user 2.11 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 1.63 s  user 1.63 s
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 0  elapsed 1.90 s  user 1.89 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 2.10 s  user 2.09 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 1.63 s  user 1.62 s
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 0  elapsed 1.93 s  user 1.92 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 2.12 s  user 2.11 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 0  elapsed 1.62 s  user 1.62 s
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 1  elapsed 4.00 s  user 3.98 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 4.19 s  user 4.17 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 3.02 s  user 3.00 s
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 1  elapsed 4.03 s  user 4.01 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 4.31 s  user 4.28 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 3.02 s  user 3.01 s
+Loading required package: Rcpp
+suez 0.3  N 2000  genes 20  snps 50  interaction 1  elapsed 4.04 s  user 4.02 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 4.27 s  user 4.24 s
+Loading required package: Rcpp
+suez 0.5  N 2000  genes 20  snps 50  interaction 1  elapsed 3.05 s  user 3.04 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 0  elapsed 8.32 s  user 7.72 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 8.71 s  user 8.67 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 6.39 s  user 6.36 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 0  elapsed 8.36 s  user 7.77 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 8.50 s  user 8.47 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 6.29 s  user 6.26 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 0  elapsed 8.26 s  user 7.67 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 8.48 s  user 8.44 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 0  elapsed 6.25 s  user 6.22 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 1  elapsed 17.17 s  user 16.52 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 18.57 s  user 17.66 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 11.53 s  user 11.17 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 1  elapsed 17.85 s  user 17.16 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 18.73 s  user 17.76 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 11.61 s  user 11.26 s
+Loading required package: Rcpp
+suez 0.3  N 5000  genes 20  snps 50  interaction 1  elapsed 17.42 s  user 16.74 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 18.59 s  user 17.65 s
+Loading required package: Rcpp
+suez 0.5  N 5000  genes 20  snps 50  interaction 1  elapsed 11.49 s  user 11.16 s

@@ -1,0 +1,8 @@
+package ‘Rcpp’ was built under R version 4.6.1 
+cores 4 rep 1  n=400 empty tasks: static 0.056 s | dynamic (fork/task) 1.415 s = 14.15 ms/task, sys 2.05 s | chunk(4/worker) 0.070 s
+cores 4 rep 2  n=400 empty tasks: static 0.045 s | dynamic (fork/task) 1.419 s = 14.19 ms/task, sys 2.05 s | chunk(4/worker) 0.059 s
+cores 4 rep 3  n=400 empty tasks: static 0.043 s | dynamic (fork/task) 1.454 s = 14.54 ms/task, sys 2.14 s | chunk(4/worker) 0.059 s
+cores 8 rep 1  n=400 empty tasks: static 0.069 s | dynamic (fork/task) 1.470 s = 29.40 ms/task, sys 2.14 s | chunk(4/worker) 0.124 s
+cores 8 rep 2  n=400 empty tasks: static 0.056 s | dynamic (fork/task) 1.582 s = 31.64 ms/task, sys 2.33 s | chunk(4/worker) 0.117 s
+cores 8 rep 3  n=400 empty tasks: static 0.058 s | dynamic (fork/task) 1.628 s = 32.56 ms/task, sys 2.37 s | chunk(4/worker) 0.144 s
+serialized size of a 1000-SNP gene result: 107.7031 KiB; serialize+unserialize 0.33 ms

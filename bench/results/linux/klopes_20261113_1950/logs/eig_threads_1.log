@@ -1,0 +1,13 @@
+Loading required package: Rcpp
+                                   R                                 BLAS 
+      "R version 4.1.2 (2021-11-01)" "/usr/lib64/libopenblasp-r0.3.15.so" 
+                              LAPACK                                 suez 
+"/usr/lib64/libopenblasp-r0.3.15.so"                                "0.5" 
+                             threads                              sysname 
+                                 "1"                              "Linux" 
+                             machine 
+                            "x86_64" 
+     N eigen_cpp lapack dense      dvalues        dproj
+1 2000    14.487  1.992 2.521 4.067732e-13 1.030079e-14
+     N eigen_cpp  lapack dense      dvalues        dproj
+1 5000   181.381 101.466    NA 5.589297e-13 1.359295e-13

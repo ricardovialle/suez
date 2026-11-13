@@ -1,0 +1,177 @@
+* installing *source* package ‘suez’ ...
+** using staged installation
+** libs
+"/opt/R/4.1.2/lib/R/bin/Rscript" -e "source(file.path('..', 'tools', 'make_cc.R')); make_cc(commandArgs(TRUE))" stan_files/suez_step_1.stan
+
+
+g++ -std=gnu++17 -I"/opt/R/4.1.2/lib/R/include" -DNDEBUG -I"../inst/include" -I"/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src" -DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG -DBOOST_MATH_OVERFLOW_ERROR_POLICY=errno_on_error -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppEigen/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -I/usr/local/include  -DRCPP_PARALLEL_USE_TBB=1 -DTBB_INTERFACE_NEW -I/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -D_REENTRANT -DSTAN_THREADS -DTBB_INTERFACE_NEW   -fpic  -g -O2  -c init.cpp -o init.o
+
+
+g++ -std=gnu++17 -I"/opt/R/4.1.2/lib/R/include" -DNDEBUG -I"../inst/include" -I"/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src" -DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG -DBOOST_MATH_OVERFLOW_ERROR_POLICY=errno_on_error -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppEigen/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -I/usr/local/include  -DRCPP_PARALLEL_USE_TBB=1 -DTBB_INTERFACE_NEW -I/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -D_REENTRANT -DSTAN_THREADS -DTBB_INTERFACE_NEW   -fpic  -g -O2  -c lmm.cpp -o lmm.o
+Wrote C++ file "stan_files/suez_step_1.cc"
+
+
+g++ -std=gnu++17 -I"/opt/R/4.1.2/lib/R/include" -DNDEBUG -I"../inst/include" -I"/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src" -DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG -DBOOST_MATH_OVERFLOW_ERROR_POLICY=errno_on_error -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppEigen/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -I/usr/local/include  -DRCPP_PARALLEL_USE_TBB=1 -DTBB_INTERFACE_NEW -I/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -D_REENTRANT -DSTAN_THREADS -DTBB_INTERFACE_NEW   -fpic  -g -O2  -c stan_files/suez_step_1.cc -o stan_files/suez_step_1.o
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/detail/shared_count.hpp:294:33: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+     explicit shared_count( std::auto_ptr<Y> & r ): pi_( new sp_counted_impl_p<Y>( r.get() ) )
+                                 ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:354:31: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+     explicit shared_ptr( std::auto_ptr<Y> & r ): px(r.get()), pn()
+                               ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:365:22: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+     shared_ptr( std::auto_ptr<Y> && r ): px(r.get()), pn()
+                      ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:423:34: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+     shared_ptr & operator=( std::auto_ptr<Y> & r )
+                                  ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:430:34: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+     shared_ptr & operator=( std::auto_ptr<Y> && r )
+                                  ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp: In member function ‘boost::shared_ptr<T>& boost::shared_ptr<T>::operator=(std::auto_ptr<_Up>&&)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:432:38: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+         this_type( static_cast< std::auto_ptr<Y> && >( r ) ).swap( *this );
+                                      ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/fusion/functional/invocation/detail/that_ptr.hpp:13,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/fusion/functional/invocation/invoke.hpp:52,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/fusion/functional/adapter/fused.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/fusion/functional/generation/make_fused.hpp:13,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/fusion/include/make_fused.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/odeint/util/resize.hpp:30,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/odeint/util/state_wrapper.hpp:26,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/odeint/util/ublas_wrapper.hpp:33,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/odeint.hpp:25,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/ode_rk45.hpp:9,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/integrate_ode_rk45.hpp:6,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/get_pointer.hpp: At global scope:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/get_pointer.hpp:48:40: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+ template<class T> T * get_pointer(std::auto_ptr<T> const& p)
+                                        ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+g++ -std=gnu++17 -shared -L/opt/R/4.1.2/lib/R/lib -L/usr/local/lib -o suez.so stan_files/suez_step_1.o init.o lmm.o -L/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/lib/ -Wl,-rpath,/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/lib/ -ltbb -ltbbmalloc -L/opt/R/4.1.2/lib/R/lib -lR
+rm stan_files/suez_step_1.cc
+installing to /pastel/Github_scripts/suez/bench/results/linux/klopes_20261113_1950/lib/cur/00LOCK-cur/00new/suez/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (suez)

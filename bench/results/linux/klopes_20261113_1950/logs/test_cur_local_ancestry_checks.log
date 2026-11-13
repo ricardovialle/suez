@@ -1,0 +1,24 @@
+eigen solver: lapack 
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS one row per SNP, all tests  
+PASS local-ancestry log-likelihoods = exact profile ML (36 fits, max diff 5.7e-14) 
+PASS bootstrap columns  
+PASS G0 x condition detected  
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS one sample per individual: betas = Tractor lm (max diff 5.6e-16) 
+PASS one sample per individual: SEs and p-values = Tractor lm (max diff 1.1e-16, 9.1e-15) 
+PASS no interaction columns for a single condition  
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS three ancestries: joint df 3, heterogeneity df 2  
+PASS ancestry with < 5 ALT alleles dropped  
+PASS ancestry with < 5 REF alleles dropped (collinear with LA)  
+Checkpoint dir: 
+Performing initial eigendecomposition...
+Checkpoint dir: 
+Performing initial eigendecomposition...
+PASS absent third ancestry: identified genotype effects equal the two-ancestry fit (max |dbeta| 3.3e-16) 
+PASS read_tractor reads Tractor files  
+0 failure(s)

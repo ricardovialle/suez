@@ -1,0 +1,669 @@
+=== S
+== validate baseline_S_step2_c1_r0.rds vs r6_p9_S_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 19942           0      3699 8.53e-14 9.08e-16          NA          0
+          l_geno 19942           0      4287 9.95e-14 1.11e-15          NA          0
+      l_interact 19942           0      4387 9.95e-14 1.08e-15          NA          0
+          p_geno 19942           0      5803 4.05e-10 4.05e-10    1.76e-10         NA
+     df_interact 19942           0     19942 0.00e+00 0.00e+00          NA          0
+      p_interact 19942           0      5441 3.24e-10 3.24e-10    1.41e-10         NA
+       beta_geno 19942           0      1004 1.33e-15 5.98e-15          NA          0
+         se_geno 19942           0      3265 3.74e-09 1.42e-08          NA          0
+     l_boot_geno 19942           0      2735 3.75e-07 3.63e-09          NA          0
+ l_boot_interact 19942           0      2726 3.63e-07 3.52e-09          NA          0
+ p_interact_boot 19942           0     19942 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   200       200       200            1               1 p<0.001:16/16/16 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+      p_interact   200       200       200            1               1 p<0.001:22/22/22 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   200       200       200            1               1 p<0.001:23/23/23 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           0     0   0            NaN
+          p_geno lead p<1e-5           0     0   0            NaN
+      p_interact eGene BH 5%           0     0   0            NaN
+      p_interact lead p<1e-5           1     0   1            NaN
+ p_interact_boot eGene BH 5%           0     0   0            NaN
+ p_interact_boot lead p<1e-5           0     0   0            NaN
+power/FDR b:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           0     0   0            NaN
+          p_geno lead p<1e-5           0     0   0            NaN
+      p_interact eGene BH 5%           0     0   0            NaN
+      p_interact lead p<1e-5           1     0   1            NaN
+ p_interact_boot eGene BH 5%           0     0   0            NaN
+ p_interact_boot lead p<1e-5           0     0   0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M
+== validate baseline_M_step2_c1_r0.rds vs r6_p9_M_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 60199           0      9849 1.99e-13 1.01e-15          NA          0
+          l_geno 60199           0     10925 2.56e-13 1.39e-15          NA          0
+      l_interact 60199           0     10664 2.56e-13 1.43e-15          NA          0
+          p_geno 60199           0     14506 1.10e-08 1.10e-08    4.79e-09         NA
+     df_interact 60199           0     60199 0.00e+00 0.00e+00          NA          0
+      p_interact 60199           0     14517 3.00e-09 3.00e-09    1.30e-09         NA
+       beta_geno 60199           0      2791 1.22e-15 5.46e-15          NA          0
+         se_geno 60199           0      6581 2.28e-09 1.76e-08          NA          0
+     l_boot_geno 60199           0      6483 5.78e-07 2.97e-09          NA          0
+ l_boot_interact 60199           0      6453 5.78e-07 2.97e-09          NA          0
+ p_interact_boot 60199           0     60199 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   300       300       300            1               1 p<0.001:76/76/76 p<1e-05:6/6/6 p<1e-08:0/0/0       5/5/5
+      p_interact   300       300       300            1               1 p<0.001:66/66/66 p<1e-05:2/2/2 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   300       300       300            1               1 p<0.001:73/73/73 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries      power fdr lead_is_causal
+          p_geno eGene BH 5%           5 0.08333333 0.0              1
+          p_geno lead p<1e-5           6 0.10000000 0.0              1
+      p_interact eGene BH 5%           0 0.00000000 0.0            NaN
+      p_interact lead p<1e-5           2 0.03333333 0.5              1
+ p_interact_boot eGene BH 5%           0 0.00000000 0.0            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000 0.0            NaN
+power/FDR b:
+            test        rule discoveries      power fdr lead_is_causal
+          p_geno eGene BH 5%           5 0.08333333 0.0              1
+          p_geno lead p<1e-5           6 0.10000000 0.0              1
+      p_interact eGene BH 5%           0 0.00000000 0.0            NaN
+      p_interact lead p<1e-5           2 0.03333333 0.5              1
+ p_interact_boot eGene BH 5%           0 0.00000000 0.0            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000 0.0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== L
+== validate baseline_L_step2_c1_r0.rds vs r6_p9_L_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 59949           0      6015 7.96e-13 1.61e-15          NA          0
+          l_geno 59949           0      5888 9.66e-13 1.98e-15          NA          0
+      l_interact 59949           0      5892 9.66e-13 2.03e-15          NA          0
+          p_geno 59949           0      9142 8.05e-09 8.05e-09    3.49e-09         NA
+     df_interact 59949           0     59949 0.00e+00 0.00e+00          NA          0
+      p_interact 59949           0      9367 2.47e-08 2.47e-08    1.07e-08         NA
+       beta_geno 59949           0      1929 9.44e-16 9.31e-15          NA          0
+         se_geno 59949           0      4757 2.19e-09 2.05e-08          NA          0
+     l_boot_geno 59949           0      3826 1.18e-06 2.81e-09          NA          0
+ l_boot_interact 59949           0      3847 1.17e-06 2.79e-09          NA          0
+ p_interact_boot 59949           0     59949 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:80/80/80 p<1e-05:8/8/8 p<1e-08:3/3/3       7/7/7
+      p_interact   150       150       150            1               1 p<0.001:51/51/51 p<1e-05:2/2/2 p<1e-08:0/0/0       1/1/1
+ p_interact_boot   150       150       150            1               1 p<0.001:47/47/47 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries      power fdr lead_is_causal
+          p_geno eGene BH 5%           7 0.23333333   0              1
+          p_geno lead p<1e-5           7 0.23333333   0              1
+      p_interact eGene BH 5%           1 0.06666667   0              1
+      p_interact lead p<1e-5           2 0.13333333   0              1
+ p_interact_boot eGene BH 5%           0 0.00000000   0            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000   0            NaN
+power/FDR b:
+            test        rule discoveries      power fdr lead_is_causal
+          p_geno eGene BH 5%           7 0.23333333   0              1
+          p_geno lead p<1e-5           7 0.23333333   0              1
+      p_interact eGene BH 5%           1 0.06666667   0              1
+      p_interact lead p<1e-5           2 0.13333333   0              1
+ p_interact_boot eGene BH 5%           0 0.00000000   0            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000   0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== XL
+== validate baseline_XL_step2_c1_r0.rds vs r6_p9_XL_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 23859           0      2306 1.82e-12 1.83e-15          NA          0
+          l_geno 23859           0      1574 2.27e-12 2.33e-15          NA          0
+      l_interact 23859           0      1484 2.39e-12 2.43e-15          NA          0
+          p_geno 23859           0      2768 3.64e-08 3.64e-08    1.58e-08         NA
+     df_interact 23859           0     23859 0.00e+00 0.00e+00          NA          0
+      p_interact 23859           0      2641 1.63e-09 1.63e-09    7.06e-10         NA
+       beta_geno 23859           0       465 1.07e-15 1.80e-14          NA          0
+         se_geno 23859           0      1102 1.24e-09 2.34e-08          NA          0
+     l_boot_geno 23859           0        99 4.57e-07 4.51e-10          NA          0
+ l_boot_interact 23859           0       135 4.53e-07 4.47e-10          NA          0
+ p_interact_boot 23859           0     23859 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno    60        60        60            1               1 p<0.001:42/42/42 p<1e-05:8/8/8 p<1e-08:3/3/3       9/9/9
+      p_interact    60        60        60            1               1 p<0.001:25/25/25 p<1e-05:5/5/5 p<1e-08:1/1/1       4/4/4
+ p_interact_boot    60        60        60            1               1 p<0.001:26/26/26 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries     power       fdr lead_is_causal
+          p_geno eGene BH 5%           9 0.5833333 0.2222222      0.8571429
+          p_geno lead p<1e-5           7 0.5000000 0.1428571      1.0000000
+      p_interact eGene BH 5%           4 0.6666667 0.0000000      1.0000000
+      p_interact lead p<1e-5           4 0.6666667 0.0000000      1.0000000
+ p_interact_boot eGene BH 5%           0 0.0000000 0.0000000            NaN
+ p_interact_boot lead p<1e-5           0 0.0000000 0.0000000            NaN
+power/FDR b:
+            test        rule discoveries     power       fdr lead_is_causal
+          p_geno eGene BH 5%           9 0.5833333 0.2222222      0.8571429
+          p_geno lead p<1e-5           7 0.5000000 0.1428571      1.0000000
+      p_interact eGene BH 5%           4 0.6666667 0.0000000      1.0000000
+      p_interact lead p<1e-5           4 0.6666667 0.0000000      1.0000000
+ p_interact_boot eGene BH 5%           0 0.0000000 0.0000000            NaN
+ p_interact_boot lead p<1e-5           0 0.0000000 0.0000000            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_grm
+== validate baseline_M_grm_step2_c1_r0.rds vs r6_p9_M_grm_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 30049           0      4371 3.13e-13 1.75e-15          NA          0
+          l_geno 30049           0      4348 3.98e-13 2.22e-15          NA          0
+      l_interact 30049           0      4278 3.69e-13 2.16e-15          NA          0
+          p_geno 30049           0      3203 5.74e-09 5.74e-09    2.49e-09         NA
+     df_interact 30049           0     30049 0.00e+00 0.00e+00          NA          0
+      p_interact 30049           0      3433 5.23e-10 5.24e-10    2.27e-10         NA
+       beta_geno 30049           0       892 3.37e-09 2.99e-08          NA          0
+         se_geno 30049           0      3439 2.60e-09 2.42e-08          NA          0
+     l_boot_geno 30049           0      1811 6.10e-07 3.27e-09          NA          0
+ l_boot_interact 30049           0      1890 5.10e-07 2.80e-09          NA          0
+ p_interact_boot 30049           0     30049 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:43/43/43 p<1e-05:5/5/5 p<1e-08:0/0/0       3/3/3
+      p_interact   150       150       150            1               1 p<0.001:23/23/23 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:12/12/12 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries      power       fdr lead_is_causal
+          p_geno eGene BH 5%           3 0.06666667 0.3333333           1.00
+          p_geno lead p<1e-5           5 0.13333333 0.2000000           0.75
+      p_interact eGene BH 5%           0 0.00000000 0.0000000            NaN
+      p_interact lead p<1e-5           1 0.00000000 1.0000000            NaN
+ p_interact_boot eGene BH 5%           0 0.00000000 0.0000000            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000 0.0000000            NaN
+power/FDR b:
+            test        rule discoveries      power       fdr lead_is_causal
+          p_geno eGene BH 5%           3 0.06666667 0.3333333           1.00
+          p_geno lead p<1e-5           5 0.13333333 0.2000000           0.75
+      p_interact eGene BH 5%           0 0.00000000 0.0000000            NaN
+      p_interact lead p<1e-5           1 0.00000000 1.0000000            NaN
+ p_interact_boot eGene BH 5%           0 0.00000000 0.0000000            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000 0.0000000            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_learn
+== validate baseline_M_learn_step2_c1_r0.rds vs r6_p9_M_learn_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 30049           0      6231 2.27e-13 1.17e-15          NA          0
+          l_geno 30049           0      6279 2.84e-13 1.46e-15          NA          0
+      l_interact 30049           0      6351 3.13e-13 1.63e-15          NA          0
+          p_geno 30049           0      7677 1.47e-09 1.47e-09    6.40e-10         NA
+     df_interact 30049           0     30049 0.00e+00 0.00e+00          NA          0
+      p_interact 30049           0      6495 2.34e-10 2.34e-10    1.02e-10         NA
+       beta_geno 30049           0      1175 7.44e-09 6.90e-08          NA          0
+         se_geno 30049           0      5793 2.42e-10 2.57e-09          NA          0
+     l_boot_geno 30049           0      3419 5.95e-07 3.36e-09          NA          0
+ l_boot_interact 30049           0      3409 5.58e-07 3.20e-09          NA          0
+ p_interact_boot 30049           0     30049 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:65/65/65 p<1e-05:7/7/7 p<1e-08:0/0/0       6/6/6
+      p_interact   150       150       150            1               1 p<0.001:11/11/11 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1    p<0.001:8/8/8 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries     power       fdr lead_is_causal
+          p_geno eGene BH 5%           6 0.1333333 0.3333333           0.75
+          p_geno lead p<1e-5           6 0.1333333 0.3333333           0.75
+      p_interact eGene BH 5%           0 0.0000000 0.0000000            NaN
+      p_interact lead p<1e-5           0 0.0000000 0.0000000            NaN
+ p_interact_boot eGene BH 5%           0 0.0000000 0.0000000            NaN
+ p_interact_boot lead p<1e-5           0 0.0000000 0.0000000            NaN
+power/FDR b:
+            test        rule discoveries     power       fdr lead_is_causal
+          p_geno eGene BH 5%           6 0.1333333 0.3333333           0.75
+          p_geno lead p<1e-5           6 0.1333333 0.3333333           0.75
+      p_interact eGene BH 5%           0 0.0000000 0.0000000            NaN
+      p_interact lead p<1e-5           0 0.0000000 0.0000000            NaN
+ p_interact_boot eGene BH 5%           0 0.0000000 0.0000000            NaN
+ p_interact_boot lead p<1e-5           0 0.0000000 0.0000000            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_num
+== validate baseline_M_num_step2_c1_r0.rds vs r6_p9_M_num_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 30049           0      4623 2.27e-13 1.59e-15          NA          0
+          l_geno 30049           0      4245 4.83e-13 5.07e-15          NA          0
+      l_interact 30049           0      4277 5.12e-13 4.45e-15          NA          0
+          p_geno 30049           0      3247 2.56e-09 2.56e-09    1.11e-09         NA
+     df_interact 30049           0     30049 0.00e+00 0.00e+00          NA          0
+      p_interact 30049           0      3184 9.05e-09 9.05e-09    3.93e-09         NA
+       beta_geno 30049           0       839 4.07e-09 3.44e-08          NA          0
+         se_geno 30049           0      3309 3.75e-09 2.46e-08          NA          0
+     l_boot_geno 30049           0      1818 7.72e-07 4.29e-09          NA          0
+ l_boot_interact 30049           0      1789 7.75e-07 4.32e-09          NA          0
+ p_interact_boot 30049           0     30049 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:54/54/54 p<1e-05:3/3/3 p<1e-08:0/0/0       0/0/0
+      p_interact   150       150       150            1               1 p<0.001:46/46/46 p<1e-05:2/2/2 p<1e-08:1/1/1       2/2/2
+ p_interact_boot   150       150       150            1               1 p<0.001:49/49/49 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries      power       fdr lead_is_causal
+          p_geno eGene BH 5%           0 0.00000000 0.0000000            NaN
+          p_geno lead p<1e-5           3 0.06666667 0.3333333              1
+      p_interact eGene BH 5%           2 0.13333333 0.0000000              1
+      p_interact lead p<1e-5           2 0.13333333 0.0000000              1
+ p_interact_boot eGene BH 5%           0 0.00000000 0.0000000            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000 0.0000000            NaN
+power/FDR b:
+            test        rule discoveries      power       fdr lead_is_causal
+          p_geno eGene BH 5%           0 0.00000000 0.0000000            NaN
+          p_geno lead p<1e-5           3 0.06666667 0.3333333              1
+      p_interact eGene BH 5%           2 0.13333333 0.0000000              1
+      p_interact lead p<1e-5           2 0.13333333 0.0000000              1
+ p_interact_boot eGene BH 5%           0 0.00000000 0.0000000            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000 0.0000000            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_fac3
+== validate baseline_M_fac3_step2_c1_r0.rds vs r6_p9_M_fac3_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 30049           0      4422 5.12e-13 2.29e-15          NA          0
+          l_geno 30049           0      4517 5.12e-13 2.17e-15          NA          0
+      l_interact 30049           0      4275 5.40e-13 2.51e-15          NA          0
+          p_geno 30049           0      7744 1.35e-09 1.35e-09    5.85e-10         NA
+     df_interact 30049           0     30049 0.00e+00 0.00e+00          NA          0
+      p_interact 30049           0      7382 3.92e-13 4.55e-13    1.97e-13         NA
+       beta_geno 30049           0       747 1.59e-15 1.23e-14          NA          0
+         se_geno 30049           0      2801 3.07e-09 2.74e-08          NA          0
+     l_boot_geno 30049           0      3121 6.02e-07 1.96e-09          NA          0
+ l_boot_interact 30049           0      3028 6.00e-07 1.95e-09          NA          0
+ p_interact_boot 30049           0     30049 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:65/65/65 p<1e-05:8/8/8 p<1e-08:1/1/1       9/9/9
+      p_interact   150       150       150            1               1 p<0.001:30/30/30 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:26/26/26 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries      power       fdr lead_is_causal
+          p_geno eGene BH 5%           9 0.23333333 0.2222222              1
+          p_geno lead p<1e-5           8 0.20000000 0.2500000              1
+      p_interact eGene BH 5%           0 0.00000000 0.0000000            NaN
+      p_interact lead p<1e-5           1 0.06666667 0.0000000              1
+ p_interact_boot eGene BH 5%           0 0.00000000 0.0000000            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000 0.0000000            NaN
+power/FDR b:
+            test        rule discoveries      power       fdr lead_is_causal
+          p_geno eGene BH 5%           9 0.23333333 0.2222222              1
+          p_geno lead p<1e-5           8 0.20000000 0.2500000              1
+      p_interact eGene BH 5%           0 0.00000000 0.0000000            NaN
+      p_interact lead p<1e-5           1 0.06666667 0.0000000              1
+ p_interact_boot eGene BH 5%           0 0.00000000 0.0000000            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000 0.0000000            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_eqtl
+== validate baseline_M_eqtl_step2_c1_r0.rds vs r6_p9_M_eqtl_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 30049           0     13467 4.26e-14 4.37e-16          NA          0
+          l_geno 30049           0      7968 1.14e-13 1.18e-15          NA          0
+      l_interact     0           0         0       NA       NA          NA          0
+          p_geno 30049           0      6448 1.05e-10 1.05e-10    4.54e-11         NA
+     df_interact 30049           0     30049 0.00e+00 0.00e+00          NA          0
+      p_interact     0           0         0       NA       NA    0.00e+00         NA
+       beta_geno 30049           0      2534 1.95e-08 1.58e-07          NA          0
+         se_geno 30049           0      9320 7.81e-10 5.92e-09          NA          0
+     l_boot_geno 30049           0      4324 5.69e-07 7.31e-09          NA          0
+ l_boot_interact     0           0         0       NA       NA          NA          0
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+          p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+     p_geno   150       150       150            1               1 p<0.001:39/39/39 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact     0         0       150          Inf              NA    p<0.001:0/0/0 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           0     0   0            NaN
+          p_geno lead p<1e-5           0     0   0            NaN
+      p_interact eGene BH 5%           0     0   0            NaN
+      p_interact lead p<1e-5           0     0   0            NaN
+ p_interact_boot eGene BH 5%           0     0   0            NaN
+ p_interact_boot lead p<1e-5           0     0   0            NaN
+power/FDR b:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           0     0   0            NaN
+          p_geno lead p<1e-5           0     0   0            NaN
+      p_interact eGene BH 5%           0     0   0            NaN
+      p_interact lead p<1e-5           0     0   0            NaN
+ p_interact_boot eGene BH 5%           0     0   0            NaN
+ p_interact_boot lead p<1e-5           0     0   0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_cov
+== validate baseline_M_cov_step2_c1_r0.rds vs r6_p9_M_cov_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 30049           0      4221 2.27e-13 1.22e-15          NA          0
+          l_geno 30049           0      4762 2.84e-13 1.48e-15          NA          0
+      l_interact 30049           0      4792 2.84e-13 1.49e-15          NA          0
+          p_geno 30049           0      7045 8.05e-10 8.05e-10    3.50e-10         NA
+     df_interact 30049           0     30049 0.00e+00 0.00e+00          NA          0
+      p_interact 30049           0      7263 3.03e-09 3.03e-09    1.31e-09         NA
+       beta_geno 30049           0       788 1.23e-09 1.15e-08          NA          0
+         se_geno 30049           0      3172 2.03e-09 2.01e-08          NA          0
+     l_boot_geno 30049           0      1826 3.59e-07 1.97e-09          NA          0
+ l_boot_interact 30049           0      1871 3.57e-07 1.94e-09          NA          0
+ p_interact_boot 30049           0     30049 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:41/41/41 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+      p_interact   150       150       150            1               1 p<0.001:35/35/35 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:23/23/23 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries      power fdr lead_is_causal
+          p_geno eGene BH 5%           0 0.00000000   0            NaN
+          p_geno lead p<1e-5           1 0.03333333   0              1
+      p_interact eGene BH 5%           0 0.00000000   0            NaN
+      p_interact lead p<1e-5           0 0.00000000   0            NaN
+ p_interact_boot eGene BH 5%           0 0.00000000   0            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000   0            NaN
+power/FDR b:
+            test        rule discoveries      power fdr lead_is_causal
+          p_geno eGene BH 5%           0 0.00000000   0            NaN
+          p_geno lead p<1e-5           1 0.03333333   0              1
+      p_interact eGene BH 5%           0 0.00000000   0            NaN
+      p_interact lead p<1e-5           0 0.00000000   0            NaN
+ p_interact_boot eGene BH 5%           0 0.00000000   0            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000   0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_miss
+== validate baseline_M_miss_step2_c1_r0.rds vs r6_p9_M_miss_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 30049           0      4623 1.71e-13 8.81e-16          NA          0
+          l_geno 30049           0      5415 2.56e-13 1.36e-15          NA          0
+      l_interact 30049           0      5340 2.56e-13 1.36e-15          NA          0
+          p_geno 30049           0      7123 1.63e-10 1.63e-10    7.07e-11         NA
+     df_interact 30049           0     30049 0.00e+00 0.00e+00          NA          0
+      p_interact 30049           0      7143 5.21e-10 5.21e-10    2.26e-10         NA
+       beta_geno 30049           0      1391 7.49e-16 5.61e-15          NA          0
+         se_geno 30049           0      3178 2.38e-09 1.65e-08          NA          0
+     l_boot_geno 30049           0      3150 5.57e-07 2.67e-09          NA          0
+ l_boot_interact 30049           0      2987 5.57e-07 2.67e-09          NA          0
+ p_interact_boot 30049           0     30049 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:55/55/55 p<1e-05:3/3/3 p<1e-08:2/2/2       3/3/3
+      p_interact   150       150       150            1               1 p<0.001:43/43/43 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:34/34/34 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           3   0.1   0              1
+          p_geno lead p<1e-5           3   0.1   0              1
+      p_interact eGene BH 5%           0   0.0   0            NaN
+      p_interact lead p<1e-5           0   0.0   0            NaN
+ p_interact_boot eGene BH 5%           0   0.0   0            NaN
+ p_interact_boot lead p<1e-5           0   0.0   0            NaN
+power/FDR b:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           3   0.1   0              1
+          p_geno lead p<1e-5           3   0.1   0              1
+      p_interact eGene BH 5%           0   0.0   0            NaN
+      p_interact lead p<1e-5           0   0.0   0            NaN
+ p_interact_boot eGene BH 5%           0   0.0   0            NaN
+ p_interact_boot lead p<1e-5           0   0.0   0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_dense
+== validate baseline_M_dense_step2_c1_r0.rds vs r6_p9_M_dense_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column      n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 148125           0     20180 1.99e-13 1.03e-15          NA          0
+          l_geno 148125           0     23614 2.56e-13 1.33e-15          NA          0
+      l_interact 148125           0     24019 2.84e-13 1.47e-15          NA          0
+          p_geno 148125           0     34891 7.48e-09 7.48e-09    3.25e-09         NA
+     df_interact 148125           0    148125 0.00e+00 0.00e+00          NA          0
+      p_interact 148125           0     35053 1.99e-09 1.99e-09    8.64e-10         NA
+       beta_geno 148125           0      7053 1.22e-15 5.59e-15          NA          0
+         se_geno 148125           0     15429 2.85e-09 2.10e-08          NA          0
+     l_boot_geno 148125           0     15639 6.54e-07 3.66e-09          NA          0
+ l_boot_interact 148125           0     15524 6.38e-07 3.59e-09          NA          0
+ p_interact_boot 148125           0    148124 6.75e-06 1.31e-05    5.67e-06         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                             sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:161/161/161 p<1e-05:4/4/4 p<1e-08:0/0/0       2/2/2
+      p_interact   150       150       150            1               1 p<0.001:150/150/150 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:136/136/136 p<1e-05:2/2/2 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries      power fdr lead_is_causal
+          p_geno eGene BH 5%           2 0.06666667 0.0              1
+          p_geno lead p<1e-5           4 0.06666667 0.5              1
+      p_interact eGene BH 5%           0 0.00000000 0.0            NaN
+      p_interact lead p<1e-5           1 0.00000000 1.0            NaN
+ p_interact_boot eGene BH 5%           0 0.00000000 0.0            NaN
+ p_interact_boot lead p<1e-5           2 0.00000000 1.0            NaN
+power/FDR b:
+            test        rule discoveries      power fdr lead_is_causal
+          p_geno eGene BH 5%           2 0.06666667 0.0              1
+          p_geno lead p<1e-5           4 0.06666667 0.5              1
+      p_interact eGene BH 5%           0 0.00000000 0.0            NaN
+      p_interact lead p<1e-5           1 0.00000000 1.0            NaN
+ p_interact_boot eGene BH 5%           0 0.00000000 0.0            NaN
+ p_interact_boot lead p<1e-5           2 0.00000000 1.0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== S_rare
+== validate baseline_S_rare_step2_c1_r0.rds vs r6_p9_S_rare_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 19104           0      4018 7.11e-14 7.52e-16          NA          0
+          l_geno 19104           0      4039 9.95e-14 1.05e-15          NA          0
+      l_interact 19104           0      4051 9.95e-14 1.06e-15          NA          0
+          p_geno 19104           0      5325 3.31e-10 3.31e-10    1.44e-10         NA
+     df_interact 19104           0     19104 0.00e+00 0.00e+00          NA          0
+      p_interact 19104           0      5117 8.28e-09 8.28e-09    3.60e-09         NA
+       beta_geno 19104           0      1015 1.55e-15 6.04e-15          NA          0
+         se_geno 19104           0      3001 3.17e-09 1.60e-08          NA          0
+     l_boot_geno 19104           0      2694 4.90e-07 4.88e-09          NA          0
+ l_boot_interact 19104           0      2675 4.31e-07 4.46e-09          NA          0
+ p_interact_boot 19104           0     19104 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   200       200       200            1               1 p<0.001:26/26/26 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+      p_interact   200       200       200            1               1 p<0.001:26/26/26 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   200       200       200            1               1 p<0.001:19/19/19 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           0     0   0            NaN
+          p_geno lead p<1e-5           1     0   1            NaN
+      p_interact eGene BH 5%           0     0   0            NaN
+      p_interact lead p<1e-5           0     0   0            NaN
+ p_interact_boot eGene BH 5%           0     0   0            NaN
+ p_interact_boot lead p<1e-5           0     0   0            NaN
+power/FDR b:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           0     0   0            NaN
+          p_geno lead p<1e-5           1     0   1            NaN
+      p_interact eGene BH 5%           0     0   0            NaN
+      p_interact lead p<1e-5           0     0   0            NaN
+ p_interact_boot eGene BH 5%           0     0   0            NaN
+ p_interact_boot lead p<1e-5           0     0   0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== LA
+== validate baseline_LA_step2_c1_r0.rds vs r6_p9_LA_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+               column    n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+                   l0 9950           0      2191 2.27e-13 1.58e-15          NA          0
+               l_geno 9950           0      2276 1.99e-13 1.41e-15          NA          0
+        l_geno_shared 9950           0      2240 1.71e-13 1.25e-15          NA         NA
+      l_interact_null 9950           0      2121 1.71e-13 1.23e-15          NA         NA
+           l_interact 9950           0      1979 1.99e-13 1.65e-15          NA          0
+    l_interact_shared 9950           0      2122 2.27e-13 1.57e-15          NA         NA
+              df_geno 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+               p_geno 9950           0      3006 1.53e-13 1.97e-13    8.54e-14         NA
+               df_het 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+                p_het 9946           0      2987 5.23e-10 5.23e-10    2.27e-10         NA
+          df_interact 9950           0      9950 0.00e+00 0.00e+00          NA          0
+           p_interact 9950           0      2690 4.34e-13 4.53e-13    1.97e-13         NA
+       p_interact_het 9946           0      2626 4.09e-10 4.09e-10    1.77e-10         NA
+              af_anc0 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+          laprop_anc0 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+            beta_anc0 9950           0       376 1.17e-15 2.06e-11          NA         NA
+              se_anc0 9950           0      1070 2.86e-09 1.65e-08          NA         NA
+               p_anc0 9950           0       368 7.39e-09 1.83e-07    7.94e-08         NA
+   beta_interact_anc0 9950           0       209 5.19e-15 2.83e-11          NA         NA
+     se_interact_anc0 9950           0       469 4.69e-09 1.51e-08          NA         NA
+      p_interact_anc0 9950           0       193 6.72e-09 8.42e-08    3.66e-08         NA
+              af_anc1 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+          laprop_anc1 9950           0      9950 0.00e+00 0.00e+00          NA         NA
+            beta_anc1 9946           0       324 2.30e-15 9.36e-12          NA         NA
+              se_anc1 9946           0       929 3.95e-09 1.65e-08          NA         NA
+               p_anc1 9946           0       341 7.65e-09 1.15e-07    5.01e-08         NA
+   beta_interact_anc1 9946           0       143 2.13e-14 2.93e-11          NA         NA
+     se_interact_anc1 9946           0       326 5.25e-09 1.51e-08          NA         NA
+      p_interact_anc1 9946           0       140 6.87e-09 7.81e-08    3.39e-08         NA
+ l_boot_interact_null 9950           0      1344 2.15e-07 1.50e-09          NA          0
+      l_boot_interact 9950           0      1283 2.11e-07 1.47e-09          NA          0
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+              p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+         p_geno   100       100       100            1               1 p<0.001:36/36/36 p<1e-05:9/9/9 p<1e-08:3/3/3    13/13/13
+     p_interact   100       100       100            1               1 p<0.001:15/15/15 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+          p_het   100       100       100            1               1 p<0.001:14/14/14 p<1e-05:4/4/4 p<1e-08:0/0/0       4/4/4
+ p_interact_het   100       100       100            1               1 p<0.001:14/14/14 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== L_grm
+== validate baseline_L_grm_step2_c1_r0.rds vs r6_p9_L_grm_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 39899           0       401 1.19e-12 2.41e-15          NA          0
+          l_geno 39899           0      3016 1.42e-12 2.89e-15          NA          0
+      l_interact 39899           0      2810 1.31e-12 3.17e-15          NA          0
+          p_geno 39899           0      2688 2.45e-08 2.45e-08    1.07e-08         NA
+     df_interact 39899           0     39899 0.00e+00 0.00e+00          NA          0
+      p_interact 39899           0      2385 3.44e-08 3.44e-08    1.50e-08         NA
+       beta_geno 39899           0       941 5.00e-09 8.07e-08          NA          0
+         se_geno 39899           0      3843 1.71e-09 2.36e-08          NA          0
+     l_boot_geno 39899           0      1459 1.60e-06 3.07e-09          NA          0
+ l_boot_interact 39899           0      1462 1.60e-06 3.07e-09          NA          0
+ p_interact_boot 39899           0     39899 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   100       100       100            1               1 p<0.001:68/68/68 p<1e-05:7/7/7 p<1e-08:5/5/5       7/7/7
+      p_interact   100       100       100            1               1 p<0.001:49/49/49 p<1e-05:1/1/1 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   100       100       100            1               1 p<0.001:54/54/54 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           7  0.35   0              1
+          p_geno lead p<1e-5           7  0.35   0              1
+      p_interact eGene BH 5%           0  0.00   0            NaN
+      p_interact lead p<1e-5           1  0.00   1            NaN
+ p_interact_boot eGene BH 5%           0  0.00   0            NaN
+ p_interact_boot lead p<1e-5           0  0.00   0            NaN
+power/FDR b:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           7  0.35   0              1
+          p_geno lead p<1e-5           7  0.35   0              1
+      p_interact eGene BH 5%           0  0.00   0            NaN
+      p_interact lead p<1e-5           1  0.00   1            NaN
+ p_interact_boot eGene BH 5%           0  0.00   0            NaN
+ p_interact_boot lead p<1e-5           0  0.00   0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_unbal
+== validate baseline_M_unbal_step2_c1_r0.rds vs r6_p9_M_unbal_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 30049           0      4824 1.99e-13 8.47e-16          NA          0
+          l_geno 30049           0      4775 2.84e-13 1.27e-15          NA          0
+      l_interact 30049           0      4859 3.13e-13 1.36e-15          NA          0
+          p_geno 30049           0      5825 8.06e-10 8.06e-10    3.50e-10         NA
+     df_interact 30049           0     30049 0.00e+00 0.00e+00          NA          0
+      p_interact 30049           0      5598 6.81e-09 6.81e-09    2.96e-09         NA
+       beta_geno 30049           0       877 4.95e-09 3.75e-08          NA          0
+         se_geno 30049           0      4127 2.92e-09 2.32e-08          NA          0
+     l_boot_geno 30049           0      1991 3.56e-07 1.53e-09          NA          0
+ l_boot_interact 30049           0      1884 3.54e-07 1.52e-09          NA          0
+ p_interact_boot 30049           0     30049 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:50/50/50 p<1e-05:1/1/1 p<1e-08:0/0/0       1/1/1
+      p_interact   150       150       150            1               1 p<0.001:33/33/33 p<1e-05:1/1/1 p<1e-08:0/0/0       1/1/1
+ p_interact_boot   150       150       150            1               1 p<0.001:33/33/33 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries      power fdr lead_is_causal
+          p_geno eGene BH 5%           1 0.03333333   0              1
+          p_geno lead p<1e-5           1 0.03333333   0              1
+      p_interact eGene BH 5%           1 0.06666667   0              0
+      p_interact lead p<1e-5           1 0.06666667   0              0
+ p_interact_boot eGene BH 5%           0 0.00000000   0            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000   0            NaN
+power/FDR b:
+            test        rule discoveries      power fdr lead_is_causal
+          p_geno eGene BH 5%           1 0.03333333   0              1
+          p_geno lead p<1e-5           1 0.03333333   0              1
+      p_interact eGene BH 5%           1 0.06666667   0              0
+      p_interact lead p<1e-5           1 0.06666667   0              0
+ p_interact_boot eGene BH 5%           0 0.00000000   0            NaN
+ p_interact_boot lead p<1e-5           0 0.00000000   0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== M_lc
+== validate baseline_M_lc_step2_c1_r0.rds vs r6_p9_M_lc_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 30049           0      1809 4.12e-13 1.04e-14          NA          0
+          l_geno 30049           0      1768 5.83e-13 2.20e-14          NA          0
+      l_interact 30049           0      1590 5.68e-13 2.59e-14          NA          0
+          p_geno 30049           0      1659 5.93e-08 5.93e-08    2.58e-08         NA
+     df_interact 30049           0     30049 0.00e+00 0.00e+00          NA          0
+      p_interact 30049           0      1748 4.93e-09 4.93e-09    2.14e-09         NA
+       beta_geno 30049           0       237 2.23e-09 2.03e-08          NA          0
+         se_geno 30049           0      1397 2.39e-09 2.50e-08          NA          0
+     l_boot_geno 30049           0       830 3.87e-07 1.41e-08          NA          0
+ l_boot_interact 30049           0       769 3.85e-07 8.09e-09          NA          0
+ p_interact_boot 30049           0     30049 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                          sig egenes_fdr5
+          p_geno   150       150       150            1               1 p<0.001:43/43/43 p<1e-05:4/4/4 p<1e-08:1/1/1       3/3/3
+      p_interact   150       150       150            1               1 p<0.001:29/29/29 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+ p_interact_boot   150       150       150            1               1 p<0.001:28/28/28 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           3   0.1   0              1
+          p_geno lead p<1e-5           3   0.1   0              1
+      p_interact eGene BH 5%           0   0.0   0            NaN
+      p_interact lead p<1e-5           0   0.0   0            NaN
+ p_interact_boot eGene BH 5%           0   0.0   0            NaN
+ p_interact_boot lead p<1e-5           0   0.0   0            NaN
+power/FDR b:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%           3   0.1   0              1
+          p_geno lead p<1e-5           3   0.1   0              1
+      p_interact eGene BH 5%           0   0.0   0            NaN
+      p_interact lead p<1e-5           0   0.0   0            NaN
+ p_interact_boot eGene BH 5%           0   0.0   0            NaN
+ p_interact_boot lead p<1e-5           0   0.0   0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 
+=== HS
+== validate baseline_HS_step2_c1_r0.rds vs r6_p9_HS_step2_c1_r0.rds ==
+rows: only_a=0 only_b=0 dup_a=0 dup_b=0 
+          column     n na_mismatch identical  max_abs  max_rel max_dlog10p n_over_tol
+              l0 19950           0      2700 2.27e-13 1.19e-15          NA          0
+          l_geno 19950           0      2607 4.83e-13 3.41e-15          NA          0
+      l_interact 19950           0      2659 3.98e-13 2.83e-15          NA          0
+          p_geno 19950           0      2214 4.07e-09 4.07e-09    1.77e-09         NA
+     df_interact 19950           0     19950 0.00e+00 0.00e+00          NA          0
+      p_interact 19950           0      2272 1.53e-08 1.53e-08    6.64e-09         NA
+       beta_geno 19950           0       571 3.63e-09 2.70e-08          NA          0
+         se_geno 19950           0      2309 2.86e-09 1.98e-08          NA          0
+     l_boot_geno 19950           0      1197 1.13e-06 5.37e-09          NA          0
+ l_boot_interact 19950           0      1244 1.12e-06 5.34e-09          NA          0
+ p_interact_boot 19950           0     19950 0.00e+00 0.00e+00    0.00e+00         NA
+ranking (sig counts a/b/both; eGenes = Bonferroni within gene + BH 5% across genes, a/b/both):
+               p genes lead_same top5_same spearman_min spearman_median                                                sig egenes_fdr5
+          p_geno   200       200       200            1               1 p<0.001:78/78/78 p<1e-05:30/30/30 p<1e-08:17/17/17    26/26/26
+      p_interact   200       200       200            1               1    p<0.001:49/49/49 p<1e-05:11/11/11 p<1e-08:5/5/5    10/10/10
+ p_interact_boot   200       200       200            1               1       p<0.001:49/49/49 p<1e-05:0/0/0 p<1e-08:0/0/0       0/0/0
+power/FDR a:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%          26 0.650 0.0      0.9615385
+          p_geno lead p<1e-5          21 0.525 0.0      1.0000000
+      p_interact eGene BH 5%          10 0.400 0.2      0.8750000
+      p_interact lead p<1e-5          10 0.400 0.2      0.8750000
+ p_interact_boot eGene BH 5%           0 0.000 0.0            NaN
+ p_interact_boot lead p<1e-5           0 0.000 0.0            NaN
+power/FDR b:
+            test        rule discoveries power fdr lead_is_causal
+          p_geno eGene BH 5%          26 0.650 0.0      0.9615385
+          p_geno lead p<1e-5          21 0.525 0.0      1.0000000
+      p_interact eGene BH 5%          10 0.400 0.2      0.8750000
+      p_interact lead p<1e-5          10 0.400 0.2      0.8750000
+ p_interact_boot eGene BH 5%           0 0.000 0.0            NaN
+ p_interact_boot lead p<1e-5           0 0.000 0.0            NaN
+VERDICT: EQUIVALENT within CONTEXT.md tolerances 

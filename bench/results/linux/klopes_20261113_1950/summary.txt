@@ -1,0 +1,39 @@
+[19:53:03] build cur: ok (7 compiler warnings, 0 in lmm.cpp)
+[19:55:01] build assert: ok (100 compiler warnings, 1 in lmm.cpp)
+[19:55:04] test cur learn_covariance_checks: ok, 6 PASS, 0 FAIL (eigen solver: lapack )
+[19:55:08] test cur local_ancestry_checks: ok, 12 PASS, 0 FAIL (eigen solver: lapack )
+[19:55:14] test cur model_checks: ok, 17 PASS, 0 FAIL (eigen solver: lapack )
+[19:55:17] test assert learn_covariance_checks: ok, 6 PASS, 0 FAIL (eigen solver: lapack )
+[19:55:22] test assert local_ancestry_checks: ok, 12 PASS, 0 FAIL (eigen solver: lapack )
+[19:55:28] test assert model_checks: ok, 17 PASS, 0 FAIL (eigen solver: lapack )
+[20:00:34] eigen timings (threads 1): N	eigen_cpp	lapack	dense;2000	14.487	1.992	2.521;5000	181.381	101.466	NA;
+[20:04:10] eigen timings (threads default): N	eigen_cpp	lapack	dense;2000	14.697	1.288	1.324;5000	184.186	9.767	NA;
+[20:06:15] build d012046: ok (7 compiler warnings, 0 in lmm.cpp)
+[20:08:23] build 7be2e38: ok (7 compiler warnings, 0 in lmm.cpp)
+    N interaction   label version reps median_s speedup_vs_ref
+ 2000           0 7be2e38     0.5    3     2.12          0.898
+ 2000           0     cur     0.5    3     1.63          1.168
+ 2000           0 d012046     0.3    3     1.90          1.000
+ 2000           1 7be2e38     0.5    3     4.27          0.944
+ 2000           1     cur     0.5    3     3.02          1.332
+ 2000           1 d012046     0.3    3     4.03          1.000
+ 5000           0 7be2e38     0.5    3     8.50          0.979
+ 5000           0     cur     0.5    3     6.29          1.323
+ 5000           0 d012046     0.3    3     8.32          1.000
+ 5000           1 7be2e38     0.5    3    18.59          0.937
+ 5000           1     cur     0.5    3    11.53          1.510
+ 5000           1 d012046     0.3    3    17.42          1.000
+ max_abs_diff_vs_ref na_mismatch
+            2.86e-09           0
+            2.86e-09           0
+            0.00e+00           0
+            2.16e-09           0
+            2.16e-09           0
+            0.00e+00           0
+            1.55e-09           0
+            1.55e-09           0
+            0.00e+00           0
+            1.59e-09           0
+            1.59e-09           0
+            0.00e+00           0
+[20:50:07] done: /pastel/Github_scripts/suez/bench/results/linux/klopes_20261113_1950 (summary.txt, environment.txt, eig_threads_*.tsv, fit_summary.tsv, logs/)

@@ -1,0 +1,947 @@
+* installing *source* package ‘suez’ ...
+** using staged installation
+** libs
+"/opt/R/4.1.2/lib/R/bin/Rscript" -e "source(file.path('..', 'tools', 'make_cc.R')); make_cc(commandArgs(TRUE))" stan_files/suez_step_1.stan
+
+
+g++ -std=gnu++17 -I"/opt/R/4.1.2/lib/R/include" -DNDEBUG -I"../inst/include" -I"/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src" -DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG -DBOOST_MATH_OVERFLOW_ERROR_POLICY=errno_on_error -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppEigen/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -I/usr/local/include  -DRCPP_PARALLEL_USE_TBB=1 -DTBB_INTERFACE_NEW -I/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -D_REENTRANT -DSTAN_THREADS -DTBB_INTERFACE_NEW   -fpic  -O1 -g -Wall -Wextra -Wno-unused-parameter -Wno-ignored-attributes -D_GLIBCXX_ASSERTIONS -c init.cpp -o init.o
+init.cpp:16:32: warning: cast between incompatible function types from ‘SEXPREC* (*)(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP)’ {aka ‘SEXPREC* (*)(SEXPREC*, SEXPREC*, SEXPREC*, SEXPREC*, SEXPREC*, SEXPREC*, SEXPREC*)’} to ‘DL_FUNC’ {aka ‘void* (*)()’} [-Wcast-function-type]
+   {"suez_fit_gene", (DL_FUNC) &suez_fit_gene, 7},
+                                ^~~~~~~~~~~~~
+init.cpp:17:34: warning: cast between incompatible function types from ‘SEXPREC* (*)(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP)’ {aka ‘SEXPREC* (*)(SEXPREC*, SEXPREC*, SEXPREC*, SEXPREC*, SEXPREC*, SEXPREC*, SEXPREC*, SEXPREC*)’} to ‘DL_FUNC’ {aka ‘void* (*)()’} [-Wcast-function-type]
+   {"suez_fit_models", (DL_FUNC) &suez_fit_models, 8},
+                                  ^~~~~~~~~~~~~~~
+init.cpp:18:33: warning: cast between incompatible function types from ‘SEXPREC* (*)(SEXP)’ {aka ‘SEXPREC* (*)(SEXPREC*)’} to ‘DL_FUNC’ {aka ‘void* (*)()’} [-Wcast-function-type]
+   {"suez_eigen_sym", (DL_FUNC) &suez_eigen_sym, 1},
+                                 ^~~~~~~~~~~~~~
+
+
+g++ -std=gnu++17 -I"/opt/R/4.1.2/lib/R/include" -DNDEBUG -I"../inst/include" -I"/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src" -DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG -DBOOST_MATH_OVERFLOW_ERROR_POLICY=errno_on_error -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppEigen/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -I/usr/local/include  -DRCPP_PARALLEL_USE_TBB=1 -DTBB_INTERFACE_NEW -I/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -D_REENTRANT -DSTAN_THREADS -DTBB_INTERFACE_NEW   -fpic  -O1 -g -Wall -Wextra -Wno-unused-parameter -Wno-ignored-attributes -D_GLIBCXX_ASSERTIONS -c lmm.cpp -o lmm.o
+Wrote C++ file "stan_files/suez_step_1.cc"
+
+
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:130,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppEigen/include/RcppEigenForward.h:26,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppEigen/include/RcppEigen.h:25,
+                 from lmm.cpp:17:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘const char* Rcpp::type2name(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘const char* (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:86:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("type2name");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘long unsigned int Rcpp::internal::enterRNGScope()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘long unsigned int (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:93:30: note: in expansion of macro ‘GET_CALLABLE’
+             static Fun fun = GET_CALLABLE("enterRNGScope");
+                              ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘long unsigned int Rcpp::internal::exitRNGScope()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘long unsigned int (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:99:30: note: in expansion of macro ‘GET_CALLABLE’
+             static Fun fun = GET_CALLABLE("exitRNGScope");
+                              ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘long unsigned int Rcpp::internal::beginSuspendRNGSynchronization()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘long unsigned int (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:105:30: note: in expansion of macro ‘GET_CALLABLE’
+             static Fun fun = GET_CALLABLE("beginSuspendRNGSynchronization");
+                              ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘long unsigned int Rcpp::internal::endSuspendRNGSynchronization()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘long unsigned int (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:111:30: note: in expansion of macro ‘GET_CALLABLE’
+             static Fun fun = GET_CALLABLE("endSuspendRNGSynchronization");
+                              ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘double Rcpp::mktime00(tm&)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘double (*)(tm&)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:132:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("mktime00");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘tm* Rcpp::gmtime_(const time_t*)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘tm* (*)(const long int*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:138:27: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun =  GET_CALLABLE("gmtime_");
+                           ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC* Rcpp::Rcpp_precious_preserve(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC* (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:154:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("Rcpp_precious_preserve");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void Rcpp::Rcpp_precious_remove(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:159:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("Rcpp_precious_remove");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘Rcpp::Rostream<true>& Rcpp::Rcpp_cout_get()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘Rcpp::Rostream<true>& (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:165:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("Rcpp_cout_get");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘Rcpp::Rostream<false>& Rcpp::Rcpp_cerr_get()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘Rcpp::Rostream<false>& (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:170:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("Rcpp_cerr_get");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC* rcpp_set_stack_trace(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC* (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:188:23: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun =  GET_CALLABLE("rcpp_set_stack_trace");
+                       ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘std::__cxx11::string demangle(const string&)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘std::__cxx11::basic_string<char> (*)(const std::__cxx11::basic_string<char>&)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:194:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("demangle");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘const char* short_file_name(const char*)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘const char* (*)(const char*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:200:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("short_file_name");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC* stack_trace(const char*, int)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC* (*)(const char*, int)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:206:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("stack_trace");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC* get_string_elt(SEXP, R_xlen_t)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC* (*)(SEXPREC*, long int)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:212:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("get_string_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘const char* char_get_string_elt(SEXP, R_xlen_t)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘const char* (*)(SEXPREC*, long int)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:218:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("char_get_string_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void set_string_elt(SEXP, R_xlen_t, SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void (*)(SEXPREC*, long int, SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:224:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("set_string_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void char_set_string_elt(SEXP, R_xlen_t, const char*)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void (*)(SEXPREC*, long int, const char*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:230:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("char_set_string_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC** get_string_ptr(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC** (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:236:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("get_string_ptr");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC* get_vector_elt(SEXP, R_xlen_t)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC* (*)(SEXPREC*, long int)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:242:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("get_vector_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void set_vector_elt(SEXP, R_xlen_t, SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void (*)(SEXPREC*, long int, SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:248:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("set_vector_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC** get_vector_ptr(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC** (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:254:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("get_vector_ptr");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘const char* char_nocheck(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘const char* (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:260:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("char_nocheck");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void* dataptr(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void* (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:266:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("dataptr");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void setCurrentScope(Rcpp::Module*)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void (*)(Rcpp::Module*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:278:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("setCurrentScope");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘int* get_cache(int)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘int* (*)(int)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:284:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("get_cache");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘int error_occured()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘int (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:296:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("error_occured");
+                      ^~~~~~~~~~~~
+g++ -std=gnu++17 -I"/opt/R/4.1.2/lib/R/include" -DNDEBUG -I"../inst/include" -I"/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src" -DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG -DBOOST_MATH_OVERFLOW_ERROR_POLICY=errno_on_error -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppEigen/include' -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -I/usr/local/include  -DRCPP_PARALLEL_USE_TBB=1 -DTBB_INTERFACE_NEW -I/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include -I'/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/include' -D_REENTRANT -DSTAN_THREADS -DTBB_INTERFACE_NEW   -fpic  -O1 -g -Wall -Wextra -Wno-unused-parameter -Wno-ignored-attributes -D_GLIBCXX_ASSERTIONS -c stan_files/suez_step_1.cc -o stan_files/suez_step_1.o
+lmm.cpp: In lambda function:
+lmm.cpp:493:5: warning: this ‘for’ clause does not guard... [-Wmisleading-indentation]
+     for (int j = 0; j < S; ++j) if (x[j] != y[j]) return x[j] < y[j]; return false; };
+     ^~~
+lmm.cpp:493:71: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘for’
+     for (int j = 0; j < S; ++j) if (x[j] != y[j]) return x[j] < y[j]; return false; };
+                                                                       ^~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:130,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘const char* Rcpp::type2name(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘const char* (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:86:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("type2name");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘long unsigned int Rcpp::internal::enterRNGScope()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘long unsigned int (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:93:30: note: in expansion of macro ‘GET_CALLABLE’
+             static Fun fun = GET_CALLABLE("enterRNGScope");
+                              ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘long unsigned int Rcpp::internal::exitRNGScope()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘long unsigned int (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:99:30: note: in expansion of macro ‘GET_CALLABLE’
+             static Fun fun = GET_CALLABLE("exitRNGScope");
+                              ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘long unsigned int Rcpp::internal::beginSuspendRNGSynchronization()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘long unsigned int (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:105:30: note: in expansion of macro ‘GET_CALLABLE’
+             static Fun fun = GET_CALLABLE("beginSuspendRNGSynchronization");
+                              ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘long unsigned int Rcpp::internal::endSuspendRNGSynchronization()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘long unsigned int (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:111:30: note: in expansion of macro ‘GET_CALLABLE’
+             static Fun fun = GET_CALLABLE("endSuspendRNGSynchronization");
+                              ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘double Rcpp::mktime00(tm&)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘double (*)(tm&)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:132:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("mktime00");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘tm* Rcpp::gmtime_(const time_t*)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘tm* (*)(const long int*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:138:27: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun =  GET_CALLABLE("gmtime_");
+                           ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC* Rcpp::Rcpp_precious_preserve(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC* (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:154:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("Rcpp_precious_preserve");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void Rcpp::Rcpp_precious_remove(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:159:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("Rcpp_precious_remove");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘Rcpp::Rostream<true>& Rcpp::Rcpp_cout_get()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘Rcpp::Rostream<true>& (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:165:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("Rcpp_cout_get");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘Rcpp::Rostream<false>& Rcpp::Rcpp_cerr_get()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘Rcpp::Rostream<false>& (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:170:26: note: in expansion of macro ‘GET_CALLABLE’
+         static Fun fun = GET_CALLABLE("Rcpp_cerr_get");
+                          ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC* rcpp_set_stack_trace(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC* (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:188:23: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun =  GET_CALLABLE("rcpp_set_stack_trace");
+                       ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘std::__cxx11::string demangle(const string&)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘std::__cxx11::basic_string<char> (*)(const std::__cxx11::basic_string<char>&)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:194:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("demangle");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘const char* short_file_name(const char*)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘const char* (*)(const char*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:200:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("short_file_name");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC* stack_trace(const char*, int)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC* (*)(const char*, int)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:206:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("stack_trace");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC* get_string_elt(SEXP, R_xlen_t)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC* (*)(SEXPREC*, long int)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:212:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("get_string_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘const char* char_get_string_elt(SEXP, R_xlen_t)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘const char* (*)(SEXPREC*, long int)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:218:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("char_get_string_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void set_string_elt(SEXP, R_xlen_t, SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void (*)(SEXPREC*, long int, SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:224:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("set_string_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void char_set_string_elt(SEXP, R_xlen_t, const char*)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void (*)(SEXPREC*, long int, const char*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:230:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("char_set_string_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC** get_string_ptr(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC** (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:236:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("get_string_ptr");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC* get_vector_elt(SEXP, R_xlen_t)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC* (*)(SEXPREC*, long int)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:242:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("get_vector_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void set_vector_elt(SEXP, R_xlen_t, SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void (*)(SEXPREC*, long int, SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:248:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("set_vector_elt");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘SEXPREC** get_vector_ptr(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘SEXPREC** (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:254:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("get_vector_ptr");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘const char* char_nocheck(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘const char* (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:260:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("char_nocheck");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void* dataptr(SEXP)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void* (*)(SEXPREC*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:266:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("dataptr");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘void setCurrentScope(Rcpp::Module*)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘void (*)(Rcpp::Module*)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:278:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("setCurrentScope");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘int* get_cache(int)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘int* (*)(int)’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:284:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("get_cache");
+                      ^~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h: In function ‘int error_occured()’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:82:73: warning: cast between incompatible function types from ‘DL_FUNC’ {aka ‘void* (*)()’} to ‘Fun’ {aka ‘int (*)()’} [-Wcast-function-type]
+     #define GET_CALLABLE(__FUN__) (Fun) R_GetCCallable( "Rcpp", __FUN__ )
+                                                                         ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/routines.h:296:22: note: in expansion of macro ‘GET_CALLABLE’
+     static Fun fun = GET_CALLABLE("error_occured");
+                      ^~~~~~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/detail/shared_count.hpp: At global scope:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/detail/shared_count.hpp:294:33: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+     explicit shared_count( std::auto_ptr<Y> & r ): pi_( new sp_counted_impl_p<Y>( r.get() ) )
+                                 ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:354:31: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+     explicit shared_ptr( std::auto_ptr<Y> & r ): px(r.get()), pn()
+                               ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:365:22: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+     shared_ptr( std::auto_ptr<Y> && r ): px(r.get()), pn()
+                      ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:423:34: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+     shared_ptr & operator=( std::auto_ptr<Y> & r )
+                                  ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:430:34: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+     shared_ptr & operator=( std::auto_ptr<Y> && r )
+                                  ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/shared_ptr.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/time_clock.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/date_time/posix_time/posix_time_types.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:15,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp: In member function ‘boost::shared_ptr<T>& boost::shared_ptr<T>::operator=(std::auto_ptr<_Up>&&)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/smart_ptr/shared_ptr.hpp:432:38: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+         this_type( static_cast< std::auto_ptr<Y> && >( r ) ).swap( *this );
+                                      ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:24,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/sum_values.hpp: At global scope:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/sum_values.hpp:41:5: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+     const size_t called() const {
+     ^~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/sum_values.hpp:45:5: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+     const size_t recorded() const {
+     ^~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/mpl/aux_/na_assert.hpp:23,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/mpl/arg.hpp:25,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/mpl/placeholders.hpp:24,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/mpl/apply.hpp:24,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/serialization/array_optimization.hpp:18,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/serialization/array_wrapper.hpp:21,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/serialization/array.hpp:26,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/ublas/storage.hpp:22,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/ublas/vector.hpp:21,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/odeint/util/ublas_wrapper.hpp:23,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/odeint.hpp:25,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/ode_rk45.hpp:9,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/integrate_ode_rk45.hpp:6,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/mpl/assert.hpp:194:21: warning: unnecessary parentheses in declaration of ‘assert_arg’ [-Wparentheses]
+ failed ************ (Pred::************
+                     ^
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/mpl/assert.hpp:199:21: warning: unnecessary parentheses in declaration of ‘assert_not_arg’ [-Wparentheses]
+ failed ************ (boost::mpl::not_<Pred>::************
+                     ^
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/fusion/functional/invocation/detail/that_ptr.hpp:13,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/fusion/functional/invocation/invoke.hpp:52,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/fusion/functional/adapter/fused.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/fusion/functional/generation/make_fused.hpp:13,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/fusion/include/make_fused.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/odeint/util/resize.hpp:30,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/odeint/util/state_wrapper.hpp:26,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/odeint/util/ublas_wrapper.hpp:33,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/numeric/odeint.hpp:25,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/ode_rk45.hpp:9,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/integrate_ode_rk45.hpp:6,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/BH/include/boost/get_pointer.hpp:48:40: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+ template<class T> T * get_pointer(std::auto_ptr<T> const& p)
+                                        ^~~~~~~~
+In file included from /usr/include/c++/8/bits/locale_conv.h:41,
+                 from /usr/include/c++/8/locale:43,
+                 from /usr/include/c++/8/iomanip:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/RcppCommon.h:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp.h:27,
+                 from stan_files/suez_step_1.cc:1:
+/usr/include/c++/8/bits/unique_ptr.h:53:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp: In member function ‘virtual std::vector<std::complex<double> > stan::io::dump::vals_c(const string&) const’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:693:52: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<double>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+       for (comp_iter = 0, real_iter = 0; real_iter < val_r->second.first.size();
+                                          ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:706:24: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+              real_iter < val_i->second.first.size();
+              ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/functor/partials_propagator.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/fun/log_mix.hpp:6,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/fun.hpp:114,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev.hpp:14,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/model/log_prob_grad.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/model/test_gradients.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/diagnose/diagnose.hpp:8,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:49,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/functor/operands_and_partials.hpp: In constructor ‘stan::math::internal::ops_partials_edge<double, std::vector<std::vector<stan::math::var_value<double>, std::allocator<stan::math::var_value<double> > > > >::ops_partials_edge(const std::vector<std::vector<stan::math::var_value<double>, std::allocator<stan::math::var_value<double> > > >&)’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/functor/operands_and_partials.hpp:223:26: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘int64_t’ {aka ‘long int’} [-Wsign-compare]
+     for (size_t i = 0; i < stan::math::size(ops); ++i) {
+                        ~~^~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/util/initialize.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/diagnose/diagnose.hpp:10,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:49,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/random_var_context.hpp: In member function ‘virtual std::vector<std::complex<double> > stan::io::random_var_context::vals_c(const string&) const’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/random_var_context.hpp:111:52: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<double>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+       for (comp_iter = 0, real_iter = 0; real_iter < val_r.size();
+                                          ~~~~~~~~~~^~~~~~~~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/optimize/bfgs.hpp:9,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:52,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/optimization/bfgs.hpp: At global scope:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/optimization/bfgs.hpp:99:10: warning: type qualifiers ignored on function return type [-Wignored-qualifiers]
+   inline const size_t iter_num() const noexcept { return _itNum; }
+          ^~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/util/create_unit_e_diag_inv_metric.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/util/inv_metric.hpp:1,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/sample/hmc_nuts_dense_e.hpp:14,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:56,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/array_var_context.hpp: In member function ‘virtual std::vector<std::complex<double> > stan::io::array_var_context::vals_c(const string&) const’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/array_var_context.hpp:304:52: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<double>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+       for (comp_iter = 0, real_iter = 0; real_iter < val_r->second.first.size();
+                                          ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/array_var_context.hpp:317:24: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<int>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+              real_iter < val_i->second.first.size();
+              ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/acosh.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/constraint.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_consistent_sizes.hpp: In instantiation of ‘void stan::math::check_consistent_sizes(const char*, const char*, const T1&, const char*, const T2&, const Ts& ...) [with T1 = Eigen::CwiseBinaryOp<Eigen::internal::scalar_cmp_op<int, int, (Eigen::internal::ComparisonName)0>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<int>, Eigen::Array<int, -1, 1> >, const Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<int, int>, const Eigen::Array<int, -1, 1>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<int>, const Eigen::Array<int, -1, 1> > > >; T2 = int; Ts = {char [16], Eigen::Array<int, -1, 1, 0, -1, 1>}]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/select.hpp:168:25:   required from ‘auto stan::math::select(T_bool, T_true, T_false) [with T_bool = Eigen::CwiseBinaryOp<Eigen::internal::scalar_cmp_op<int, int, (Eigen::internal::ComparisonName)0>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<int>, Eigen::Array<int, -1, 1> >, const Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<int, int>, const Eigen::Array<int, -1, 1>, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<int>, const Eigen::Array<int, -1, 1> > > >; T_true = int; T_false = Eigen::Array<int, -1, 1>; stan::require_eigen_array_t<Mat>* <anonymous> = 0; stan::require_any_eigen_array_t<T_true, T_false>* <anonymous> = 0]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_pFq.hpp:172:52:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_consistent_sizes.hpp:47:62: warning: parameter ‘name2’ set but not used [-Wunused-but-set-parameter]
+                                    const T1& x1, const char* name2,
+                                                  ~~~~~~~~~~~~^~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor.hpp:14,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:17,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/hcubature.hpp: In instantiation of ‘Eigen::Matrix<Type, -1, -1> stan::math::internal::combos(int, Scalar, int) [with Scalar = double]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/hcubature.hpp:194:57:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/hcubature.hpp:108:24: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘const int’ [-Wsign-compare]
+   for (size_t i = 0; i < choose_dimk; i++) {
+                      ~~^~~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/hcubature.hpp:110:26: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘const int’ [-Wsign-compare]
+     for (size_t j = 0; j < k; j++) {
+                        ~~^~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/hcubature.hpp: In instantiation of ‘Eigen::Matrix<Type, -1, -1> stan::math::internal::signcombos(int, Scalar, int) [with Scalar = double]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/hcubature.hpp:197:36:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/functor/hcubature.hpp:149:22: warning: comparison of integer expressions of different signedness: ‘int’ and ‘const size_t’ {aka ‘const long unsigned int’} [-Wsign-compare]
+       if (first_zero == index_size) {
+           ~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/util/create_unit_e_diag_inv_metric.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/util/inv_metric.hpp:1,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/sample/hmc_nuts_dense_e.hpp:14,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:56,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/array_var_context.hpp: In instantiation of ‘std::vector<long unsigned int> stan::io::array_var_context::validate_dims(const std::vector<std::__cxx11::basic_string<char> >&, T, const std::vector<std::vector<long unsigned int> >&) [with T = long unsigned int]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/array_var_context.hpp:97:75:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/array_var_context.hpp:74:23: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<std::vector<long unsigned int> >::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+     for (int i = 0; i < dims.size(); i++) {
+                     ~~^~~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/array_var_context.hpp: In instantiation of ‘std::vector<long unsigned int> stan::io::array_var_context::validate_dims(const std::vector<std::__cxx11::basic_string<char> >&, T, const std::vector<std::vector<long unsigned int> >&) [with T = long int]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/array_var_context.hpp:118:75:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/array_var_context.hpp:74:23: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<std::vector<long unsigned int> >::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err.hpp:6,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/acosh.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/constraint.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_bounded.hpp: In instantiation of ‘static void stan::math::internal::bounded<T_y, T_low, T_high, y_is_vec>::check(const char*, const char*, const T_y&, const T_low&, const T_high&) [with T_y = double; T_low = int; T_high = int; bool y_is_vec = false]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_bounded.hpp:80:75:   required from ‘void stan::math::check_bounded(const char*, const char*, const T_y&, const T_low&, const T_high&) [with T_y = double; T_low = int; T_high = int]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/inv_Phi.hpp:32:59:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_bounded.hpp:30:26: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘int64_t’ {aka ‘long int’} [-Wsign-compare]
+     for (size_t n = 0; n < max_size(low, high); n++) {
+                        ~~^~~~~~~~~~~~~~~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_bounded.hpp: In instantiation of ‘static void stan::math::internal::bounded<T_y, T_low, T_high, y_is_vec>::check(const char*, const char*, const T_y&, const T_low&, const T_high&) [with T_y = int; T_low = int; T_high = int; bool y_is_vec = false]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_bounded.hpp:80:75:   required from ‘void stan::math::check_bounded(const char*, const char*, const T_y&, const T_low&, const T_high&) [with T_y = int; T_low = int; T_high = int]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/one_hot_array.hpp:23:39:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_bounded.hpp:30:26: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘int64_t’ {aka ‘long int’} [-Wsign-compare]
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_not_nan.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_2F1_converges.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/acosh.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/constraint.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp: In instantiation of ‘void stan::math::elementwise_check(const F&, const char*, const char*, const T&, const char*, const Indexings& ...) [with F = stan::math::check_not_nan(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, -1, 1>]::<lambda(double)>; T = Eigen::Matrix<double, -1, 1>; Indexings = {}; stan::require_eigen_t<T>* <anonymous> = 0; std::enable_if_t<((Eigen::internal::traits<_Rhs>::Flags & Eigen::LinearAccessBit) || T::IsVectorAtCompileTime)>* <anonymous> = 0]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_not_nan.hpp:28:20:   required from ‘void stan::math::check_not_nan(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, -1, 1>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/variational/families/normal_fullrank.hpp:47:58:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp:153:24: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘Eigen::EigenBase<Eigen::Matrix<double, -1, 1> >::Index’ {aka ‘long int’} [-Wsign-compare]
+   for (size_t i = 0; i < x.size(); i++) {
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp: In instantiation of ‘void stan::math::elementwise_check(const F&, const char*, const char*, const T&, const char*, const Indexings& ...) [with F = stan::math::check_not_nan(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, -1, -1>]::<lambda(double)>; T = Eigen::Matrix<double, -1, -1>; Indexings = {}; stan::require_eigen_t<T>* <anonymous> = 0; std::enable_if_t<(((!(Eigen::internal::traits<_Rhs>::Flags & Eigen::LinearAccessBit)) && (! T::IsVectorAtCompileTime)) && (!(Eigen::internal::traits<_Rhs>::Flags & Eigen::RowMajorBit)))>* <anonymous> = 0]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_not_nan.hpp:28:20:   required from ‘void stan::math::check_not_nan(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, -1, -1>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/variational/families/normal_fullrank.hpp:74:66:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp:207:24: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘Eigen::Index’ {aka ‘long int’} [-Wsign-compare]
+   for (size_t i = 0; i < x.rows(); i++) {
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp:208:26: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘Eigen::Index’ {aka ‘long int’} [-Wsign-compare]
+     for (size_t j = 0; j < x.cols(); j++) {
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/meta.hpp:70,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/invalid_argument.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/core/init_threadpool_tbb.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/core.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/abs.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/constraint.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_less_or_equal.hpp: In instantiation of ‘void stan::math::check_less_or_equal(const char*, const char*, const T_y&, const T_high&, Idxs ...) [with T_y = long unsigned int; T_high = long int; stan::require_all_stan_scalar_t<U, V>* <anonymous> = 0; Idxs = {}]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/array_var_context.hpp:79:36:   required from ‘std::vector<long unsigned int> stan::io::array_var_context::validate_dims(const std::vector<std::__cxx11::basic_string<char> >&, T, const std::vector<std::vector<long unsigned int> >&) [with T = long int]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/array_var_context.hpp:118:75:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_less_or_equal.hpp:39:20: warning: comparison of integer expressions of different signedness: ‘const long unsigned int’ and ‘const long int’ [-Wsign-compare]
+   if (unlikely(!(y <= high))) {
+                 ~~~^~~~~~~~
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/meta/compiler_attributes.hpp:9:41: note: in definition of macro ‘unlikely’
+ #define unlikely(x) __builtin_expect(!!(x), 0)
+                                         ^
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_not_nan.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_2F1_converges.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/acosh.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/constraint.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp: In instantiation of ‘void stan::math::elementwise_check(const F&, const char*, const char*, const T&, const char*, const Indexings& ...) [with F = stan::math::check_finite(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, -1, 1>]::<lambda(double)>; T = Eigen::Matrix<double, -1, 1>; Indexings = {}; stan::require_eigen_t<T>* <anonymous> = 0; std::enable_if_t<((Eigen::internal::traits<_Rhs>::Flags & Eigen::LinearAccessBit) || T::IsVectorAtCompileTime)>* <anonymous> = 0]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_finite.hpp:29:20:   required from ‘void stan::math::check_finite(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, -1, 1>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/util/validate_diag_inv_metric.hpp:21:70:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp:153:24: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘Eigen::EigenBase<Eigen::Matrix<double, -1, 1> >::Index’ {aka ‘long int’} [-Wsign-compare]
+   for (size_t i = 0; i < x.size(); i++) {
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp: In instantiation of ‘void stan::math::elementwise_check(const F&, const char*, const char*, const T&, const char*, const Indexings& ...) [with F = stan::math::check_positive(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, -1, 1>]::<lambda(double)>; T = Eigen::Matrix<double, -1, 1>; Indexings = {}; stan::require_eigen_t<T>* <anonymous> = 0; std::enable_if_t<((Eigen::internal::traits<_Rhs>::Flags & Eigen::LinearAccessBit) || T::IsVectorAtCompileTime)>* <anonymous> = 0]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_positive.hpp:29:20:   required from ‘void stan::math::check_positive(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, -1, 1>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/util/validate_diag_inv_metric.hpp:22:74:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp:153:24: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘Eigen::EigenBase<Eigen::Matrix<double, -1, 1> >::Index’ {aka ‘long int’} [-Wsign-compare]
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err.hpp:6,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/acosh.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/constraint.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_bounded.hpp: In instantiation of ‘static void stan::math::internal::bounded<T_y, T_low, T_high, y_is_vec>::check(const char*, const char*, const T_y&, const T_low&, const T_high&) [with T_y = double; T_low = double; T_high = double; bool y_is_vec = false]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_bounded.hpp:80:75:   required from ‘void stan::math::check_bounded(const char*, const char*, const T_y&, const T_low&, const T_high&) [with T_y = double; T_low = double; T_high = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/atanh.hpp:32:18:   required from ‘double stan::math::atanh(T&&) [with T = const double&; stan::require_arithmetic_t<T>* <anonymous> = 0]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/fun/atanh.hpp:59:41:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_bounded.hpp:30:26: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘int64_t’ {aka ‘long int’} [-Wsign-compare]
+     for (size_t n = 0; n < max_size(low, high); n++) {
+                        ~~^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:54,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/optimize/newton.hpp: In instantiation of ‘int stan::services::optimize::newton(Model&, const stan::io::var_context&, unsigned int, unsigned int, double, int, bool, stan::callbacks::interrupt&, stan::callbacks::logger&, stan::callbacks::writer&, stan::callbacks::writer&) [with Model = model_suez_step_1_namespace::model_suez_step_1; bool jacobian = false]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:502:41:   required from ‘int rstan::{anonymous}::command(rstan::stan_args&, Model&, Rcpp::List&, const std::vector<long unsigned int>&, const std::vector<std::__cxx11::basic_string<char> >&, RNG_t&) [with Model = model_suez_step_1_namespace::model_suez_step_1; RNG_t = boost::random::additive_combine_engine<boost::random::linear_congruential_engine<unsigned int, 40014, 0, 2147483563>, boost::random::linear_congruential_engine<unsigned int, 40692, 0, 2147483399> >; Rcpp::List = Rcpp::Vector<19>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:1215:18:   required from ‘SEXPREC* rstan::stan_fit<Model, RNG_t>::call_sampler(SEXP) [with Model = model_suez_step_1_namespace::model_suez_step_1; RNG_t = boost::random::additive_combine_engine<boost::random::linear_congruential_engine<unsigned int, 40014, 0, 2147483563>, boost::random::linear_congruential_engine<unsigned int, 40692, 0, 2147483399> >; SEXP = SEXPREC*]’
+stan_files/suez_step_1.cc:13:87:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/optimize/newton.hpp:98:7: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
+   int ret = 0;
+       ^~~
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/fun/multiply_lower_tri_self_transpose.hpp:8,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/constraint/cov_matrix_constrain.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/constraint.hpp:9,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/model/log_prob_grad.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/model/test_gradients.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/diagnose/diagnose.hpp:8,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:49,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/fun/dot_self.hpp: In instantiation of ‘stan::math::var stan::math::dot_self(const T&) [with T = Eigen::Map<const Eigen::Matrix<stan::math::var_value<double>, -1, 1>, 0, Eigen::Stride<0, 0> >; stan::require_eigen_vector_vt<stan::is_var, T>* <anonymous> = 0; stan::math::var = stan::math::var_value<double>]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/constraint/unit_vector_constrain.hpp:64:23:   required from ‘auto stan::math::unit_vector_constrain(const T&, stan::math::var&) [with T = Eigen::Map<const Eigen::Matrix<stan::math::var_value<double>, -1, 1>, 0, Eigen::Stride<0, 0> >; stan::require_eigen_col_vector_vt<stan::is_var, T>* <anonymous> = 0; stan::math::var = stan::math::var_value<double>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/constraint/unit_vector_constrain.hpp:118:33:   required from ‘auto stan::math::unit_vector_constrain(T&&, Lp&) [with bool Jacobian = true; T = Eigen::Map<const Eigen::Matrix<stan::math::var_value<double>, -1, 1>, 0, Eigen::Stride<0, 0> >; Lp = stan::math::var_value<double>; stan::require_convertible_t<typename stan::return_type<T2>::type, Lp>* <anonymous> = 0]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/deserializer.hpp:489:72:   required from ‘auto stan::io::deserializer<T>::read_constrain_unit_vector(LP&, Sizes ...) [with Ret = Eigen::Matrix<stan::math::var_value<double>, -1, 1>; bool Jacobian = true; LP = stan::math::var_value<double>; Sizes = {int}; stan::require_not_std_vector_t<Ret>* <anonymous> = 0; T = stan::math::var_value<double>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/deserializer.hpp:519:7:   required from ‘auto stan::io::deserializer<T>::read_constrain_unit_vector(LP&, size_t, Sizes ...) [with Ret = std::vector<Eigen::Matrix<stan::math::var_value<double>, -1, 1>, std::allocator<Eigen::Matrix<stan::math::var_value<double>, -1, 1> > >; bool Jacobian = true; LP = stan::math::var_value<double>; Sizes = {int}; stan::require_std_vector_t<U>* <anonymous> = 0; T = stan::math::var_value<double>; size_t = long unsigned int]’
+stan_files/suez_step_1.hpp:356:12:   required from ‘stan::scalar_type_t<T_inv_scale> model_suez_step_1_namespace::model_suez_step_1::log_prob_impl(VecR&, VecI&, std::ostream*) const [with bool propto__ = true; bool jacobian__ = true; VecR = std::vector<stan::math::var_value<double>, std::allocator<stan::math::var_value<double> > >; VecI = std::vector<int>; stan::require_vector_like_t<VecR>* <anonymous> = 0; stan::require_vector_like_vt<std::is_integral, VecI>* <anonymous> = 0; stan::require_st_var<VecR>* <anonymous> = 0; stan::scalar_type_t<T_inv_scale> = stan::math::var_value<double>; std::ostream = std::basic_ostream<char>]’
+stan_files/suez_step_1.hpp:699:75:   required from ‘T_ model_suez_step_1_namespace::model_suez_step_1::log_prob(std::vector<T_x2>&, std::vector<int>&, std::ostream*) const [with bool propto__ = true; bool jacobian__ = true; T_ = stan::math::var_value<double>; std::ostream = std::basic_ostream<char>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/model/log_prob_grad.hpp:40:9:   required from ‘double stan::model::log_prob_grad(const M&, std::vector<double>&, std::vector<int>&, std::vector<double>&, std::ostream*) [with bool propto = true; bool jacobian_adjust_transform = true; M = model_suez_step_1_namespace::model_suez_step_1; std::ostream = std::basic_ostream<char>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:1183:49:   required from ‘SEXPREC* rstan::stan_fit<Model, RNG_t>::grad_log_prob(SEXP, SEXP) [with Model = model_suez_step_1_namespace::model_suez_step_1; RNG_t = boost::random::additive_combine_engine<boost::random::linear_congruential_engine<unsigned int, 40014, 0, 2147483563>, boost::random::linear_congruential_engine<unsigned int, 40692, 0, 2147483399> >; SEXP = SEXPREC*]’
+stan_files/suez_step_1.cc:21:88:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/fun/dot_self.hpp:28:24: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘Eigen::EigenBase<Eigen::Map<Eigen::Matrix<stan::math::var_value<double>, -1, 1> > >::Index’ {aka ‘long int’} [-Wsign-compare]
+   for (size_t i = 0; i < arena_v.size(); ++i) {
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_not_nan.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_2F1_converges.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/acosh.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/constraint.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp: In instantiation of ‘void stan::math::elementwise_check(const F&, const char*, const char*, const T&, const char*, const Indexings& ...) [with F = stan::math::check_finite(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, 2, 1>]::<lambda(double)>; T = Eigen::Matrix<double, 2, 1>; Indexings = {}; stan::require_eigen_t<T>* <anonymous> = 0; std::enable_if_t<((Eigen::internal::traits<_Rhs>::Flags & Eigen::LinearAccessBit) || T::IsVectorAtCompileTime)>* <anonymous> = 0]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_finite.hpp:29:20:   required from ‘void stan::math::check_finite(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, 2, 1>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/hypergeometric_pFq.hpp:32:15:   required from ‘stan::return_type_t<T_x, T_sigma, T_l> stan::math::hypergeometric_pFq(Ta&&, Tb&&, Tz&&) [with Ta = Eigen::Matrix<double, 2, 1>&; Tb = Eigen::Matrix<double, 1, 1, 0, 1, 1>&; Tz = const double&; stan::require_all_vector_st<std::is_arithmetic, Ta, Tb>* <anonymous> = 0; stan::require_arithmetic_t<Tz>* <anonymous> = 0; stan::return_type_t<T_x, T_sigma, T_l> = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/hypergeometric_2F1.hpp:190:30:   required from ‘stan::return_type_t<T_x1, T_x2, T_sigma, T_l> stan::math::hypergeometric_2F1(const Ta1&, const Ta2&, const Tb&, const Tz&) [with Ta1 = double; Ta2 = double; Tb = double; Tz = double; ScalarT = double; OptT = boost::optional<double>; stan::require_all_arithmetic_t<Ta1, Ta2, Tb, Tz>* <anonymous> = 0; stan::return_type_t<T_x1, T_x2, T_sigma, T_l> = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_2F1.hpp:192:39:   required from ‘TupleT stan::math::internal::grad_2F1_impl(const T1&, const T2&, const T3&, const T_z&, double, int) [with bool calc_a1 = true; bool calc_a2 = true; bool calc_b1 = true; bool calc_z = true; T1 = double; T2 = double; T3 = double; T_z = double; ScalarT = double; TupleT = std::tuple<double, double, double, double>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_2F1.hpp:308:57:   required from ‘auto stan::math::grad_2F1(const T1&, const T2&, const T3&, const T_z&, double, int) [with bool ReturnSameT = true; T1 = double; T2 = double; T3 = double; T_z = double; stan::require_t<std::integral_constant<bool, __v> >* <anonymous> = 0]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_reg_inc_beta.hpp:50:25:   required from ‘void stan::math::grad_reg_inc_beta(T&, T&, const T&, const T&, const T&, const T&, const T&, const T&, const T&) [with T = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/fun/inc_beta.hpp:28:64:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp:153:24: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘Eigen::EigenBase<Eigen::Matrix<double, 2, 1> >::Index’ {aka ‘long int’} [-Wsign-compare]
+   for (size_t i = 0; i < x.size(); i++) {
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp: In instantiation of ‘void stan::math::elementwise_check(const F&, const char*, const char*, const T&, const char*, const Indexings& ...) [with F = stan::math::check_finite(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, 1, 1, 0, 1, 1>]::<lambda(double)>; T = Eigen::Matrix<double, 1, 1, 0, 1, 1>; Indexings = {}; stan::require_eigen_t<T>* <anonymous> = 0; std::enable_if_t<((Eigen::internal::traits<_Rhs>::Flags & Eigen::LinearAccessBit) || T::IsVectorAtCompileTime)>* <anonymous> = 0]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_finite.hpp:29:20:   required from ‘void stan::math::check_finite(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, 1, 1, 0, 1, 1>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/hypergeometric_pFq.hpp:33:15:   required from ‘stan::return_type_t<T_x, T_sigma, T_l> stan::math::hypergeometric_pFq(Ta&&, Tb&&, Tz&&) [with Ta = Eigen::Matrix<double, 2, 1>&; Tb = Eigen::Matrix<double, 1, 1, 0, 1, 1>&; Tz = const double&; stan::require_all_vector_st<std::is_arithmetic, Ta, Tb>* <anonymous> = 0; stan::require_arithmetic_t<Tz>* <anonymous> = 0; stan::return_type_t<T_x, T_sigma, T_l> = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/hypergeometric_2F1.hpp:190:30:   required from ‘stan::return_type_t<T_x1, T_x2, T_sigma, T_l> stan::math::hypergeometric_2F1(const Ta1&, const Ta2&, const Tb&, const Tz&) [with Ta1 = double; Ta2 = double; Tb = double; Tz = double; ScalarT = double; OptT = boost::optional<double>; stan::require_all_arithmetic_t<Ta1, Ta2, Tb, Tz>* <anonymous> = 0; stan::return_type_t<T_x1, T_x2, T_sigma, T_l> = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_2F1.hpp:192:39:   required from ‘TupleT stan::math::internal::grad_2F1_impl(const T1&, const T2&, const T3&, const T_z&, double, int) [with bool calc_a1 = true; bool calc_a2 = true; bool calc_b1 = true; bool calc_z = true; T1 = double; T2 = double; T3 = double; T_z = double; ScalarT = double; TupleT = std::tuple<double, double, double, double>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_2F1.hpp:308:57:   required from ‘auto stan::math::grad_2F1(const T1&, const T2&, const T3&, const T_z&, double, int) [with bool ReturnSameT = true; T1 = double; T2 = double; T3 = double; T_z = double; stan::require_t<std::integral_constant<bool, __v> >* <anonymous> = 0]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_reg_inc_beta.hpp:50:25:   required from ‘void stan::math::grad_reg_inc_beta(T&, T&, const T&, const T&, const T&, const T&, const T&, const T&, const T&) [with T = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/fun/inc_beta.hpp:28:64:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp:153:24: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘Eigen::EigenBase<Eigen::Matrix<double, 1, 1, 0, 1, 1> >::Index’ {aka ‘long int’} [-Wsign-compare]
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp: In instantiation of ‘void stan::math::elementwise_check(const F&, const char*, const char*, const T&, const char*, const Indexings& ...) [with F = stan::math::check_not_nan(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, 2, 1>]::<lambda(double)>; T = Eigen::Matrix<double, 2, 1>; Indexings = {}; stan::require_eigen_t<T>* <anonymous> = 0; std::enable_if_t<((Eigen::internal::traits<_Rhs>::Flags & Eigen::LinearAccessBit) || T::IsVectorAtCompileTime)>* <anonymous> = 0]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_not_nan.hpp:28:20:   required from ‘void stan::math::check_not_nan(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, 2, 1>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/hypergeometric_pFq.hpp:35:16:   required from ‘stan::return_type_t<T_x, T_sigma, T_l> stan::math::hypergeometric_pFq(Ta&&, Tb&&, Tz&&) [with Ta = Eigen::Matrix<double, 2, 1>&; Tb = Eigen::Matrix<double, 1, 1, 0, 1, 1>&; Tz = const double&; stan::require_all_vector_st<std::is_arithmetic, Ta, Tb>* <anonymous> = 0; stan::require_arithmetic_t<Tz>* <anonymous> = 0; stan::return_type_t<T_x, T_sigma, T_l> = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/hypergeometric_2F1.hpp:190:30:   required from ‘stan::return_type_t<T_x1, T_x2, T_sigma, T_l> stan::math::hypergeometric_2F1(const Ta1&, const Ta2&, const Tb&, const Tz&) [with Ta1 = double; Ta2 = double; Tb = double; Tz = double; ScalarT = double; OptT = boost::optional<double>; stan::require_all_arithmetic_t<Ta1, Ta2, Tb, Tz>* <anonymous> = 0; stan::return_type_t<T_x1, T_x2, T_sigma, T_l> = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_2F1.hpp:192:39:   required from ‘TupleT stan::math::internal::grad_2F1_impl(const T1&, const T2&, const T3&, const T_z&, double, int) [with bool calc_a1 = true; bool calc_a2 = true; bool calc_b1 = true; bool calc_z = true; T1 = double; T2 = double; T3 = double; T_z = double; ScalarT = double; TupleT = std::tuple<double, double, double, double>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_2F1.hpp:308:57:   required from ‘auto stan::math::grad_2F1(const T1&, const T2&, const T3&, const T_z&, double, int) [with bool ReturnSameT = true; T1 = double; T2 = double; T3 = double; T_z = double; stan::require_t<std::integral_constant<bool, __v> >* <anonymous> = 0]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_reg_inc_beta.hpp:50:25:   required from ‘void stan::math::grad_reg_inc_beta(T&, T&, const T&, const T&, const T&, const T&, const T&, const T&, const T&) [with T = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/fun/inc_beta.hpp:28:64:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp:153:24: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘Eigen::EigenBase<Eigen::Matrix<double, 2, 1> >::Index’ {aka ‘long int’} [-Wsign-compare]
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp: In instantiation of ‘void stan::math::elementwise_check(const F&, const char*, const char*, const T&, const char*, const Indexings& ...) [with F = stan::math::check_not_nan(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, 1, 1, 0, 1, 1>]::<lambda(double)>; T = Eigen::Matrix<double, 1, 1, 0, 1, 1>; Indexings = {}; stan::require_eigen_t<T>* <anonymous> = 0; std::enable_if_t<((Eigen::internal::traits<_Rhs>::Flags & Eigen::LinearAccessBit) || T::IsVectorAtCompileTime)>* <anonymous> = 0]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_not_nan.hpp:28:20:   required from ‘void stan::math::check_not_nan(const char*, const char*, const T_y&) [with T_y = Eigen::Matrix<double, 1, 1, 0, 1, 1>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/hypergeometric_pFq.hpp:36:16:   required from ‘stan::return_type_t<T_x, T_sigma, T_l> stan::math::hypergeometric_pFq(Ta&&, Tb&&, Tz&&) [with Ta = Eigen::Matrix<double, 2, 1>&; Tb = Eigen::Matrix<double, 1, 1, 0, 1, 1>&; Tz = const double&; stan::require_all_vector_st<std::is_arithmetic, Ta, Tb>* <anonymous> = 0; stan::require_arithmetic_t<Tz>* <anonymous> = 0; stan::return_type_t<T_x, T_sigma, T_l> = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/hypergeometric_2F1.hpp:190:30:   required from ‘stan::return_type_t<T_x1, T_x2, T_sigma, T_l> stan::math::hypergeometric_2F1(const Ta1&, const Ta2&, const Tb&, const Tz&) [with Ta1 = double; Ta2 = double; Tb = double; Tz = double; ScalarT = double; OptT = boost::optional<double>; stan::require_all_arithmetic_t<Ta1, Ta2, Tb, Tz>* <anonymous> = 0; stan::return_type_t<T_x1, T_x2, T_sigma, T_l> = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_2F1.hpp:192:39:   required from ‘TupleT stan::math::internal::grad_2F1_impl(const T1&, const T2&, const T3&, const T_z&, double, int) [with bool calc_a1 = true; bool calc_a2 = true; bool calc_b1 = true; bool calc_z = true; T1 = double; T2 = double; T3 = double; T_z = double; ScalarT = double; TupleT = std::tuple<double, double, double, double>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_2F1.hpp:308:57:   required from ‘auto stan::math::grad_2F1(const T1&, const T2&, const T3&, const T_z&, double, int) [with bool ReturnSameT = true; T1 = double; T2 = double; T3 = double; T_z = double; stan::require_t<std::integral_constant<bool, __v> >* <anonymous> = 0]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/grad_reg_inc_beta.hpp:50:25:   required from ‘void stan::math::grad_reg_inc_beta(T&, T&, const T&, const T&, const T&, const T&, const T&, const T&, const T&) [with T = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/rev/fun/inc_beta.hpp:28:64:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/elementwise_check.hpp:153:24: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘Eigen::EigenBase<Eigen::Matrix<double, 1, 1, 0, 1, 1> >::Index’ {aka ‘long int’} [-Wsign-compare]
+In file included from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun/acosh.hpp:5,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/fun.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/constraint.hpp:4,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim.hpp:11,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/io/dump.hpp:7,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:43,
+                 from /home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/rstaninc.hpp:4,
+                 from stan_files/suez_step_1.hpp:18,
+                 from stan_files/suez_step_1.cc:3:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_consistent_sizes.hpp: In instantiation of ‘void stan::math::check_consistent_sizes(const char*, const char*, const T1&, const char*, const T2&, const Ts& ...) [with T1 = int; T2 = int; Ts = {}]’:
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/prob/normal_rng.hpp:40:25:   required from ‘typename stan::VectorBuilder<true, double, T_shape1, T_shape2>::type stan::math::normal_rng(const T_loc&, const T_scale&, RNG&) [with T_loc = int; T_scale = int; RNG = boost::random::additive_combine_engine<boost::random::linear_congruential_engine<unsigned int, 40014, 0, 2147483563>, boost::random::linear_congruential_engine<unsigned int, 40692, 0, 2147483399> >; typename stan::VectorBuilder<true, double, T_shape1, T_shape2>::type = double]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/variational/families/normal_fullrank.hpp:366:38:   required from ‘void stan::variational::normal_fullrank::sample_log_g(BaseRNG&, Eigen::VectorXd&, double&) const [with BaseRNG = boost::random::additive_combine_engine<boost::random::linear_congruential_engine<unsigned int, 40014, 0, 2147483563>, boost::random::linear_congruential_engine<unsigned int, 40692, 0, 2147483399> >; Eigen::VectorXd = Eigen::Matrix<double, -1, 1>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/variational/advi.hpp:504:7:   required from ‘int stan::variational::advi<Model, Q, BaseRNG>::run(double, bool, int, double, int, stan::callbacks::logger&, stan::callbacks::writer&, stan::callbacks::writer&) const [with Model = model_suez_step_1_namespace::model_suez_step_1; Q = stan::variational::normal_fullrank; BaseRNG = boost::random::additive_combine_engine<boost::random::linear_congruential_engine<unsigned int, 40014, 0, 2147483563>, boost::random::linear_congruential_engine<unsigned int, 40692, 0, 2147483399> >]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/src/stan/services/experimental/advi/fullrank.hpp:90:5:   required from ‘int stan::services::experimental::advi::fullrank(Model&, const stan::io::var_context&, unsigned int, unsigned int, double, int, int, int, double, double, bool, int, int, int, stan::callbacks::interrupt&, stan::callbacks::logger&, stan::callbacks::writer&, stan::callbacks::writer&, stan::callbacks::writer&) [with Model = model_suez_step_1_namespace::model_suez_step_1]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:890:17:   required from ‘int rstan::{anonymous}::command(rstan::stan_args&, Model&, Rcpp::List&, const std::vector<long unsigned int>&, const std::vector<std::__cxx11::basic_string<char> >&, RNG_t&) [with Model = model_suez_step_1_namespace::model_suez_step_1; RNG_t = boost::random::additive_combine_engine<boost::random::linear_congruential_engine<unsigned int, 40014, 0, 2147483563>, boost::random::linear_congruential_engine<unsigned int, 40692, 0, 2147483399> >; Rcpp::List = Rcpp::Vector<19>]’
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/rstan/include/rstan/stan_fit.hpp:1215:18:   required from ‘SEXPREC* rstan::stan_fit<Model, RNG_t>::call_sampler(SEXP) [with Model = model_suez_step_1_namespace::model_suez_step_1; RNG_t = boost::random::additive_combine_engine<boost::random::linear_congruential_engine<unsigned int, 40014, 0, 2147483563>, boost::random::linear_congruential_engine<unsigned int, 40692, 0, 2147483399> >; SEXP = SEXPREC*]’
+stan_files/suez_step_1.cc:13:87:   required from here
+/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/StanHeaders/include/stan/math/prim/err/check_consistent_sizes.hpp:47:62: warning: parameter ‘name2’ set but not used [-Wunused-but-set-parameter]
+                                    const T1& x1, const char* name2,
+                                                  ~~~~~~~~~~~~^~~~~
+g++ -std=gnu++17 -shared -L/opt/R/4.1.2/lib/R/lib -L/usr/local/lib -o suez.so stan_files/suez_step_1.o init.o lmm.o -L/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/lib/ -Wl,-rpath,/home/ricardo_a_vialle/R/x86_64-pc-linux-gnu-library/4.1/RcppParallel/lib/ -ltbb -ltbbmalloc -L/opt/R/4.1.2/lib/R/lib -lR
+rm stan_files/suez_step_1.cc
+installing to /pastel/Github_scripts/suez/bench/results/linux/klopes_20261113_1950/lib/assert/00LOCK-assert/00new/suez/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (suez)

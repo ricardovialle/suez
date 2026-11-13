@@ -1,0 +1,18 @@
+date: Fri Nov 13 19:50:51 UTC 2026
+host: Linux klopes 4.18.0-383.el8.x86_64 #1 SMP Wed Apr 20 15:38:08 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+suez HEAD: 1117754 dirty: 0 files
+cpu: Intel(R) Xeon(R) CPU @ 2.80GHz
+cores: 8
+CXX: g++ / g++ (GCC) 8.5.0 20210514 (Red Hat 8.5.0-20)
+CXX17FLAGS: -std=c++17
+OPENBLAS_NUM_THREADS=unset OMP_NUM_THREADS=unset
+R: R version 4.1.2 (2021-11-01) 
+LAPACK: /usr/lib64/libopenblasp-r0.3.15.so 
+BLAS: /usr/lib64/libopenblasp-r0.3.15.so 
+BLAS (resolved): /usr/lib64/libopenblasp-r0.3.15.so 
+rstan 2.32.7 
+StanHeaders 2.39.1.1 
+RcppEigen 0.3.4.0.2 
+Rcpp 1.1.2 
+RcppParallel 6.2.1 
+BH 1.90.0.1 

@@ -1,0 +1,9 @@
+S: rows 19942 keys TRUE NA-mismatch 0 | max dl(data) 5.7e-14 dl(boot) 3.3e-07 | dbeta 6.1e-16 dse 2.8e-09 | identical FALSE => PASS
+M: rows 60199 keys TRUE NA-mismatch 0 | max dl(data) 8.5e-14 dl(boot) 4.2e-07 | dbeta 6.1e-16 dse 1.7e-09 | identical FALSE => PASS
+M_miss: rows 30049 keys TRUE NA-mismatch 0 | max dl(data) 0 dl(boot) 0 | dbeta 0 dse 0 | identical TRUE => PASS
+M_fac3: rows 30049 keys TRUE NA-mismatch 0 | max dl(data) 1.7e-13 dl(boot) 3.8e-07 | dbeta 5e-16 dse 2.3e-09 | identical FALSE => PASS
+LA: rows 9950 keys TRUE NA-mismatch 0 | max dl(data) 0 dl(boot) 0 | dbeta NA dse NA | identical TRUE => PASS
+M_grm: rows 30049 keys TRUE NA-mismatch 0 | max dl(data) 3.4e-13 dl(boot) 7.5e-07 | dbeta 2.7e-09 dse 2e-09 | identical FALSE => PASS
+M_dense: rows 148125 keys TRUE NA-mismatch 0 | max dl(data) 1.1e-13 dl(boot) 5e-07 | dbeta 7.8e-16 dse 1.8e-09 | identical FALSE => PASS
+L: rows 59949 keys TRUE NA-mismatch 0 | max dl(data) 2.3e-13 dl(boot) 5.9e-07 | dbeta 5e-16 dse 1e-09 | identical FALSE => PASS
+XL: rows 23859 keys TRUE NA-mismatch 0 | max dl(data) 3.4e-13 dl(boot) 1.4e-07 | dbeta 2.9e-16 dse 5.8e-10 | identical FALSE => PASS

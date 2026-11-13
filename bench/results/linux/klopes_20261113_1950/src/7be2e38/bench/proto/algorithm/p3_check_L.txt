@@ -1,0 +1,4 @@
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+L        genes=10 snps=3910  p0 14.876s  proto 1.962s  ratio 7.58x | l0=2.8e-13 l_geno=4.5e-13 l_interact=5.1e-13 df=0 beta=6.7e-16 se=9.4e-10 l_boot_geno=4.2e-07 l_boot_interact=4.2e-07 rel_beta=3.2e-12 rel_se=1.6e-08 na_mismatch=0 dbeta_over_se=8.1e-15 | stats 116127/0/0
+XL       genes=10 snps=3910  p0 34.879s  proto 4.566s  ratio 7.64x | l0=5.7e-13 l_geno=1.6e-12 l_interact=1.5e-12 df=0 beta=9.2e-16 se=8.1e-10 l_boot_geno=7e-08 l_boot_interact=6.8e-08 rel_beta=2.8e-11 rel_se=1.5e-08 na_mismatch=0 dbeta_over_se=1.6e-14 | stats 114045/0/0

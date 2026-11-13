@@ -1,0 +1,12 @@
+easy_impute             Simple SVD based imputation of missing
+                        genotypes
+learn_covariance        Function to learn covariance structure across
+                        samples using latent factors
+map_interaction_qtl     Response (e)QTL mapping
+qqnorm_no_plot          qqnorm without plotting
+quantile_normalize      Quantile normalize rows (to normal)
+quantile_normalize_cols
+                        Quantile normalize columns
+read_tractor            Read Tractor's per-ancestry dosage and
+                        haplotype-count files
+suez-package            The 'suez' package.
