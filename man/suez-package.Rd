@@ -6,7 +6,7 @@
 \alias{suez}
 \title{The 'suez' package.}
 \description{
-Extends the PANAMA (e)QTL mapping approach to handle repeat measurements and multiple conditions
+Maps expression QTLs and genotype x condition (response) eQTLs with linear mixed models that account for repeated samples, relatedness and hidden confounders, extending the PANAMA approach to repeat measurements and multiple conditions (with optional local-ancestry models for admixed samples)
 }
 \references{
 * Fusi N, Stegle O, Lawrence ND. 2012. Joint modelling of confounding factors and prominent genetic regulators provides increased accuracy in genetical genomics studies. PLoS Computational Biology 8:e1002330.

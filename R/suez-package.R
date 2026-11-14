@@ -1,6 +1,6 @@
 #' The 'suez' package.
 #' 
-#' @description Extends the PANAMA (e)QTL mapping approach to handle repeat measurements and multiple conditions
+#' @description Maps expression QTLs and genotype x condition (response) eQTLs with linear mixed models that account for repeated samples, relatedness and hidden confounders, extending the PANAMA approach to repeat measurements and multiple conditions (with optional local-ancestry models for admixed samples)
 #' 
 #' @docType package
 #' @name suez-package

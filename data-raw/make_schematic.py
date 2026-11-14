@@ -54,6 +54,7 @@ cards = [  # y, h, title, lines
     (158, 92, "Sample annotation", ["individual (repeated samples)", "condition: factor or numeric"]),
     (266, 72, "Kinship / GRM", ["optional, individuals ×", "individuals"]),
     (420, 112, "Genotypes", ["SNPs × individuals (0/1/2)", "+ SNP positions", "+ gene positions"]),
+    (548, 92, "Covariates", ["optional, samples × q:", "PCs, sex, batch, ..."]),
     (672, 112, "Local ancestry", ["optional, admixed samples:", "Tractor files per ancestry", "(dosage + hapcount)"]),
 ]
 for y, h, t, ls in cards:
@@ -112,7 +113,7 @@ models = [("M0", "y = C b + e"), ("M1", "y = C b + g β + e"), ("M2", "y = C b +
 for i, (m, f) in enumerate(models):
     text(ax, Y2 + 106 + 21 * i, m, 13, S2, "700"); text(ax + 32, Y2 + 106 + 21 * i, f, 13.5)
 text(ax, Y2 + 176, "e ~ N(0, σ²_{k} K + σ² I),   K = cov_suez", 13)
-text(ax, Y2 + 196, "C: condition, g: genotype (standardized)", 11.5, MUTED)
+text(ax, Y2 + 196, "C: condition + covariates, g: genotype (std.)", 11.5, MUTED)
 # mini plot: expression vs genotype per condition
 px, py, pw, ph = ax + 10, Y2 + 212, 150, 54
 out.append(f'<path d="M{px},{py} L{px},{py+ph} L{px+pw},{py+ph}" fill="none" stroke="{LINE}" stroke-width="1.2"/>')
@@ -133,7 +134,7 @@ text(px + pw / 2, py + ph + 26, "genotype", 10.5, MUTED, anchor="middle")
 bx = X2 + 300
 text(bx, Y2 + 82, "Exact fit of each model", 13, INK, "700")
 for i, l in enumerate(["rotate by the eigenvectors of K: the", "covariance becomes diagonal, b and", "the scale are closed-form, leaving",
-                       "h = σ²_{k} / (σ²_{k} + σ²)"]):
+                       "h = σ²_{k} / (σ²_{k} + σ²)", "(default K: eigenvectors built exactly)"]):
     text(bx, Y2 + 104 + 17 * i, l, 12, MUTED)
 cx, cy, cw, ch = bx + 6, Y2 + 186, 200, 66
 def ll(x): return 0.9 * math.exp(-((x + 1.6) / 0.8) ** 2) + 1.0 * math.exp(-((x - 1.2) / 0.6) ** 2)
@@ -196,6 +197,7 @@ arrow([(220, 302), (X1 - 4, 302)])                    # kinship -> step 1
 arrow([(236, 96), (236, 470), (X2 - 4, 470)])         # expression -> step 2
 arrow([(244, 204), (244, 486), (X2 - 4, 486)])        # annotation -> step 2
 arrow([(220, 520), (X2 - 4, 520)])                    # genotypes -> step 2
+arrow([(220, 594), (X2 - 4, 594)])                    # covariates -> step 2
 arrow([(220, 728), (X3 - 4, 728)], S3)                # local ancestry -> local-ancestry mode
 arrow([(X3 + W3 - 60, Y3 + 4), (X3 + W3 - 60, Y2 + H2 + 4)], S3)   # replaces g in step 2
 arrow([(hx + n*cs/2, Y1 + H1 - 4), (hx + n*cs/2, Y2 + 4)], S1, 2.2, "sample_kernel", (hx + n*cs/2 + 10, Y1 + H1 + 26))

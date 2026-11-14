@@ -78,6 +78,12 @@ every local maximum of the grid (the likelihood can have two peaks). Failed fits
 before fitting (the likelihood is invariant). The function stops if the kernel is not positive
 semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
 default kernel with condition fitting every within-individual contrast).
+
+Parallelism: genes run on the registered doMC workers (forked processes). \code{options(suez.threads = n)}
+(or the environment variable SUEZ_THREADS) also fits each gene's SNP blocks on n threads (default 1;
+local-ancestry mode is not threaded). Results are identical at any thread count. Threads help when there are
+few genes or N is large (e.g. a GRM kernel with N >= 1000), and use much less memory than the same number of
+forked workers; total CPUs used = workers x threads.
 }
 \section{Local-ancestry models}{
 

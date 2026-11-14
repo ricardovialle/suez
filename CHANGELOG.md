@@ -20,6 +20,8 @@ with the default kernel; peak RAM -3..-78% (bench/results/r12_final_summary.tsv,
 - An exactly collinear SNP can get a finite estimate where round 11 gave NA (both are within rounding of the
   degenerate case: round 11 flips the same way under a 2e-15 perturbation of y).
 - `src/Makevars`: links `$(LAPACK_LIBS) $(BLAS_LIBS)` (no `$(FLIBS)`, so source installs work without gfortran).
+- Documentation: README section comparing suez with standard eQTL pipelines (advantages and limitations of
+  each), covariates and `suez.threads` documented, schematic and package description updated.
 
 ## Round 11: BLAS/LAPACK and large-N review
 

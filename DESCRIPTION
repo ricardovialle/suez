@@ -5,7 +5,9 @@ Version: 0.5
 Date: 2017-09-28
 Author: David A. Knowles
 Maintainer: David A. Knowles <knowles84@gmail.com>
-Description: Extends the PANAMA (e)QTL mapping approach to handle repeat measurements and multiple conditions.
+Description: Maps expression QTLs and genotype x condition (response) eQTLs with linear mixed models that
+    account for repeated samples, relatedness and hidden confounders, extending the PANAMA approach to
+    repeat measurements and multiple conditions (with optional local-ancestry models for admixed samples).
 License: GPL (>=3)
 Depends: R (>= 3.0.2), Rcpp (>= 0.12.12), methods
 Imports: rstan (>= 2.26.0),

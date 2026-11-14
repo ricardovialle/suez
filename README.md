@@ -10,6 +10,7 @@ measured more than once, for example before and after a treatment. It extends th
 - several conditions per individual, categorical (control / treated) or continuous (dose, time, age)
 - hidden confounders, learned as latent factors
 - repeated samples of the same individual, and known relatedness (a kinship matrix or GRM)
+- known covariates (genotype PCs, sex, batch, ...) as fixed effects
 - admixed individuals: ancestry-specific eQTL and response-eQTL effects from local ancestry, with the
   models of [Tractor](https://github.com/Atkinson-Lab/Tractor) inside the suez mixed model
   ([below](#local-ancestry-admixed-samples))
@@ -28,6 +29,58 @@ A worked example from raw counts and a joint-called VCF to eQTL calls (filtering
 genotype QC, both suez steps, multiple testing) is in the
 [vignette](https://ricardovialle.github.io/suez/doc/suez.html) (source:
 [vignettes/suez.Rmd](vignettes/suez.Rmd)).
+
+## How suez compares with standard eQTL mapping
+
+The usual eQTL pipeline (Matrix eQTL, FastQTL, QTLtools, tensorQTL) fits an ordinary linear regression of
+expression on genotype for each gene x SNP, with hidden confounders removed beforehand as fixed covariates
+(PEER factors or expression PCs) and samples assumed independent. Condition-dependent (response) effects
+are then found in one of three ways: mapping each condition separately and comparing the results, mapping
+the per-individual change between two conditions (e.g. log fold change), or adding a genotype x condition
+term to the regression (e.g. tensorQTL's interaction mode). Mixed-model tools (LIMIX, GEMMA, EMMAX) add a
+random effect for relatedness, usually with a kinship matrix computed from genotypes.
+
+suez tests the genotype x condition term inside a linear mixed model fitted to all samples at once, with
+a sample covariance learned from the expression data itself (repeated samples, kinship and latent
+confounders together), and refits the variance components exactly for every SNP.
+
+| | standard pipeline (linear regression) | suez |
+|---|---|---|
+| Unit of analysis | one sample per individual and condition, assumed independent | all samples jointly; repeated samples of an individual share a random effect |
+| Response eQTL test | per-condition maps compared, change scores, or a G x E term in a regression | likelihood-ratio test of the G x E term in a mixed model; factor or continuous condition |
+| Hidden confounders | PEER factors / PCs regressed out first, as fixed covariates | latent factors learned in step 1 as part of the random effect, shared by all genes |
+| Relatedness | usually ignored, or a separate mixed-model tool | kinship / GRM in the same covariance |
+| Variance components | none (OLS), or estimated once under the null (EMMAX-style) | re-estimated for each SNP and model by exact maximum likelihood |
+| Null calibration | permutations (FastQTL beta approximation for gene-level p) | chi-square LRT, optional parametric bootstrap per SNP |
+| Speed | very fast: one vectorised regression per SNP (tensorQTL also runs on GPUs) | ~1,700-35,000 tests per second per core (see [timings](#parallel-processing-and-reproducibility)) |
+
+**Advantages of suez**
+
+- Uses every sample of a repeated-measures design in one model, instead of collapsing to change scores
+  (which double the noise and allow only two conditions) or treating samples of one individual as independent
+  (which inflates p-values).
+- Tests response eQTLs directly, with any number of condition levels or a continuous condition (dose, time),
+  rather than comparing p-values between per-condition maps, which is not a test of a difference.
+- Hidden confounders, repeated samples and kinship are modelled together, so latent factors do not have to
+  be removed beforehand at the cost of degrees of freedom, and the random effect keeps tests calibrated in
+  related or repeatedly sampled cohorts.
+- Exact per-SNP variance components: no approximation when a SNP explains a large share of the variance.
+- Ancestry-specific eQTL and response effects in admixed cohorts (local ancestry, Tractor's models).
+
+**Advantages of the standard pipeline**
+
+- Much faster, so genome-wide cis and trans scans and many permutations are routine; suez maps cis only.
+- Mature workflows around it: gene-level permutation p-values and eGene FDR, conditional / independent
+  signals, fine-mapping and colocalisation inputs, GTEx-style summary statistics.
+- Simple and transparent: with one sample per individual and unrelated donors, a linear regression on
+  PEER/PC-adjusted expression is well calibrated and easy to reproduce.
+- Per-condition maps give condition-specific covariates and normalisation for free, and combine with
+  methods such as mashr to estimate effect sharing across many conditions or tissues.
+
+**Limitations of suez to keep in mind**: one covariance is shared by all genes (gene-specific variance
+structure is not modelled); expression is modelled as Gaussian after per-gene quantile normalisation (no
+count model); p-values are per SNP (apply your own gene-level correction, e.g. Bonferroni within gene, then
+FDR across genes); step 1's covariance is N x N, so memory grows with the square of the number of samples.
 
 ## Installation
 
@@ -140,13 +193,17 @@ res = map_interaction_qtl(input, genotype, geneloc, snploc, anno,
                           permutation_approach = "boot",    # one parametric bootstrap draw per SNP
                           cisdist = 1e5,                    # cis window: gene +/- 100 kb
                           maf_threshold = 0.05,
+                          covariates = pcs,                 # optional: samples x q fixed covariates
                           checkpoint_dir = "suez_checkpoints")
 ```
 
 - `input` is the log2 expression matrix. The default `normalization_approach = "qq"` quantile-normalizes
   each gene, so pass the log2 matrix, not `qq` from step 1. Other choices: `"log"` (centre and scale),
   `"linear"` (on 2^input) and `"none"`.
-- Without a `sample_kernel`, the model only accounts for repeated samples of the same individual.
+- Without a `sample_kernel`, the model only accounts for repeated samples of the same individual. This
+  kernel's eigenvectors are built exactly (no eigen-decomposition), so it is fast even for thousands of samples.
+- `covariates`: a samples x q numeric matrix or data.frame (e.g. genotype PCs, sex, batch, global ancestry),
+  added as fixed effects to every model, in the same row order as `anno`.
 - For each gene, SNPs with `snploc$chr == chr` and `left - cisdist < pos < right + cisdist` are tested.
   SNPs with fewer than 5 ALT alleles in total, or no variation, are skipped. `maf_threshold` drops SNPs
   whose minor allele frequency is at or below the threshold.
@@ -297,22 +354,30 @@ random seed from your R session, so after `set.seed()` the results are the same 
 and either backend. For genome-wide runs on a cluster, you can also split genes across jobs (e.g. by
 chromosome) by subsetting `geneloc`.
 
-Rough timings on an Apple M5 (suez 0.5, one core, bootstrap on; `bench/REPORT.md`): step 2 runs about
-20,000 tests per second with 400 samples and the default kernel (M: 60,000 tests in 2.8 s), about 3,700 per
-second with a dense GRM at 1,000 samples, and step 1 takes a few seconds for 200-400 samples whatever the
-number of genes. With 8 forked workers expect about 4x on Apple silicon (its efficiency cores are slower).
-These timings used R's reference BLAS/LAPACK. The kernel's eigen-decomposition uses LAPACK through `eigen()`
-when R links an optimised BLAS/LAPACK (OpenBLAS, MKL, Accelerate/vecLib, BLIS, FlexiBLAS, ATLAS) and Eigen's
-solver otherwise; `options(suez.eigen_solver = "eigen")` or `"lapack"` forces one. Data fits are the same
-either way; bootstrap draws for a given seed depend on the solver (same distribution). Linux checks and
-timings: `bench/linux/run_checks.sh`.
+Each gene can also use several threads, `options(suez.threads = n)` (or the environment variable
+`SUEZ_THREADS`); results are identical at any thread count. Forked workers are faster, but threads use far
+less memory: with a GRM at 2,000 samples, 1 process x 8 threads ran at about 75% of the speed of 8 workers
+with a quarter of their RAM. Use threads when there are few genes, large N or little memory; total CPUs =
+workers x threads.
+
+Rough timings on an Apple M5 (current version, one core, bootstrap on, R's reference BLAS/LAPACK;
+`bench/EXPERIMENT_LOG.md`, round 12): step 2 runs about 35,000 tests per second with 400 samples and the
+default kernel (60,000 tests in 1.7 s), 6,215 tests with 4,000 samples in 1.2 s, about 5,000 per second with
+a dense GRM at 1,000 samples, and about 1,700 per second with a GRM, 10 covariates and 850 samples. Step 1
+takes a few seconds for 200-400 samples whatever the number of genes. With 8 forked workers expect about 4x
+on Apple silicon (its efficiency cores are slower). For an explicit `sample_kernel`, the eigen-decomposition
+uses LAPACK through R when R links an optimised BLAS/LAPACK (OpenBLAS, MKL, Accelerate/vecLib, BLIS,
+FlexiBLAS, ATLAS) and Eigen's solver otherwise; `options(suez.eigen_solver = "eigen")` or `"lapack"` forces
+one. Data fits are the same either way; bootstrap draws for a given seed depend on the eigenbasis (same
+distribution). Linux checks and timings: `bench/linux/run_checks.sh`.
 
 ## Tests
 
 `tests/` run with `R CMD check` (about 15 s). They compare every likelihood-ratio test with an exact
 reference (including a likelihood with two peaks and every local-ancestry model), check recovery of known
 variances in step 1, the local-ancestry estimates against Tractor's linear model, `read_tractor()`, results
-on 1 vs 2 cores, checkpoint files and the error checks.
+on 1 vs 2 cores and on 1-8 threads, invariance to the kernel's scale (optima at the h = 0 / 1 boundaries),
+checkpoint files and the error checks.
 
 ## Citation
 
