@@ -67,6 +67,36 @@ for (i in seq_len(nrow(res))) {
 }
 check("LRT = exact profile-ML LRT", worst < 1e-3, sprintf("(%d LRTs, max |dLR| %.2g)", 2 * nrow(res), worst))
 
+# one condition (eQTL only), with repeated samples and with one sample per individual, GRM and default
+# kernels: the null model can have no fixed columns after the intercept contrast (p0 = 0), which used to
+# crash on x86 (integer division by zero in Eigen's GEMM blocking, SIGFPE). Gene g9 has 100 cis-SNPs, enough
+# for Eigen to use its blocked product (it crashed from about 50-80 SNPs per gene; smaller products take another path).
+rng = .Random.seed   # restored below, so the later checks see the same random draws as before
+G9 = rbind(G, matrix(rbinom(100 * nd, 2, 0.3), 100, nd, dimnames = list(paste0("rx", 1:100), inds)))
+snploc9 = rbind(snploc, data.frame(snpid = paste0("rx", 1:100), chr = "1", pos = 9e6 + 1:100))
+geneloc9 = rbind(geneloc, data.frame(geneid = "g9", chr = "1", left = 9e6, right = 9e6 + 10))
+Y9 = rbind(Y, g9 = 0.4 * G9["rx1", ind] + rnorm(N))
+for (one in c(FALSE, TRUE)) for (Kc in c("GRM", "default")) {
+  ix = if (one) which(!duplicated(ind)) else seq_len(N); n1 = length(ix)
+  K1 = if (Kc == "GRM") K[ix, ix] else outer(ind[ix], ind[ix], "==") * 1
+  Q1 = qr.Q(qr(matrix(1, n1, 1)), complete = TRUE)[, -1]
+  e1 = eigen(crossprod(Q1, K1 %*% Q1), symmetric = TRUE); U1 = Q1 %*% e1$vectors; lam1 = pmax(e1$values, 0)
+  r1c = map_interaction_qtl(Y9[, ix], G9, geneloc9, snploc9, data.frame(individual = ind[ix], condition = 1),
+                            sample_kernel = if (Kc == "GRM") K1 else NULL, normalization_approach = "none",
+                            permutation_approach = "boot", cisdist = 100)
+  w1 = 0
+  for (i in seq_len(nrow(r1c))) {
+    uy = drop(crossprod(U1, Y9[r1c$gene[i], ix])); UX1 = crossprod(U1, cbind(std(G9[r1c$cis_snp[i], ind[ix]])))
+    w1 = max(w1, abs(2 * (r1c$l_geno[i] - r1c$l0[i]) - 2 * (profile_ml(UX1, uy, lam1) - profile_ml(UX1[, 0], uy, lam1))))
+  }
+  check(sprintf("one condition (%s, %s kernel): eQTL LRT = exact profile-ML LRT, no interaction columns",
+                if (one) "one sample per individual" else "repeated samples", Kc),
+        nrow(r1c) == n_gene * n_snp + 100 && w1 < 1e-3 && all(is.na(r1c$p_interact)) && !anyNA(r1c$l_boot_geno),
+        sprintf("(%d LRTs, max |dLR| %.2g)", nrow(r1c), w1))
+}
+assign(".Random.seed", rng, envir = globalenv())
+
+
 lead = res[res$cis_snp %in% rownames(G)[(0:(n_gene - 1)) * n_snp + 1], ]
 check("G x condition detected at the causal SNPs", all(lead$p_interact < 0.05))
 z = (lead$beta_geno - 0.4) / lead$se_geno                  # marginal slope at mean(cond) ~ 0

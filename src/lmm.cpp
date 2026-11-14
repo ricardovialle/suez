@@ -572,14 +572,17 @@ static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const
     const double ldi = gw.logdet[i]; const MatrixXd& F = xg.F[i]; const std::vector<int>& pm = xg.perm[i]; const VectorXd& sg = xg.sg[i];
     const auto Fl = F.triangularView<Eigen::Lower>();
     for (int s = 0; s < Sy; ++s) for (int e = 0; e < p0; ++e) Y0(e, s) = M(i, s, pm[e], iy);
-    Yt.noalias() = Fl * Y0; Yp = sg.asDiagonal() * Yt;
+    // p0 == 0 (one condition, no covariates): Eigen's GEMM blocking divides by the zero depth (SIGFPE on x86)
+    if (p0 > 0) Yt.noalias() = Fl * Y0; else Yt.setZero(0, Sy);
+    Yp = sg.asDiagonal() * Yt;
     for (int s = 0; s < Sy; ++s) q[s] = Yt.col(s).dot(Yp.col(s));
     const std::vector<MatrixXd>& At_ = use ? cache->At[i] : At0; const MatrixXd& SC = use ? cache->SC[i] : SC0;
     if (!use) {
       for (int c = 0; c < k; ++c) {
         if (!used[c]) continue;
         Ac[c].resize(p0, S); for (int s = 0; s < S; ++s) for (int e = 0; e < p0; ++e) Ac[c](e, s) = M(i, s, pm[e], p0 + c);
-        At0[c].noalias() = Fl * Ac[c]; Ap[c] = sg.asDiagonal() * At0[c];
+        if (p0 > 0) At0[c].noalias() = Fl * Ac[c]; else At0[c].setZero(0, S);
+        Ap[c] = sg.asDiagonal() * At0[c];
       }
       for (int c = 0; c < k; ++c) for (int l = 0; l <= c; ++l) {
         if (!used[c] || !used[l]) continue;

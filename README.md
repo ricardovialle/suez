@@ -54,6 +54,13 @@ confounders together), and refits the variance components exactly for every SNP.
 | Null calibration | permutations (FastQTL beta approximation for gene-level p) | chi-square LRT, optional parametric bootstrap per SNP |
 | Speed | very fast: one vectorised regression per SNP (tensorQTL also runs on GPUs) | ~1,700-35,000 tests per second per core (see [timings](#parallel-processing-and-reproducibility)) |
 
+A head-to-head benchmark on the same simulated data (tensorQTL on CPU and GPU, 200-4,000 samples, up to 1M cis
+tests, calibration and power against the simulated truth) is in the
+[suez vs tensorQTL report](https://ricardovialle.github.io/suez/doc/suez_vs_tensorqtl.html) (source and scripts:
+[bench/tensorqtl](bench/tensorqtl)). In short: with the default kernel suez on 8 cores was 1.4-5.7x faster than
+the fastest tensorQTL run; with a dense GRM it was 2-4x slower at 1,000-2,000 samples; and tensorQTL run on all
+samples of a repeated-measures design was miscalibrated (eQTL test λ up to 1.46), while suez stayed at λ 0.98-1.06.
+
 **Advantages of suez**
 
 - Uses every sample of a repeated-measures design in one model, instead of collapsing to change scores

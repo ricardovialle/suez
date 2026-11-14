@@ -1,0 +1,13 @@
+dataset	method	n_samples	n_tests	t_map_cis	rss_mb	gpu_mb
+S	tensorqtl_gpu_mapcis	200	19950	5.634	1472	11.14
+S	tensorqtl_cpu1_mapcis	200	19950	10.67	890.3	
+M	tensorqtl_gpu_mapcis	400	60199	9.213	1516	11.7
+M	tensorqtl_cpu1_mapcis	400	60199	27.46	1034	
+L	tensorqtl_gpu_mapcis	1000	59949	5.169	1677	26.98
+L	tensorqtl_cpu1_mapcis	1000	59949	39.4	1283	
+XL	tensorqtl_gpu_mapcis	2000	23859	2.998	1756	43.45
+XL	tensorqtl_cpu1_mapcis	2000	23859	26.79	1447	
+XXL	tensorqtl_gpu_mapcis	4000	6215	2.195	1956	78.93
+XXL	tensorqtl_cpu1_mapcis	4000	6215	14.69	1825	
+G	tensorqtl_gpu_mapcis	400	1003748	147.4	3397	12.58
+G	tensorqtl_cpu1_mapcis	400	1003748	502.6	2977	

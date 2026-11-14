@@ -1,0 +1,46 @@
+# Environments for bench/tensorqtl: suez (R) and tensorQTL (Python, CUDA PyTorch), solved separately
+# because conda-forge's rstan and PyTorch/MKL need different TBB versions.
+#   pixi run -e r  Rscript ...        pixi run -e py python ...
+[workspace]
+name = "suez-tensorqtl-bench"
+channels = ["conda-forge"]
+platforms = [{ name = "linux-64-cuda", platform = "linux-64", cuda = "12" }]
+
+[feature.r.dependencies]
+r-base = "4.4.*"
+r-rstan = "*"
+r-rstantools = "*"
+r-stanheaders = "*"
+r-rcppeigen = "*"
+r-rcppparallel = "*"
+r-bh = "*"
+r-domc = "*"
+r-dplyr = "*"
+r-readr = "*"
+r-magrittr = "*"
+r-foreach = "*"
+r-jsonlite = "*"
+"r-data.table" = "*"
+cxx-compiler = "*"
+c-compiler = "*"
+make = "*"
+
+[feature.py.dependencies]
+python = "3.11.*"
+pytorch-gpu = "*"
+cuda-version = "12.*"
+numpy = "*"
+pandas = "*"
+scipy = "*"
+pyarrow = "*"
+pip = "*"
+pandas-plink = "*"
+matplotlib = ">=3.11.2,<4"
+
+[feature.py.pypi-dependencies]
+tensorqtl = "*"
+pgenlib = "*"
+
+[environments]
+r = { features = ["r"], no-default-feature = true }
+py = { features = ["py"], no-default-feature = true }

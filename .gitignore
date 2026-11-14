@@ -17,3 +17,8 @@ bench/proto/r12/numerical/gemm/gemm_*
 !bench/proto/r12/numerical/gemm/gemm_*.*
 bench/proto/r12/numerical/gemm/shape_*
 !bench/proto/r12/numerical/gemm/shape_*.*
+
+# suez vs tensorQTL comparison
+bench/tensorqtl/.pixi/
+bench/tensorqtl/data/
+bench/tensorqtl/out/

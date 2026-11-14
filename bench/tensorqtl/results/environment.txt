@@ -1,0 +1,9 @@
+cpu: Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz
+cores: 8
+ram: 15 GB
+gpu: NVIDIA GeForce RTX 2070 SUPER, 8192 MiB, 621.01
+os: Ubuntu 24.04.1 LTS (WSL2, kernel 6.18.58.1-microsoft-standard-WSL2)
+suez: 2866490 (0.5)
+r: R version 4.4.3 (2025-02-28) libopenblasp-r0.3.34.so
+tq: tensorQTL 1.0.10 / PyTorch 2.14.1 / CUDA 12.9
+date: 2026-11-14

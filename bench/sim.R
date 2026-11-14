@@ -46,7 +46,7 @@ make_dataset = function(p) {
   U = matrix(rnorm(N * p$n_factor), N)
   covs = if (p$n_cov) matrix(rnorm(N * p$n_cov), N, dimnames = list(NULL, paste0("cov", seq_len(p$n_cov)))) else NULL
   Y = matrix(rnorm(ng * N), ng) + outer(rnorm(ng, 0, 0.3), trt) +
-    matrix(rnorm(ng * ni, 0, 0.5), ng)[, rep(seq_len(ni), nrep)] +
+    matrix(rnorm(ng * ni, 0, if (is.null(p$ind_sd)) 0.5 else p$ind_sd), ng)[, rep(seq_len(ni), nrep)] +
     matrix(rnorm(ng * p$n_factor, 0, 0.4), ng) %*% t(U)
   causal = sample(ng, round(ng * 0.2))
   truth = data.frame(gene = geneloc$geneid[causal], snp = snp[(causal - 1) * spg + 1],

@@ -22,6 +22,12 @@ with the default kernel; peak RAM -3..-78% (bench/results/r12_final_summary.tsv,
 - `src/Makevars`: links `$(LAPACK_LIBS) $(BLAS_LIBS)` (no `$(FLIBS)`, so source installs work without gfortran).
 - Documentation: README section comparing suez with standard eQTL pipelines (advantages and limitations of
   each), covariates and `suez.threads` documented, schematic and package description updated.
+- Fix: with a single condition (eQTL-only mode) and no covariates, step 2 crashed on x86 (SIGFPE; forked workers
+  returned no rows) for genes with more than ~50-80 cis-SNPs: `grid_values` multiplied a 0 x 0 triangular block,
+  and Eigen's blocked product divided by the zero depth (Apple silicon does not trap it). Regression test in
+  `tests/model_checks.R` (one condition, repeated and single samples, GRM and default kernels, 100-SNP gene).
+- Benchmark against tensorQTL 1.0.10 (CPU and GPU) on the same simulated data: `bench/tensorqtl/`, report
+  `doc/suez_vs_tensorqtl.html`, linked from the README.
 
 ## Round 11: BLAS/LAPACK and large-N review
 

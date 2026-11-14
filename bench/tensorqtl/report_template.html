@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>suez vs tensorQTL</title>
+<meta name="description" content="Speed and statistical comparison of suez and tensorQTL (CPU and GPU) on identical simulated repeated-measures eQTL data.">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #fcfcfb; --surface: #fcfcfb; --panel: #f3f2ef; --ink: #0b0b0b; --ink2: #52514e; --muted: #77756f;
+  --rule: #e2e0da; --grid: #e9e7e2; --accent: #2a78d6;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #1a1a19; --surface: #1a1a19; --panel: #242422; --ink: #f0efec; --ink2: #c3c2b7; --muted: #9a998f;
+    --rule: #3a3936; --grid: #2e2d2b; --accent: #3987e5;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #1a1a19; --surface: #1a1a19; --panel: #242422; --ink: #f0efec; --ink2: #c3c2b7; --muted: #9a998f;
+  --rule: #3a3936; --grid: #2e2d2b; --accent: #3987e5;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1040px; margin: 0 auto; padding: 40px 16px 80px; }
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; }
+h2 { font-size: 1.35rem; margin: 48px 0 12px; padding-top: 12px; border-top: 1px solid var(--rule); }
+h3 { font-size: 1.05rem; margin: 28px 0 8px; }
+p, li { color: var(--ink); max-width: 76ch; }
+.lede { font-size: 1.1rem; color: var(--ink2); max-width: 72ch; }
+.mut, .meta { color: var(--muted); }
+.meta { font-size: 0.9rem; }
+a { color: var(--accent); }
+code { font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--panel); padding: 1px 5px; border-radius: 4px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 28px 0 8px; }
+.kpi { background: var(--panel); border-radius: 10px; padding: 14px 16px; }
+.kpi b { display: block; font-size: 1.6rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.kpi span { color: var(--ink2); font-size: 0.92rem; }
+.tw { overflow-x: auto; margin: 12px 0 20px; border: 1px solid var(--rule); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+th, td { padding: 7px 10px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+th { color: var(--ink2); font-weight: 600; background: var(--panel); position: sticky; top: 0; }
+table.num td:not(:first-child):not(:nth-child(2)) { font-variant-numeric: tabular-nums; }
+tbody tr:last-child td { border-bottom: 0; }
+.chart { width: 100%; height: auto; display: block; }
+.chart text { fill: var(--ink2); font: 12px system-ui, sans-serif; }
+.chart .lab { fill: var(--ink); font-weight: 600; font-size: 12.5px; }
+.chart .sub, .chart .tick { fill: var(--muted); font-size: 11px; }
+.chart .grid { stroke: var(--grid); stroke-width: 1; }
+.chart .row { stroke: var(--grid); stroke-width: 1; stroke-dasharray: 2 3; }
+.chart .diag { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; }
+.chart .mk:hover circle, .chart .mk:hover rect, .chart .mk:hover path { stroke-width: 3; }
+.chart .ln:hover polyline { stroke-width: 3.5; }
+.fig { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 12px 8px; margin: 16px 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.86rem; color: var(--ink2); margin: 0 0 6px 4px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 8px; }
+.note { background: var(--panel); border-radius: 8px; padding: 12px 16px; margin: 16px 0; font-size: 0.95rem; }
+.note p { margin: 4px 0; }
+dl.env { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; font-size: 0.9rem; }
+dl.env dt { color: var(--muted); } dl.env dd { margin: 0; }
+</style>
+</head>
+<body>
+<main>
+<h1>suez vs tensorQTL</h1>
+<p class="lede">Speed, calibration and power of suez and tensorQTL (CPU and GPU), run on the same simulated
+repeated-measures eQTL datasets on one workstation. Both tools see the same quantile-normalized expression, the same
+genotypes and the same ±100 kb cis windows.</p>
+<p class="meta">{{ENV_DATE}} · {{ENV_CPU}} ({{ENV_CORES}} cores), {{ENV_RAM}} RAM · {{ENV_GPU}} · suez {{ENV_SUEZ}} ·
+{{ENV_TQ}}</p>
+
+<div class="kpis">
+  <div class="kpi"><b>{{num:fmt_t(W('G','suez_8cores'))}} s vs {{num:fmt_t(min(W('G','tensorqtl_gpu'),W('G','tensorqtl_cpu1')))}} s</b>
+    <span>~1M cis tests, 400 samples: suez on 8 cores vs the fastest tensorQTL run (eQTL + response models)</span></div>
+  <div class="kpi"><b>{{num:round(W('XL_grm','ratio8'),1)}}x slower</b>
+    <span>suez with a dense GRM kernel at N = 2,000 (8 cores) than tensorQTL on the GPU</span></div>
+  <div class="kpi"><b>λ {{num:fmt_p(C('NULLR','tq_sample5','lambda_p_geno'),2)}} vs {{num:fmt_p(C('NULLR','suez_learned','lambda_p_geno'),2)}}</b>
+    <span>eQTL test on null data with 2 samples per individual: tensorQTL on all samples vs suez</span></div>
+  <div class="kpi"><b>{{num:fmt_t(PM('G','tensorqtl_gpu_mapcis'))}} s on GPU</b>
+    <span>tensorQTL gene-level permutations (map_cis, 10,000 permutations) for 4,000 genes, vs
+    {{num:fmt_t(PM('G','tensorqtl_cpu1_mapcis'))}} s on one CPU thread</span></div>
+</div>
+
+<h2>Summary</h2>
+<ul>
+  <li><b>With the default (repeated-individual) kernel, suez is as fast as tensorQTL per core and faster on all
+    8 cores.</b> One suez core was within 0.6-2.3x of the fastest tensorQTL run on every size from 200 to
+    4,000 samples. On 8 cores suez was 1.4-5.7x faster, because tensorQTL maps one gene at a time and
+    gains little from threads or the GPU when cis windows hold only ~100-250 SNPs.</li>
+  <li><b>With a dense kernel (GRM, or a learned covariance), suez slows with N</b>: still 1.7x faster than
+    tensorQTL at N = 400 on 8 cores, but 2-4x slower at N = 1,000-2,000 (9-16x on one core). Step 1 (<code>learn_covariance</code>) adds 4-46 s at
+    N = 200-600. tensorQTL is also about 2x faster for eQTL-only mapping (no condition).</li>
+  <li><b>The GPU pays off for permutations and large N, not for nominal scans of small windows.</b> For nominal
+    mapping the GPU was slower than one CPU thread up to N = 400 (per-gene transfers dominate) and about 2x
+    faster at N = 1,000-4,000. For <code>map_cis</code> it was 2-9x faster. On the CPU, 8 threads were slower than
+    1 thread up to N = 400 (up to 10x, on M_fac3) and about 1.7x faster at N ≥ 1,000.</li>
+  <li><b>tensorQTL on all samples of a repeated-measures design is miscalibrated.</b> Treating the two samples
+    of an individual as independent inflates the eQTL test (λ 1.12-1.46, up to 2x the nominal false-positive
+    rate). It also makes the response test conservative for a within-individual condition (λ 0.24-0.89), which
+    loses power. Expression PCs do not fix either. suez stayed at λ 0.98-1.06 on every dataset.</li>
+  <li><b>The standard fix, mapping per individual (mean and difference of the two conditions), is calibrated
+    and about as powerful as suez</b> for a balanced 2-level design. It cannot handle 3+ levels, a continuous
+    condition or unbalanced repeats; suez can, with one model.</li>
+  <li><b>suez's step-1 kernel matters for power</b>: modelling the latent factors raised eQTL detection from
+    0.43 to 0.57 (M) and response detection from 0.50 to 0.80 (HS), compared with the repeated-individual kernel alone.</li>
+</ul>
+
+<h2>Setup</h2>
+<h3>Data</h3>
+<p>All datasets come from the suez benchmark simulator (<code>bench/sim.R</code>, the same seeds as
+<code>bench/datasets.R</code>), plus two added for this comparison (<code>bench/tensorqtl/datasets_tq.R</code>).
+Expression = condition effect + individual effect (SD 0.5; SD 1 in NULLR) + 5 latent factors + noise; 20% of
+genes have a causal SNP, half an eQTL (0.4 SD per allele) and half a response eQTL (effect only in the treated or
+higher condition levels). Genotypes have AR(1) LD (ρ = 0.8) within each gene. G is a larger scan (4,000 genes,
+~1M tests); NULLR has no cis effects at all and a strong individual effect, for calibration.</p>
+<h3>What each tool runs</h3>
+<ul>
+  <li><b>suez</b> (<code>map_interaction_qtl</code>, <code>normalization_approach = "qq"</code>, cisdist 100 kb,
+    no bootstrap unless stated): genotype and genotype x condition likelihood-ratio tests in the mixed model, for
+    every cis pair. Kernel: the dataset's (repeated-individual only, or a GRM where named) for timings; for
+    statistics also the step-1 kernel from <code>learn_covariance(P = 10)</code>. Timed: the
+    <code>map_interaction_qtl</code> call (normalization and eigendecomposition included), with a monotonic clock.</li>
+  <li><b>tensorQTL</b> 1.0.10 (<code>cis.map_nominal</code>, window 100 kb): every sample is a phenotype column
+    and its individual's genotypes are repeated. eQTL test: nominal mapping with the condition (dummies) and 5
+    expression PCs as covariates; response test: <code>interaction_df</code> = the condition, with the 5 PCs. A
+    3-level factor gets one Wald test per level, combined here by Bonferroni (tensorQTL has no joint test).
+    "Per individual": the mean and the difference of the two conditions, each rank-normalized, mapped with 5 PCs
+    of each. Timed: both <code>map_nominal</code> calls, including writing the per-pair parquet files and
+    excluding data loading and CUDA initialisation (~0.2 s).</li>
+  <li>The PCs are computed from expression after regressing out the condition, so they capture the 5 simulated
+    latent factors. Neither tool gets a MAF filter beyond suez's built-in rule (≥ 5 ALT alleles), so the test
+    counts match to within 0.4%.</li>
+  <li>Hardware: CPU runs are pinned to 1 BLAS thread. "suez 8 cores" is 8 forked doMC workers; "tensorQTL CPU
+    8 threads" is <code>torch.set_num_threads(8)</code>. Speed numbers are the median of 3 interleaved
+    repetitions.</li>
+</ul>
+
+<h2>Speed</h2>
+<div class="fig">
+{{SPEED_LEGEND}}
+{{SPEED_SVG}}
+</div>
+<p class="mut">Hover a mark for the exact time. tensorQTL CPU at 8 threads is in the table only.</p>
+{{SPEED_TABLE}}
+<p>Notes. tensorQTL's host memory (~1.3-3.3 GB) is mostly PyTorch and CUDA libraries; suez peaked at
+160-960 MB per process (8 workers use up to 8x that). GPU memory never exceeded 80 MB. suez's bootstrap
+(<code>permutation_approach = "boot"</code>, one null draw per SNP) added 35-80% here.</p>
+
+<h3>Gene-level permutations</h3>
+<p>tensorQTL's <code>map_cis</code> (10,000 permutations per gene, beta approximation) gives the gene-level
+p-values that eGene FDR is built on. suez has no equivalent; its bootstrap gives one null draw per SNP instead.</p>
+{{PERM_TABLE}}
+
+<h2>Calibration</h2>
+<p>Null pairs are every tested pair of a gene with no simulated cis effect (all genes in NULLR). λ is the median
+χ² of the p-values over its null expectation; P(p &lt; α) is the share of null pairs below α.</p>
+<div class="fig">
+{{QQ_LEGEND}}
+<div class="pair">{{QQ_GENO}}{{QQ_INT}}</div>
+</div>
+{{CAL_TABLE}}
+<p><b>Why tensorQTL drifts both ways.</b> With samples of one individual treated as independent, the genotype
+effect is estimated from pseudo-replicates, so its standard error is too small (inflated eQTL test). The
+condition contrast, in contrast, is within individuals; ordinary least squares counts the individual effect as
+noise, so the interaction's standard error is too large (deflated response test). A continuous condition that
+varies within individuals (M_num) is roughly calibrated for the response test. With one sample per individual
+(M_eqtl) tensorQTL is calibrated, as expected.</p>
+
+<h2>Power</h2>
+<p>Gene-level: a gene is called when its smallest p-value times its number of cis tests (Bonferroni within the
+gene) is below 0.05. "Calibrated threshold" uses instead the 5% quantile of that statistic over null genes, which
+removes the advantage an inflated test gets from false positives. The datasets have only 15-30 causal genes
+of each type, so differences under about 0.2 are within noise (one gene is 0.03-0.07).</p>
+{{POW_TABLE}}
+
+<h2>Agreement between the tools</h2>
+<p>Spearman correlation of p-values over all tested pairs of dataset M. suez with the repeated-individual kernel
+and tensorQTL without PCs rank pairs almost identically: the models differ only in how the samples of an
+individual are weighted, which shifts the calibration but hardly the ranking. Adding PCs or the step-1 kernel
+changes the ranking (they remove the latent factors). tensorQTL's GPU and CPU results agree to float32 precision.</p>
+{{CONC_TABLE}}
+
+<h3>suez step 1</h3>
+{{STEP1_TABLE}}
+
+<h2>Issues found along the way</h2>
+<ul>
+  <li><b>suez crashed with one condition on x86.</b> In eQTL-only mode (a single <code>condition</code>, no
+    covariates) the null model has no fixed columns, and <code>grid_values</code> multiplied a 0 x 0 triangular
+    matrix by a 0 x S block. For more than ~50-80 SNPs per gene Eigen's blocked product divided by the zero
+    depth: SIGFPE on 1 core, and silently 0 results with forked workers. (Apple silicon does not trap integer
+    division, which is probably why the macOS benchmarks passed.) Fixed in <code>src/lmm.cpp</code>, with a
+    regression test in <code>tests/model_checks.R</code>; the M_eqtl results here use the fixed build.</li>
+  <li><b>tensorQTL 1.0.10 with several interaction terms</b> raises <code>KeyError: 'pval_i'</code> while
+    summarising the top association per gene, after the per-pair files are written. The runner catches that one
+    error and uses the per-pair files.</li>
+  <li><b>WSL2's wall clock jumps</b> (backwards and forwards by tens of seconds), which corrupts timings based on
+    it, including R's <code>proc.time()</code> elapsed. suez is timed with <code>/proc/uptime</code> and tensorQTL
+    with <code>time.perf_counter()</code>, both monotonic.</li>
+</ul>
+
+<h2>Reproduce</h2>
+<p>From the repository root, with <a href="https://pixi.sh">pixi</a> installed (it builds R 4.4 and Python 3.11
+with CUDA PyTorch in <code>bench/tensorqtl/.pixi</code>):</p>
+<pre><code>P="pixi run --manifest-path bench/tensorqtl/pixi.toml"
+$P -e r R CMD INSTALL --no-docs --library=bench/lib/cur .
+$P -e r Rscript bench/tensorqtl/sim_tq.R
+$P -e r Rscript bench/tensorqtl/export.R S M L XL XXL G M_grm L_grm XL_grm M_fac3 M_num M_cov M_eqtl M_unbal HS NULLR
+bash bench/tensorqtl/run_all.sh
+$P -e py python bench/tensorqtl/analyze.py</code></pre>
+<p>Summary tables: <code>bench/tensorqtl/results/</code>. The full run took about an hour on this machine.</p>
+<dl class="env">
+  <dt>CPU</dt><dd>{{ENV_CPU}}, {{ENV_CORES}} cores, {{ENV_RAM}}</dd>
+  <dt>GPU</dt><dd>{{ENV_GPU}}</dd>
+  <dt>OS</dt><dd>{{ENV_OS}}</dd>
+  <dt>suez</dt><dd>{{ENV_SUEZ}}, {{ENV_R}}</dd>
+  <dt>tensorQTL</dt><dd>{{ENV_TQ}}</dd>
+</dl>
+</main>
+</body>
+</html>
