@@ -14,11 +14,23 @@
 // the Schur complement on the shared X0 block. Where the normal equations cancel, values are recomputed from
 // direct residuals. SNPs are processed in blocks (rotation, moments, grid, fits, bootstrap), so memory does not
 // grow with the moments of a whole gene. Bootstrap normals are drawn in SNP and contrast order, as in suez 0.4.
+#define USE_FC_LEN_T
 #include <RcppEigen.h>
+#include <R_ext/Lapack.h>
+#ifndef FCONE
+#define FCONE
+#endif
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <vector>
+#include <cstdint>
+#include <cstring>
+#include <atomic>
+#include <exception>
+#include <memory>
+#include <mutex>
+#include <thread>
 using Eigen::ArrayXd; using Eigen::MatrixXd; using Eigen::VectorXd; using Eigen::VectorXi;
 static const double NEG_INF = -std::numeric_limits<double>::infinity();
 static const double POS_INF = std::numeric_limits<double>::infinity();
@@ -61,11 +73,28 @@ static const double SCHUR_PIVOT = 1e-10;
 // blocks of 16..256 SNPs so the GEMMs stay wide.
 static const double MOMENT_BYTES = 4 << 20;
 
+// f(task, worker) for tasks [0, n) on up to nt threads (options(suez.threads)), tasks handed out one at a time. A
+// task's result must not depend on the worker that runs it (per-worker scratch only), so outputs are identical at
+// any thread count. f must not call the R API (no Rcpp::stop, no RNG); exceptions are rethrown on this thread.
+template <class F> static void par_for(int n, int nt, F f) {
+  nt = std::max(1, std::min(nt, n));
+  if (nt == 1) { for (int t = 0; t < n; ++t) f(t, 0); return; }
+  std::atomic<int> next(0); std::exception_ptr err; std::mutex mu;
+  auto work = [&](int w) {
+    for (int t; (t = next++) < n;)
+      try { f(t, w); } catch (...) { std::lock_guard<std::mutex> g(mu); if (!err) err = std::current_exception(); next = n; }
+  };
+  std::vector<std::thread> th; for (int w = 1; w < nt; ++w) th.emplace_back(work, w);
+  work(0); for (auto& x : th) x.join();
+  if (err) std::rethrow_exception(err);
+}
+
 static inline int pidx(int a, int b, int N) { if (a > b) std::swap(a, b); return a * N - a * (a - 1) / 2 + (b - a); }
 
 // ---------------------------------------------------------------- eigenvalue groups
 struct Weights {   // per-row coefficients of w, c w^2, c^2 w^3 at one h, and the trace terms
   ArrayXd a, b, e; double T1 = 0, T2 = 0, LD = 0; bool null_ok = true;
+  ArrayXd d_, w_, cw_;   // scratch (no allocation per call)
 };
 
 struct Spectrum {
@@ -75,6 +104,7 @@ struct Spectrum {
   std::vector<std::vector<double>> dpow;         // dpow[k][t] = delta_t^k, t < n0 (null contrasts come first)
   std::vector<double> lamnull; double P[KN + 1] = {0};   // exact null eigenvalues; power sums of delta
   ArrayXd glam, gcnt;                                     // non-null rows: eigenvalue and size
+  std::vector<int> run_end;   // for a singleton row (k = 0, one contrast): end of its run of singleton rows
 
   explicit Spectrum(const ArrayXd& lam) : n(lam.size()), perm(lam.size()) {
     for (int i = 0; i < n; ++i) perm[i] = i;
@@ -96,6 +126,30 @@ struct Spectrum {
     }
     const int nr = nnull_rows(), m = R() - nr; glam.resize(m); gcnt.resize(m);
     for (int r = 0; r < m; ++r) { glam[r] = rows[nr + r].lam; gcnt[r] = rows[nr + r].t1 - rows[nr + r].t0; }
+    all_single = (gcnt == 1).all();
+    run_end.assign(R(), -1);
+    for (int r = R() - 1; r >= 0; --r) if (single(r)) run_end[r] = r + 1 < R() && single(r + 1) ? run_end[r + 1] : r + 1;
+  }
+  // sum_r gcnt_r log d_r. Where every group has one contrast (GRM-like kernels), log of products of 4 (one log per
+  // 4 rows; each product is in [d_min^4, d_max^4], far from under/overflow for d in [1e-60, 1e60]), else Eigen's log.
+  bool all_single = false; double dlo = 0, dhi = 0;
+  double logdet_rows(const ArrayXd& d) const {
+    const int m = d.size(), m4 = m / 4;
+    if (!all_single || m4 == 0) return (gcnt * d.log()).sum();
+    const double lo = d.minCoeff(), hi = d.maxCoeff();
+    if (!(lo > 1e-60 && hi < 1e60)) return (gcnt * d.log()).sum();
+    const ArrayXd& D = d;
+    double s = (D.segment(0, m4) * D.segment(m4, m4) * D.segment(2 * m4, m4) * D.segment(3 * m4, m4)).log().sum();
+    for (int r = 4 * m4; r < m; ++r) s += std::log(D[r]);
+    return s;
+  }
+  bool single(int r) const { return rows[r].k == 0 && rows[r].t1 - rows[r].t0 == 1; }
+  // sum over contrasts [t0, t1) of (dk) u v: Eigen's vectorised reductions for long rows, scalar for short ones
+  static double rowdot(const double* u, const double* v, const double* dk, int t0, int t1) {
+    const int len = t1 - t0;
+    if (len < 8) { double acc = 0; if (dk) for (int t = t0; t < t1; ++t) acc += dk[t] * u[t] * v[t]; else for (int t = t0; t < t1; ++t) acc += u[t] * v[t]; return acc; }
+    Eigen::Map<const ArrayXd> U(u + t0, len), V(v + t0, len);
+    return dk ? (Eigen::Map<const ArrayXd>(dk + t0, len) * U * V).sum() : (U * V).sum();
   }
   int R() const { return rows.size(); }
   int nnull_rows() const { return n0 ? K + 1 : 0; }
@@ -104,12 +158,24 @@ struct Spectrum {
   MatrixXd permute(const MatrixXd& M) const { MatrixXd P(M.rows(), M.cols()); for (int i = 0; i < n; ++i) P.row(i) = M.row(perm[i]); return P; }
   // moments of the pair (u, v) on every row
   void mom(const double* u, const double* v, double* out) const {
-    for (int r = 0; r < R(); ++r) {
-      const Row& q = rows[r]; double acc = 0;
-      if (q.k == 0) for (int t = q.t0; t < q.t1; ++t) acc += u[t] * v[t];
-      else { const double* dk = dpow[q.k].data(); for (int t = q.t0; t < q.t1; ++t) acc += dk[t] * u[t] * v[t]; }
-      out[r] = acc;
+    for (int r = 0; r < R();) {
+      if (run_end[r] > 0) {   // run of singleton rows: contiguous contrasts, one product each (bit-identical)
+        const int e = run_end[r], t0 = rows[r].t0; for (int j = 0; j < e - r; ++j) out[r + j] = u[t0 + j] * v[t0 + j];
+        r = e; continue;
+      }
+      const Row& q = rows[r]; out[r] = rowdot(u, v, q.k ? dpow[q.k].data() : nullptr, q.t0, q.t1); ++r;
     }
+  }
+  // per-contrast weights wt[t] of weight set j (0: w, 1: c w^2, 2: c^2 w^3) at h: the row value for grouped
+  // contrasts, the order-K expansion for null contrasts (exact null_w where it does not hold), as wsum / mom use
+  void expand(const Weights& W, int j, double h, double* wt) const {
+    const ArrayXd& f = j == 0 ? W.a : j == 1 ? W.b : W.e; const int nr = nnull_rows();
+    for (int r = nr; r < R(); ++r) { const double v = f[r]; for (int t = rows[r].t0; t < rows[r].t1; ++t) wt[t] = v; }
+    if (!n0) return;
+    if (W.null_ok) {
+      for (int t = 0; t < n0; ++t) wt[t] = f[0];
+      for (int k = 1; k <= K; ++k) { const double fk = f[k]; const double* dk = dpow[k].data(); for (int t = 0; t < n0; ++t) wt[t] += fk * dk[t]; }
+    } else for (int t = 0; t < n0; ++t) { double w[3]; null_w(t, h, w[0], w[1], w[2]); wt[t] = w[j]; }
   }
   // null contrast t's exact weights at h
   void null_w(int t, double h, double& w, double& wb, double& we) const {
@@ -119,9 +185,9 @@ struct Spectrum {
     const int R_ = R(), nr = nnull_rows();
     W.a.setZero(R_); W.b.setZero(R_); W.e.setZero(R_); W.T1 = W.T2 = W.LD = 0; W.null_ok = true;
     if (R_ > nr) {   // non-null groups, vectorised (Eigen's log)
-      const int m = R_ - nr; const ArrayXd d = h * glam + (1 - h), w = d.inverse();
-      W.a.tail(m) = w; W.LD += (gcnt * d.log()).sum();
-      if (derivs) { const ArrayXd cw = (glam - 1) * w; W.b.tail(m) = cw * w; W.e.tail(m) = cw * cw * w;
+      const int m = R_ - nr; ArrayXd &d = W.d_, &w = W.w_, &cw = W.cw_; d = h * glam + (1 - h); w = d.inverse();
+      W.a.tail(m) = w; W.LD += logdet_rows(d);
+      if (derivs) { cw = (glam - 1) * w; W.b.tail(m) = cw * w; W.e.tail(m) = cw * cw * w;
                     W.T1 += (gcnt * cw).sum(); W.T2 += (gcnt * cw.square()).sum(); }
     }
     if (!n0) return;
@@ -154,10 +220,7 @@ struct Spectrum {
     const ArrayXd& f = j == 0 ? W.a : j == 1 ? W.b : W.e; double acc = 0;
     for (int r = 0; r < R(); ++r) {
       if (f[r] == 0) continue;
-      const Row& q = rows[r]; double s = 0;
-      if (q.k == 0) for (int t = q.t0; t < q.t1; ++t) s += u[t] * v[t];
-      else { const double* dk = dpow[q.k].data(); for (int t = q.t0; t < q.t1; ++t) s += dk[t] * u[t] * v[t]; }
-      acc += f[r] * s;
+      const Row& q = rows[r]; acc += f[r] * rowdot(u, v, q.k ? dpow[q.k].data() : nullptr, q.t0, q.t1);
     }
     if (!W.null_ok) for (int t = 0; t < n0; ++t) { double w[3]; null_w(t, h, w[0], w[1], w[2]); acc += w[j] * u[t] * v[t]; }
     return acc;
@@ -187,7 +250,8 @@ struct Block {
   std::vector<int> kind, slot;   // per pair: 0 = MX0, 1 = MY, 2 = Mper
   MatrixXd MY, Mper;
   const double* col(int a, int s) const { return a < p0 ? X0.col(a).data() : a < iy ? B[a - p0].col(s).data() : Y.col(shared_y ? 0 : s).data(); }
-  Block(const Spectrum& sp_, const MatrixXd& X0_, const MatrixXd& MX0_, const std::vector<MatrixXd>& B_, const MatrixXd& Y_, int S_)
+  // src: a block on the same X0 and B (the data block): pairs not involving y are copied from it (bootstrap)
+  Block(const Spectrum& sp_, const MatrixXd& X0_, const MatrixXd& MX0_, const std::vector<MatrixXd>& B_, const MatrixXd& Y_, int S_, const Block* src = nullptr)
       : sp(sp_), X0(X0_), MX0(MX0_), B(B_), Y(Y_), p0(X0_.cols()), k(B_.size()), N(p0 + k + 1), iy(p0 + k), S(S_), shared_y(Y_.cols() == 1) {
     const int np = N * (N + 1) / 2; kind.resize(np); slot.resize(np); int ny = 0;
     auto shared = [&](int a) { return a < p0 || (a == iy && shared_y); };
@@ -201,6 +265,8 @@ struct Block {
     for (int a = 0; a < N; ++a) for (int b = a; b < N; ++b) {
       const int t = pidx(a, b, N);
       if (kind[t] == 1) sp.mom(col(a, 0), col(b, 0), MY.col(slot[t]).data());
+      else if (kind[t] == 2 && src && b < iy && src->kind[t] == 2)
+        for (int s = 0; s < S; ++s) Mper.col((size_t)s * nper + slot[t]) = src->Mper.col((size_t)s * src->nper + src->slot[t]);
       else if (kind[t] == 2) for (int s = 0; s < S; ++s) sp.mom(col(a, s), col(b, s), Mper.col((size_t)s * nper + slot[t]).data());
     }
   }
@@ -263,6 +329,37 @@ struct PinvLDLT {
   }
 };
 
+// PinvLDLT's factorisation and pseudo-solve without Eigen's per-step GEMV overhead (small p, called per Newton
+// step): Eigen's unblocked LDLT pivots on the largest *original* |diagonal| among the remaining columns (its
+// diagonal is not updated before the search), so the same permutation is simulated first, then a right-looking
+// LDLT (column axpys) on the permuted lower triangle. Same pivots, same keep/drop rule; rounding order differs.
+struct FastLDLT {
+  int m = 0; MatrixXd B; VectorXd D, d0; std::vector<int> perm; VectorXd x_;
+  void compute(const MatrixXd& A) {
+    m = A.rows(); perm.resize(m); D.resize(m); d0.resize(m); B.resize(m, m);
+    for (int i = 0; i < m; ++i) { perm[i] = i; d0[i] = A(i, i); }
+    for (int k = 0; k < m; ++k) {   // as Eigen: first index of the largest |d0| among positions k..m-1, then swap
+      int bi = k; double bv = std::fabs(d0[k]);
+      for (int i = k + 1; i < m; ++i) if (std::fabs(d0[i]) > bv) { bv = std::fabs(d0[i]); bi = i; }
+      std::swap(perm[k], perm[bi]); std::swap(d0[k], d0[bi]);
+    }
+    for (int c = 0; c < m; ++c) for (int r = c; r < m; ++r) B(r, c) = A(perm[r], perm[c]);
+    for (int k = 0; k < m; ++k) {
+      const double dk = B(k, k); D[k] = dk; double* lk = &B(0, k);
+      if (dk == 0) continue;   // Eigen: column left unscaled, and D = 0 removes it from every later update
+      for (int i = k + 1; i < m; ++i) lk[i] /= dk;
+      for (int j = k + 1; j < m; ++j) { const double t = lk[j] * dk; double* bj = &B(0, j); for (int i = j; i < m; ++i) bj[i] -= t * lk[i]; }
+    }
+  }
+  void solve(const VectorXd& rhs, VectorXd& x) {   // x = A^+ rhs as PinvLDLT::solve
+    x_.resize(m); for (int i = 0; i < m; ++i) x_[i] = rhs[perm[i]];
+    for (int k = 0; k < m; ++k) { const double xk = x_[k]; const double* lk = &B(0, k); for (int i = k + 1; i < m; ++i) x_[i] -= lk[i] * xk; }
+    for (int i = 0; i < m; ++i) x_[i] = std::fabs(D[i]) > COLLINEAR * std::fabs(d0[i]) && D[i] != 0 ? x_[i] / D[i] : 0;
+    for (int k = m - 1; k >= 0; --k) { const double* lk = &B(0, k); double acc = x_[k]; for (int i = k + 1; i < m; ++i) acc -= lk[i] * x_[i]; x_[k] = acc; }
+    x.resize(m); for (int i = 0; i < m; ++i) x[perm[i]] = x_[i];
+  }
+};
+
 // ---------------------------------------------------------------- profile likelihood (Newton, final values)
 // As suez 0.4: f = -(n/2) log(g/n) - (1/2) sum log d - n/2, with g = r'Wr, f' and f'' from Q1 = sum c w^2 r^2,
 // Q2 = sum c^2 w^3 r^2 - Xv'A^-1 Xv, Xv = X' diag(c w^2) r, the trace terms sum c w and sum c^2 w^2.
@@ -270,15 +367,24 @@ struct PinvLDLT {
 // r = y - Xb in the pairs; with direct residuals where that cancels.
 struct Profile {
   const Spectrum& sp; const int n; Weights W; MatrixXd AB, MW, A; VectorXd b, rhs, coef, Xv, tmp; ArrayXd r;
-  PinvLDLT L; double s = NAN;
+  FastLDLT L; double s = NAN; ArrayXd wt1, wt2, wr;
+  // best call of the current refine (value, h, and the state wald / refine read), so the final value at the
+  // best h need not be recomputed; column 0 is formed the same way in value-only and derivative calls, so the
+  // saved value equals a recomputation bit for bit
+  struct Snap { double h = NAN, v = NEG_INF, s = NAN; VectorXd b, rhs; MatrixXd A; } best;
   explicit Profile(const Spectrum& s_) : sp(s_), n(s_.n) {}
+  void save(double h, double v) { if (!(v > best.v)) return; best.h = h; best.v = v; best.s = s; best.b = b; best.rhs = rhs; best.A = A; }
+  void restore() { s = best.s; b = best.b; rhs = best.rhs; A = best.A; }
   double operator()(const Model& m, double h, double* f1 = nullptr, double* f2 = nullptr) {
-    const MatrixXd& MM = m.MM; const int Nm = m.z.size(), p = Nm - 1, nc = f1 ? 3 : 1, P2 = MM.cols();
+    const MatrixXd& MM = m.MM; const int Nm = m.z.size(), p = Nm - 1, P2 = MM.cols();
+    // derivative sums from residuals (n (2p + 4) flops) instead of two more moment GEMVs (2 R P2): GRM-like kernels
+    // (R ~ n rows) with several columns, e.g. covariates; default kernels (few rows) keep the moments
+    const bool dird = f1 && 2.0 * sp.R() * P2 > 1.5 * n * (2 * p + 4); const int nc = f1 && !dird ? 3 : 1;
     if (sp.is_bad(h)) { if (f1) *f1 = *f2 = NAN; return NEG_INF; }
     sp.weights(h, f1 != nullptr, W);
-    AB.resize(sp.R(), 3); MW.resize(P2, 3);   // fixed shapes: no reallocation between value-only and derivative calls
-    AB.col(0) = W.a.matrix(); if (f1) { AB.col(1) = W.b.matrix(); AB.col(2) = W.e.matrix(); }
-    if (f1) MW.noalias() = MM.transpose() * AB; else MW.col(0).noalias() = MM.transpose() * AB.col(0);
+    MW.resize(P2, 3);   // three GEMVs: Eigen's GEMM is 2-3x slower than them on these skinny shapes
+    MW.col(0).noalias() = MM.transpose() * W.a.matrix();
+    if (nc == 3) { MW.col(1).noalias() = MM.transpose() * W.b.matrix(); MW.col(2).noalias() = MM.transpose() * W.e.matrix(); }
     if (!W.null_ok)
       for (int t = 0; t < sp.n0; ++t) {
         double w[3]; sp.null_w(t, h, w[0], w[1], w[2]);
@@ -310,6 +416,12 @@ struct Profile {
       if (direct) {
         Q1 = sp.wsum(W, 1, h, r.data(), r.data()); Q2 = sp.wsum(W, 2, h, r.data(), r.data());
         for (int a = 0; a < p; ++a) Xv[a] = sp.wsum(W, 1, h, m.z[a], r.data());
+      } else if (dird) {
+        r = Eigen::Map<const ArrayXd>(m.z[p], n);
+        for (int a = 0; a < p; ++a) r -= b[a] * Eigen::Map<const ArrayXd>(m.z[a], n);
+        wt1.resize(n); wt2.resize(n); sp.expand(W, 1, h, wt1.data()); sp.expand(W, 2, h, wt2.data());
+        wr = wt1 * r; Q1 = (wr * r).sum(); Q2 = (wt2 * r.square()).sum();
+        for (int a = 0; a < p; ++a) Xv[a] = (Eigen::Map<const ArrayXd>(m.z[a], n) * wr).sum();
       } else {
         Q1 = coef.dot(MW.col(1)); Q2 = coef.dot(MW.col(2));
         for (int a = 0; a < p; ++a) { double x = MW(pidx(a, p, Nm), 1); for (int e = 0; e < p; ++e) x -= MW(pidx(a, e, Nm), 1) * b[e]; Xv[a] = x; }
@@ -318,7 +430,8 @@ struct Profile {
       *f1 = 0.5 * n * Q1 / g - 0.5 * W.T1;
       *f2 = -0.5 * n * (2 * Q2 / g - Q1 * Q1 / (g * g)) + 0.5 * W.T2;
     }
-    return -0.5 * n - 0.5 * (n * std::log(s) + W.LD);
+    const double val = -0.5 * n - 0.5 * (n * std::log(s) + W.LD);
+    save(h, val); return val;
   }
 };
 
@@ -332,6 +445,12 @@ static std::pair<double, double> newton(Profile& P, const Model& m, const double
   double hb = HS[best], vb = v[best], f1, f2;
   double a = HS[std::max(0, best - 1)], c = HS[std::min(NG - 1, best + 1)];
   if (!std::isfinite(vb) || !(c > a)) return {hb, vb};
+  // incumbent from Profile evaluations, not the grid value: a grid value carries the Schur-complement rounding
+  // (~1e-8 in l at h -> 1 on rescaled kernels) and, when it is the larger, the fit was reported at the grid point
+  // instead of the optimum. Interior points: the first Newton step evaluates the grid point itself. Boundary points
+  // (h = 0, h = 1) are outside Newton's |x| <= XCAP, so they are evaluated here (a kernel scaled by 1e6 puts the
+  // optimum at h = 0 and x = -12 is 1.2e-5 below it; tests/model_checks.R kernel-scale check).
+  vb = best == 0 || best == NG - 1 ? P(m, hb) : NEG_INF;
   double lo = X_of(a), hi = X_of(c), x = X_of(hb);
   for (int it = 0; it < 60; ++it) {
     double h = H(x), fv = P(m, h, &f1, &f2);
@@ -361,12 +480,13 @@ static Fit refine(Profile& P, const Model& m, const double* v) {
     if (std::isfinite(v[i]) && (i == 0 || v[i] >= v[i - 1]) && (i == NG - 1 || v[i] >= v[i + 1])) peaks.push_back(i);
   std::sort(peaks.begin(), peaks.end(), [&](int p, int q) { return v[p] > v[q]; });
   if (peaks.empty()) peaks.push_back(argmax(v));
-  double hb = HS[peaks[0]], vb = NEG_INF;
+  double hb = HS[peaks[0]], vb = NEG_INF; P.best.v = NEG_INF; P.best.h = NAN;
   for (size_t j = 0; j < peaks.size() && j < (size_t)MAX_PEAKS; ++j) {
     auto r = newton(P, m, v, peaks[j]);
     if (r.second > vb) { vb = r.second; hb = r.first; }
   }
-  Fit f; f.value = P(m, hb); f.s2k = P.s * hb; f.s2 = P.s * (1 - hb); f.b = P.b;
+  Fit f; if (P.best.h == hb) { P.restore(); f.value = P.best.v; } else f.value = P(m, hb);
+  f.s2k = P.s * hb; f.s2 = P.s * (1 - hb); f.b = P.b;
   f.ok = std::isfinite(f.value);
   return f;
 }
@@ -377,16 +497,27 @@ static Fit refine(Profile& P, const Model& m, const double* v) {
 // expansion does not hold. Normal equations by the Schur complement on X0 (A00^-1 per grid point, shared),
 // the k x k remainder by Cholesky; LDLT on the full system (suez 0.4) for a small pivot; direct residuals where
 // rss / y'Wy < CANCEL_GRID.
-struct X0Grid { std::vector<MatrixXd> A0i; };
+// Per grid point, A00^+ = F F' with F' = D^{+1/2} L^-1 P from the pivoted LDLT (PinvLDLT's rule for dropped
+// pivots; sg = sign of the kept pivot, 0 when dropped), so a' A00^+ b = (F'a) . (sg (F'b)): the per-SNP products
+// become one triangular GEMM per column over a whole SNP block, and each column is transformed once for all models.
+struct X0Grid { std::vector<MatrixXd> F; std::vector<std::vector<int>> perm; std::vector<VectorXd> sg; };
 static X0Grid x0_grid(const Spectrum& sp, const GridW& gw, const MatrixXd& X0, const MatrixXd& MX0) {
-  const int p0 = X0.cols(); X0Grid xg; xg.A0i.resize(NG);
+  const int p0 = X0.cols(); X0Grid xg; xg.F.resize(NG); xg.perm.resize(NG); xg.sg.resize(NG);
   const MatrixXd R = MX0.transpose() * gw.A.transpose();
   for (int i = 0; i < NG; ++i) {
     if (gw.bad[i]) continue;
     MatrixXd A00(p0, p0);
     for (int a = 0; a < p0; ++a) for (int b = 0; b < p0; ++b) A00(a, b) = gw.W[i].null_ok ? R(pidx(a, b, p0), i) : sp.wsum(gw.W[i], 0, HS[i], X0.col(a).data(), X0.col(b).data());
-    PinvLDLT L; L.compute(A00); xg.A0i[i].resize(p0, p0);
-    for (int j = 0; j < p0; ++j) xg.A0i[i].col(j) = L.solve(VectorXd::Unit(p0, j));
+    FastLDLT L; L.compute(A00);
+    MatrixXd Li = MatrixXd::Identity(p0, p0);
+    MatrixXd Lu = L.B.triangularView<Eigen::UnitLower>(); Lu.triangularView<Eigen::UnitLower>().solveInPlace(Li);
+    xg.sg[i].resize(p0);
+    for (int e = 0; e < p0; ++e) {
+      const bool keep = std::fabs(L.D[e]) > COLLINEAR * std::fabs(L.d0[e]) && L.D[e] != 0;
+      const double dh = keep ? 1 / std::sqrt(std::fabs(L.D[e])) : 0;
+      Li.row(e) *= dh; xg.sg[i][e] = keep ? (L.D[e] > 0 ? 1 : -1) : 0;
+    }
+    xg.F[i] = Li.triangularView<Eigen::Lower>(); xg.perm[i] = L.perm;
   }
   return xg;
 }
@@ -403,7 +534,12 @@ static double grid_direct(const Block& bl, const GridW& gw, int i, int s, const 
   return bl.sp.wsum(W, 0, h, r.data(), r.data());
 }
 
-static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const X0Grid& xg, const std::vector<std::vector<int>>& models) {
+// y-free part of the per-SNP normal equations (transformed columns F'a_c and Schur entries per grid point): the same
+// for the data and bootstrap grids of a SNP block (same X0 and B, y differs), so the bootstrap grid reuses the data
+// grid's (round 12: algorithm specialist's SchurCache idea on the factored grid).
+struct SchurCache { bool ok = false; int S = 0; std::vector<char> used; std::vector<std::vector<MatrixXd>> At; std::vector<MatrixXd> SC; };
+static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const X0Grid& xg, const std::vector<std::vector<int>>& models,
+                                         SchurCache* cache = nullptr, bool reuse = false) {
   const Spectrum& sp = bl.sp; const int p0 = bl.p0, k = bl.k, iy = bl.iy, S = bl.S, n = sp.n, nper = bl.nper;
   const MatrixXd At = gw.A.transpose();
   MatrixXd RY = bl.MY.transpose() * At, RP = bl.Mper.transpose() * At;   // (pairs) x NG
@@ -422,34 +558,49 @@ static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const
     const int t = pidx(a, b, bl.N);
     return bl.kind[t] == 0 ? RX(bl.slot[t], i) : bl.kind[t] == 1 ? RY(bl.slot[t], i) : RP((size_t)s * nper + bl.slot[t], i);
   };
+  // block columns used by some model
+  std::vector<char> used(k, 0); for (auto& mb : models) for (int c : mb) used[c] = 1;
+  const int Sy = bl.shared_y ? 1 : S;
+  std::vector<MatrixXd> Ac(k), At0(k), Ap(k); MatrixXd Y0(p0, Sy), Yt, Yp;
+  VectorXd q(Sy); MatrixXd U(k, S), SC0((size_t)k * k, S);   // per SNP: u_c = c_c - a_c' A00^+ r0, Schur entries (c, l <= c)
+  const bool use = cache && reuse && cache->ok && cache->used == used && cache->S == S, store = cache && !reuse;
+  if (store) { cache->ok = true; cache->S = S; cache->used = used; cache->At.assign(NG, std::vector<MatrixXd>(k)); cache->SC.assign(NG, MatrixXd()); }
   std::vector<MatrixXd> V(models.size(), MatrixXd(S, NG));
-  std::vector<double> r0(p0), z(p0), u(k), c(k), a(p0 * k), T(p0 * k), Sc(k * k);
+  std::vector<double> u(k), Sc(k * k);
   for (int i = 0; i < NG; ++i) {
     if (gw.bad[i]) { for (auto& v : V) v.col(i).setConstant(NEG_INF); continue; }
-    const double* Ai = xg.A0i[i].data(); const double ldi = gw.logdet[i];
+    const double ldi = gw.logdet[i]; const MatrixXd& F = xg.F[i]; const std::vector<int>& pm = xg.perm[i]; const VectorXd& sg = xg.sg[i];
+    const auto Fl = F.triangularView<Eigen::Lower>();
+    for (int s = 0; s < Sy; ++s) for (int e = 0; e < p0; ++e) Y0(e, s) = M(i, s, pm[e], iy);
+    Yt.noalias() = Fl * Y0; Yp = sg.asDiagonal() * Yt;
+    for (int s = 0; s < Sy; ++s) q[s] = Yt.col(s).dot(Yp.col(s));
+    const std::vector<MatrixXd>& At_ = use ? cache->At[i] : At0; const MatrixXd& SC = use ? cache->SC[i] : SC0;
+    if (!use) {
+      for (int c = 0; c < k; ++c) {
+        if (!used[c]) continue;
+        Ac[c].resize(p0, S); for (int s = 0; s < S; ++s) for (int e = 0; e < p0; ++e) Ac[c](e, s) = M(i, s, pm[e], p0 + c);
+        At0[c].noalias() = Fl * Ac[c]; Ap[c] = sg.asDiagonal() * At0[c];
+      }
+      for (int c = 0; c < k; ++c) for (int l = 0; l <= c; ++l) {
+        if (!used[c] || !used[l]) continue;
+        for (int s = 0; s < S; ++s) SC0(c * k + l, s) = M(i, s, p0 + c, p0 + l) - At0[c].col(s).dot(Ap[l].col(s));
+      }
+      if (store) { cache->At[i] = At0; cache->SC[i] = SC0; }
+    }
+    for (int c = 0; c < k; ++c) {
+      if (!used[c]) continue;
+      for (int s = 0; s < S; ++s) U(c, s) = M(i, s, p0 + c, iy) - At_[c].col(s).dot(Yp.col(bl.shared_y ? 0 : s));
+    }
     for (int s = 0; s < S; ++s) {
-      const double yy = M(i, s, iy, iy); double q = 0;
-      for (int e = 0; e < p0; ++e) r0[e] = M(i, s, e, iy);
-      for (int e = 0; e < p0; ++e) { double x = 0; for (int f = 0; f < p0; ++f) x += Ai[e + f * p0] * r0[f]; z[e] = x; q += r0[e] * x; }
+      const double yy = M(i, s, iy, iy), qs = q[bl.shared_y ? 0 : s];
       for (size_t mi = 0; mi < models.size(); ++mi) {
         const std::vector<int>& mb = models[mi]; const int kk = mb.size();
-        double rss = yy - q; bool full = false;
+        double rss = yy - qs; bool full = false;
         for (int j = 0; j < kk; ++j) {
-          const int cj = p0 + mb[j]; double* aj = a.data() + j * p0; double* Tj = T.data() + j * p0;   // not &a[..]: p0 can be 0 (empty vector)
-          for (int e = 0; e < p0; ++e) aj[e] = M(i, s, e, cj);
-          for (int e = 0; e < p0; ++e) { double x = 0; for (int f = 0; f < p0; ++f) x += Ai[e + f * p0] * aj[f]; Tj[e] = x; }
-          c[j] = M(i, s, cj, iy);
-          for (int l = 0; l <= j; ++l) Sc[j * k + l] = M(i, s, cj, p0 + mb[l]);
-        }
-        for (int j = 0; j < kk; ++j) {
-          if (Sc[j * k + j] == 0) { for (int l = 0; l < j; ++l) Sc[j * k + l] = 0; Sc[j * k + j] = 1; u[j] = 0; continue; }   // absent column
-          const double* aj = a.data() + j * p0; double x = c[j];
-          for (int e = 0; e < p0; ++e) x -= aj[e] * z[e];
-          u[j] = x;
-          for (int l = 0; l <= j; ++l) {
-            if (Sc[l * k + l] == 0) continue;
-            const double* Tl = T.data() + l * p0; double y = 0; for (int e = 0; e < p0; ++e) y += aj[e] * Tl[e]; Sc[j * k + l] -= y;
-          }
+          const int cj = mb[j];
+          if (M(i, s, p0 + cj, p0 + cj) == 0) { for (int l = 0; l < j; ++l) Sc[j * k + l] = 0; Sc[j * k + j] = 1; u[j] = 0; continue; }   // absent column
+          u[j] = U(cj, s);
+          for (int l = 0; l <= j; ++l) { const int cl = mb[l]; Sc[j * k + l] = cj >= cl ? SC(cj * k + cl, s) : SC(cl * k + cj, s); }
         }
         for (int j = 0; j < kk; ++j) {   // Cholesky of the Schur complement, forward solve, rss -= |L^-1 u|^2
           double dj = Sc[j * k + j]; const double dj0 = M(i, s, p0 + mb[j], p0 + mb[j]);
@@ -482,8 +633,12 @@ static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const
 // ---------------------------------------------------------------- rotation
 // U'M with repeated rows of M (samples of one individual share a genotype; the interaction column is constant
 // over the reference condition): M = Z Mu, U'M = (Z'U)' Mu; only the summation order changes.
-static MatrixXd rotate(const Eigen::Map<MatrixXd>& U, const MatrixXd& M) {
-  const int N = M.rows(), S = M.cols();
+// Threaded (nt > 1): the result's rows (contrasts) in chunks of ROT_ROWS. Eigen's GEMM gives bitwise the same rows
+// for any row partition in multiples of 24 (3 x the packet size of the NEON / AVX / AVX-512 kernels; bench/proto/r12/
+// parallel/gemm_bits.cpp), and UZ is summed per element in sample order, so the result equals the serial one.
+static const int ROT_ROWS = 240;
+static MatrixXd rotate(const Eigen::Map<MatrixXd>& U, const MatrixXd& M, int nt) {
+  const int N = M.rows(), S = M.cols(), n = U.cols(), nch = (n + ROT_ROWS - 1) / ROT_ROWS;
   if (S == 0) return MatrixXd(U.cols(), 0);
   // NaN breaks the sort's strict weak ordering (undefined behaviour; libstdc++ can read out of bounds)
   if (!M.allFinite()) Rcpp::stop("non-finite genotype or term values (impute missing genotypes first)");
@@ -494,18 +649,45 @@ static MatrixXd rotate(const Eigen::Map<MatrixXd>& U, const MatrixXd& M) {
   std::sort(ord.begin(), ord.end(), less);
   std::vector<int> cls(N); int nc = 0;
   for (int i = 0; i < N; ++i) cls[ord[i]] = (i > 0 && !less(ord[i - 1], ord[i])) ? nc - 1 : nc++;
-  if (nc > 0.75 * N) return U.transpose() * M;   // few repeats: plain product
-  MatrixXd UZ = MatrixXd::Zero(U.cols(), nc), Mu(nc, S);
-  for (int i = 0; i < N; ++i) { UZ.col(cls[i]) += U.row(i).transpose(); Mu.row(cls[i]) = M.row(i); }
-  return UZ * Mu;
+  if (nc > 0.75 * N) {   // few repeats: plain product
+    if (nt <= 1) return U.transpose() * M;
+    MatrixXd R(n, S);
+    par_for(nch, nt, [&](int c, int) { const int r0 = c * ROT_ROWS, h = std::min(ROT_ROWS, n - r0);
+      R.middleRows(r0, h).noalias() = U.middleCols(r0, h).transpose() * M; });
+    return R;
+  }
+  MatrixXd Mu(nc, S);
+  for (int i = 0; i < N; ++i) Mu.row(cls[i]) = M.row(i);
+  if (nt <= 1) {
+    MatrixXd UZ = MatrixXd::Zero(U.cols(), nc);
+    for (int i = 0; i < N; ++i) UZ.col(cls[i]) += U.row(i).transpose();
+    return UZ * Mu;
+  }
+  MatrixXd UZ(n, nc), R(n, S);
+  par_for(nch, nt, [&](int c, int) { const int r0 = c * ROT_ROWS, h = std::min(ROT_ROWS, n - r0);
+    UZ.middleRows(r0, h).setZero();
+    for (int i = 0; i < N; ++i) UZ.col(cls[i]).segment(r0, h) += U.row(i).segment(r0, h).transpose();
+    R.middleRows(r0, h).noalias() = UZ.middleRows(r0, h) * Mu; });
+  return R;
 }
 
 // U'M for all columns at once, in fixed 256-column chunks (independent of the moment block size). Rotating inside
 // the moment blocks re-read U once per block: at N = 5000 the blocks are 16 SNPs wide and U is 200 MB.
-static MatrixXd rotate_all(const Eigen::Map<MatrixXd>& U, const MatrixXd& M) {
+// The default kernel's structured basis (R/lmm.R zz_contrast_basis) comes as a sparse CSC list (i, p, x, dim):
+// U'M in O(nnz(U) S), nnz ~ N log2 N.
+typedef Eigen::Map<const Eigen::SparseMatrix<double>> SpMap;
+static SpMap sp_map(SEXP L_) {
+  Rcpp::List L(L_); Rcpp::IntegerVector i = L["i"], p = L["p"], d = L["dim"]; Rcpp::NumericVector x = L["x"];
+  return SpMap(d[0], d[1], x.size(), p.begin(), i.begin(), x.begin());
+}
+static MatrixXd rotate_all(const SpMap& U, const MatrixXd& M, int = 1) {   // O(nnz S): not threaded
+  if (!M.allFinite()) Rcpp::stop("non-finite genotype or term values (impute missing genotypes first)");
+  return U.transpose() * M;
+}
+static MatrixXd rotate_all(const Eigen::Map<MatrixXd>& U, const MatrixXd& M, int nt = 1) {
   MatrixXd R(U.cols(), M.cols());
   for (int c0 = 0; c0 < M.cols(); c0 += 256) {
-    const int w = std::min(256, (int)M.cols() - c0); R.middleCols(c0, w) = rotate(U, M.middleCols(c0, w));
+    const int w = std::min(256, (int)M.cols() - c0); R.middleCols(c0, w) = rotate(U, M.middleCols(c0, w), nt);
   }
   return R;
 }
@@ -529,9 +711,30 @@ static void wald(const Profile& P, VectorXd& beta, VectorXd& se) {
   for (int i = 0; i < nk; ++i) { beta[k[i]] = b[i]; se[k[i]] = std::sqrt(Vb(i, i)); }
 }
 
+// Rotated term columns made lazily in rotate_all's fixed 256-column chunks (bit-identical to rotate_all on all
+// columns): a SNP block takes its columns from at most two chunks and earlier chunks are dropped, so a gene holds
+// 2 x terms x (N-1) x 256 rotated values instead of terms x (N-1) x S plus full standardized copies.
+struct LazyRotated {
+  struct Chunk { int c0, w; std::vector<MatrixXd> R; };
+  std::vector<Chunk> ch;
+  // term j, columns s0 .. s0 + sb - 1 of S; load(c0, w) returns the rotated terms of columns c0 .. c0 + w - 1
+  template <class F> MatrixXd cols(int j, int s0, int sb, int S, F&& load) {
+    while (!ch.empty() && ch.front().c0 + ch.front().w <= s0) ch.erase(ch.begin());
+    while (ch.empty() || ch.back().c0 + ch.back().w < s0 + sb) {
+      const int c0 = ch.empty() ? s0 - s0 % 256 : ch.back().c0 + ch.back().w, w = std::min(256, S - c0);
+      ch.push_back(Chunk{c0, w, load(c0, w)});
+    }
+    MatrixXd M(ch.front().R[j].rows(), sb);
+    for (int sl = 0; sl < sb; ++sl)
+      for (const Chunk& c : ch) if (s0 + sl < c.c0 + c.w) { M.col(sl) = c.R[j].col(s0 + sl - c.c0); break; }
+    return M;
+  }
+};
+
 // ---------------------------------------------------------------- fit_gene (suez_fit_gene)
-static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
-                           const MatrixXd& G, const MatrixXd& C, bool boot) {
+template <class UT>
+static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
+                           const Eigen::Map<MatrixXd>& G, const MatrixXd& C, bool boot, int nt) {
   const int S = G.cols(), q = C.cols(), p0 = UX0_.cols(), n = Uy_.size();
   const ArrayXd lam = lam_.array();
   const Spectrum sp(lam); const GridW gw(sp, lam); Profile PR(sp);
@@ -545,13 +748,21 @@ static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, 
     f0 = refine(PR, make_model(b0, 0, c0), V0.data()); }
   if (!f0.ok) Rcpp::stop("no-genotype model did not converge");
 
-  MatrixXd Gs = G; VectorXd gsd(S);
-  for (int s = 0; s < S; ++s) standardize(Gs.col(s), gsd[s]);
-  std::vector<MatrixXd> Is(q); std::vector<std::vector<bool>> iok(q, std::vector<bool>(S)); VectorXi df = VectorXi::Zero(S);
-  for (int j = 0; j < q; ++j) {
-    Is[j] = G.array().colwise() * C.col(j).array();
-    for (int s = 0; s < S; ++s) { double sd; iok[j][s] = standardize(Is[j].col(s), sd); if (!iok[j][s]) Is[j].col(s).setZero(); else ++df[s]; }
-  }
+  // standardized genotype and interaction columns, made and rotated per chunk (LazyRotated)
+  VectorXd gsd(S); std::vector<std::vector<bool>> iok(q, std::vector<bool>(S)); VectorXi df = VectorXi::Zero(S);
+  auto load = [&](int c0, int w) {
+    std::vector<MatrixXd> R;
+    MatrixXd Gc = G.middleCols(c0, w);
+    for (int s = 0; s < w; ++s) standardize(Gc.col(s), gsd[c0 + s]);
+    R.push_back(rotate_all(U, Gc, nt)); Gc.resize(0, 0);
+    for (int j = 0; j < q; ++j) {
+      MatrixXd Ic = G.middleCols(c0, w).array().colwise() * C.col(j).array();
+      for (int s = 0; s < w; ++s) { const int t = c0 + s; double sd; iok[j][t] = standardize(Ic.col(s), sd); if (!iok[j][t]) Ic.col(s).setZero(); else ++df[t]; }
+      R.push_back(rotate_all(U, Ic, nt));
+    }
+    return R;
+  };
+  LazyRotated lr;
   std::vector<int> all(1 + q); for (int j = 0; j <= q; ++j) all[j] = j;
   const std::vector<std::vector<int>> mdata = q ? std::vector<std::vector<int>>{{0}, all} : std::vector<std::vector<int>>{{0}};
   const std::vector<std::vector<int>> mboot = q ? std::vector<std::vector<int>>{{}, {0}, all} : std::vector<std::vector<int>>{{}, {0}};
@@ -565,59 +776,89 @@ static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, 
   std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
   const int k1 = 1 + q, nper = p0 * k1 + k1 * (k1 + 1) / 2 + k1 + p0 + 1;   // per-SNP pairs of the bootstrap block
   const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.R() * nper))));
-  std::vector<MatrixXd> RG(1, rotate_all(U, Gs));
-  for (int j = 0; j < q; ++j) RG.push_back(rotate_all(U, Is[j]));
-  for (int s0 = 0; s0 < S; s0 += SB) {
-    const int sb = std::min(SB, S - s0);
-    std::vector<MatrixXd> B;
-    for (int j = 0; j <= q; ++j) B.push_back(sp.permute(RG[j].middleCols(s0, sb)));
-    std::vector<Fit> f1(sb);
-    {
-      Block bd(sp, UX0, MX0, B, Y1, sb);
-      std::vector<MatrixXd> VV = grid_values(bd, gw, xg, mdata);
+  // SNP blocks (the serial blocks, so identical results at any thread count) in waves of nt: rotation and the
+  // bootstrap normals on this thread in block order (R's RNG in SNP order, as suez 0.4), the data fits and the
+  // bootstrap refits of a wave's blocks in parallel. nt = 1: block by block, as before. Workers write only their own
+  // rows of `out` (plain memory, no R API).
+  const int nb = (S + SB - 1) / SB, wave = std::max(1, nt);
+  double* O = out.begin(); auto o = [&](int s, int j) -> double& { return O[s + (size_t)S * j]; };
+  std::vector<Profile> PRs(std::max(1, std::min(nt, nb)), PR);
+  struct Blk { int s0 = 0, sb = 0; std::vector<MatrixXd> B; std::unique_ptr<Block> bd; SchurCache scache; std::vector<Fit> f1; MatrixXd Yb; };
+  for (int b0 = 0; b0 < nb; b0 += wave) {
+    const int nw = std::min(wave, nb - b0);
+    std::vector<Blk> wv(nw);
+    for (int w = 0; w < nw; ++w) {
+      Blk& k = wv[w]; k.s0 = (b0 + w) * SB; k.sb = std::min(SB, S - k.s0); k.f1.resize(k.sb);
+      for (int j = 0; j <= q; ++j) k.B.push_back(sp.permute(lr.cols(j, k.s0, k.sb, S, load)));
+    }
+    par_for(nw, nt, [&](int w, int t) {
+      Blk& k = wv[w]; Profile& P = PRs[t]; const int s0 = k.s0, sb = k.sb;
+      k.bd.reset(new Block(sp, UX0, MX0, k.B, Y1, sb)); const Block& bd = *k.bd;
+      std::vector<MatrixXd> VV = grid_values(bd, gw, xg, mdata, &k.scache, false);
       for (int sl = 0; sl < sb; ++sl) {
-        const int s = s0 + sl; out(s, 2) = df[s];
-        VectorXd v1 = VV[0].row(sl).transpose(); f1[sl] = refine(PR, make_model(bd, sl, cols1()), v1.data()); ok_nested(f1[sl], f0);
-        if (!f1[sl].ok) continue;
-        out(s, 0) = f1[sl].value;
-        VectorXd be, se; wald(PR, be, se); out(s, 3) = be[p0] / gsd[s]; out(s, 4) = se[p0] / gsd[s];
+        const int s = s0 + sl; o(s, 2) = df[s];
+        VectorXd v1 = VV[0].row(sl).transpose(); k.f1[sl] = refine(P, make_model(bd, sl, cols1()), v1.data()); ok_nested(k.f1[sl], f0);
+        if (!k.f1[sl].ok) continue;
+        o(s, 0) = k.f1[sl].value;
+        VectorXd be, se; wald(P, be, se); o(s, 3) = be[p0] / gsd[s]; o(s, 4) = se[p0] / gsd[s];
         if (df[s] > 0) {
-          VectorXd v2 = VV[1].row(sl).transpose(); Fit f2 = refine(PR, make_model(bd, sl, cols2(s)), v2.data()); ok_nested(f2, f1[sl]);
-          if (f2.ok) out(s, 1) = f2.value;
+          VectorXd v2 = VV[1].row(sl).transpose(); Fit f2 = refine(P, make_model(bd, sl, cols2(s)), v2.data()); ok_nested(f2, k.f1[sl]);
+          if (f2.ok) o(s, 1) = f2.value;
         }
       }
-    }
+    });
     if (!boot) continue;
     // bootstrap: one y per SNP, drawn in SNP order and in the original contrast order (as suez 0.4)
-    MatrixXd Yb = MatrixXd::Zero(n, sb);
-    for (int sl = 0; sl < sb; ++sl) {
-      const Fit& f = f1[sl]; if (!f.ok) continue;
-      for (int i = 0; i < n; ++i) Yb(pos[i], sl) = std::sqrt(f.s2k * lam[i] + f.s2) * R::norm_rand();
-      Yb.col(sl) += UX0 * f.b.head(p0) + B[0].col(sl) * f.b[p0];
-    }
-    Block bb(sp, UX0, MX0, B, Yb, sb);
-    std::vector<MatrixXd> WW = grid_values(bb, gw, xg, mboot);
-    for (int sl = 0; sl < sb; ++sl) {
-      const int s = s0 + sl; if (!f1[sl].ok) continue;
-      VectorXd v = WW[0].row(sl).transpose(); Fit g0 = refine(PR, make_model(bb, sl, c0), v.data());
-      if (!g0.ok) continue;
-      v = WW[1].row(sl).transpose(); Fit g1 = refine(PR, make_model(bb, sl, cols1()), v.data()); ok_nested(g1, g0);
-      if (!g1.ok) continue;
-      out(s, 5) = g1.value;
-      if (df[s] > 0) {
-        v = WW[2].row(sl).transpose(); Fit g2 = refine(PR, make_model(bb, sl, cols2(s)), v.data()); ok_nested(g2, g1);
-        if (g2.ok) out(s, 6) = g2.value;
+    for (Blk& k : wv) {
+      k.Yb = MatrixXd::Zero(n, k.sb);
+      for (int sl = 0; sl < k.sb; ++sl) {
+        const Fit& f = k.f1[sl]; if (!f.ok) continue;
+        for (int i = 0; i < n; ++i) k.Yb(pos[i], sl) = std::sqrt(f.s2k * lam[i] + f.s2) * R::norm_rand();
+        k.Yb.col(sl) += UX0 * f.b.head(p0) + k.B[0].col(sl) * f.b[p0];
       }
     }
+    par_for(nw, nt, [&](int w, int t) {
+      Blk& k = wv[w]; Profile& P = PRs[t]; const int s0 = k.s0, sb = k.sb;
+      Block bb(sp, UX0, MX0, k.B, k.Yb, sb, k.bd.get());
+      std::vector<MatrixXd> WW = grid_values(bb, gw, xg, mboot, &k.scache, true);
+      for (int sl = 0; sl < sb; ++sl) {
+        const int s = s0 + sl; if (!k.f1[sl].ok) continue;
+        VectorXd v = WW[0].row(sl).transpose(); Fit g0 = refine(P, make_model(bb, sl, c0), v.data());
+        if (!g0.ok) continue;
+        v = WW[1].row(sl).transpose(); Fit g1 = refine(P, make_model(bb, sl, cols1()), v.data()); ok_nested(g1, g0);
+        if (!g1.ok) continue;
+        o(s, 5) = g1.value;
+        if (df[s] > 0) {
+          v = WW[2].row(sl).transpose(); Fit g2 = refine(P, make_model(bb, sl, cols2(s)), v.data()); ok_nested(g2, g1);
+          if (g2.ok) o(s, 6) = g2.value;
+        }
+      }
+    });
   }
   return Rcpp::List::create(Rcpp::Named("l0") = f0.value, Rcpp::Named("res") = out);
 }
 
-extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot) {
-  BEGIN_RCPP
+static SEXP fit_gene_call(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, int nt) {
+  const Rcpp::NumericMatrix Gd(G);   // not copied when G is double (map_interaction_qtl); integer G is converted
+  const Eigen::Map<MatrixXd> Gm(const_cast<double*>(Gd.begin()), Gd.nrow(), Gd.ncol());
+  if (TYPEOF(U) == VECSXP)
+    return fit_gene(sp_map(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
+                    Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt);
   return fit_gene(Rcpp::as<Eigen::Map<MatrixXd>>(U),   // U (N x N-1) used in place, not copied per gene
                   Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
-                  Rcpp::as<MatrixXd>(G), Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot));
+                  Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt);
+}
+
+extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot) {
+  BEGIN_RCPP
+  return fit_gene_call(U, lambda, Uy, UX0, G, C, boot, 1);
+  END_RCPP
+}
+
+// As suez_fit_gene on `threads` threads (options(suez.threads)): identical results at any thread count.
+extern "C" SEXP suez_fit_gene_threads(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, SEXP threads) {
+  BEGIN_RCPP
+  return fit_gene_call(U, lambda, Uy, UX0, G, C, boot, std::max(1, Rcpp::as<int>(threads)));
   END_RCPP
 }
 
@@ -626,7 +867,8 @@ extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SE
 // models of a SNP block share one set of moments. As src/lmm.cpp: a zero column is left out of that SNP's
 // design (npar), beta / se on the standardized scale (b of the fit, se from (X'W'X)^-1), y simulated per SNP
 // under model boot_null in SNP order, then models boot_null and boot_alt refitted.
-static Rcpp::List fit_models(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
+template <class UT>
+static Rcpp::List fit_models(const UT& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
                              Rcpp::List cols, Rcpp::List models, int boot_null, int boot_alt) {
   const int n = Uy_.size(), p0 = UX0_.cols(), M = models.size(), nc = cols.size();
   const ArrayXd lam = lam_.array();
@@ -651,11 +893,13 @@ static Rcpp::List fit_models(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_
   std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
   const int nper = p0 * nc + nc * (nc + 1) / 2 + nc + p0 + 1;
   const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.R() * nper))));
-  std::vector<MatrixXd> RC; for (int j = 0; j < nc; ++j) RC.push_back(rotate_all(U, C[j]));
+  auto load = [&](int c0, int w) {   // term columns rotated per chunk (LazyRotated)
+    std::vector<MatrixXd> R; for (int j = 0; j < nc; ++j) R.push_back(rotate_all(U, MatrixXd(C[j].middleCols(c0, w)))); return R; };
+  LazyRotated lr;
   for (int s0 = 0; s0 < S; s0 += SB) {
     const int sb = std::min(SB, S - s0);
     std::vector<MatrixXd> B;
-    for (int j = 0; j < nc; ++j) B.push_back(sp.permute(RC[j].middleCols(s0, sb)));
+    for (int j = 0; j < nc; ++j) B.push_back(sp.permute(lr.cols(j, s0, sb, S, load)));
     // design of SNP sl under model m: X0 then the model's nonzero columns (src/lmm.cpp's design())
     auto design = [&](int m, int sl, std::vector<int>& use) {
       use.clear(); std::vector<int> c(p0); for (int e = 0; e < p0; ++e) c[e] = e;
@@ -701,6 +945,9 @@ static Rcpp::List fit_models(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_
 extern "C" SEXP suez_fit_models(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP cols, SEXP models,
                                 SEXP boot_null, SEXP boot_alt) {
   BEGIN_RCPP
+  if (TYPEOF(U) == VECSXP)
+    return fit_models(sp_map(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
+                    Rcpp::List(cols), Rcpp::List(models), Rcpp::as<int>(boot_null), Rcpp::as<int>(boot_alt));
   return fit_models(Rcpp::as<Eigen::Map<MatrixXd>>(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
                     Rcpp::List(cols), Rcpp::List(models), Rcpp::as<int>(boot_null), Rcpp::as<int>(boot_alt));
   END_RCPP
@@ -714,5 +961,71 @@ extern "C" SEXP suez_eigen_sym(SEXP A) {
   if (es.info() != Eigen::Success) Rcpp::stop("symmetric eigen-decomposition failed (non-finite values?)");
   return Rcpp::List::create(Rcpp::Named("values") = VectorXd(es.eigenvalues().reverse()),
                             Rcpp::Named("vectors") = MatrixXd(es.eigenvectors().rowwise().reverse()));
+  END_RCPP
+}
+
+
+extern "C" SEXP suez_sp_crossprod(SEXP U, SEXP M) {
+  BEGIN_RCPP
+  return Rcpp::wrap(MatrixXd(sp_map(U).transpose() * Rcpp::as<Eigen::Map<MatrixXd>>(M)));
+  END_RCPP
+}
+
+// ---------------------------------------------------------------- lean contrast eigen-decomposition (memory)
+// kernel_contrast_eigen in one call, with the same arithmetic as the R code it replaces (K1 = K - 2 w u',
+// K2 = K1 - 2 u (u'K1), eigen of K2[-1, -1], U = H [0; V]; sums in reference dgemv order with FMA, as R's
+// reference BLAS). Eigen's solver runs in place inside the returned N x (N-1) matrix (holds K + U instead of
+// ~7 N x N matrices); LAPACK's dsyevr (as eigen(symmetric = TRUE)) writes its vectors into U (K + K2 + U).
+// Returns list(vectors = U, values) (values decreasing).
+#pragma clang fp contract(off)
+// Variant taking K1 = K H and z = u'K1 from R (R's BLAS), and forming crossprod(u, V) with R's BLAS call:
+// identical to the R code under any BLAS, holds K + K1 + U.
+extern "C" SEXP suez_contrast_eigen(SEXP K1_, SEXP u_, SEXP z_, SEXP lapack_) {
+  BEGIN_RCPP
+  const int n = Rf_nrows(K1_), m = n - 1; const bool lapack = Rf_asLogical(lapack_);
+  const double *KH = REAL(K1_), *u = REAL(u_), *z = REAL(z_);
+  auto K1 = [&](int i, int j) { return KH[i + (size_t)j * n]; };
+  Rcpp::NumericMatrix U(n, m); double* buf = U.begin();
+  VectorXd diag(m);
+  if (!lapack) {
+    const int off = (reinterpret_cast<std::uintptr_t>(buf) % 16) ? 1 : 0;   // A 16-byte aligned, as Eigen's MatrixXd
+    Eigen::Map<MatrixXd, Eigen::Aligned16> A(buf + off, m, m);
+    for (int j = 0; j < m; ++j) {   // lower triangle of K2[-1, -1], upper zero (SelfAdjointEigenSolver::compute)
+      for (int i = 0; i < j; ++i) A(i, j) = 0;
+      for (int i = j; i < m; ++i) A(i, j) = K1(i + 1, j + 1) - 2 * (u[i + 1] * z[j + 1]);
+    }
+    if (!A.allFinite()) Rcpp::stop("non-finite values in sample_kernel");
+    // SelfAdjointEigenSolver::compute (Eigen 3.4) on A itself
+    double scale = A.cwiseAbs().maxCoeff(); if (scale == 0) scale = 1;
+    A.triangularView<Eigen::Lower>() /= scale;
+    VectorXd sub(m - 1), hc(m - 1);
+    // tridiagonalization_inplace_selector::run (Tridiagonalization<> needs a plain matrix type)
+    Eigen::internal::tridiagonalization_inplace(A, hc);
+    diag = A.diagonal(); sub = A.diagonal<-1>();
+    A = Eigen::HouseholderSequence<decltype(A), VectorXd>(A, hc).setLength(m - 1).setShift(1);
+    if (Eigen::internal::computeFromTridiagonal_impl(diag, sub, 30, true, A) != Eigen::Success)
+      Rcpp::stop("symmetric eigen-decomposition failed (non-finite values?)");
+    diag *= scale;
+    for (int j = m - 1; j >= 0; --j) { std::memmove(buf + (size_t)j * n + 1, buf + off + (size_t)j * m, m * sizeof(double)); buf[(size_t)j * n] = 0; }
+  } else {   // La_rs: dsyevr("V", "A", "L") on a copy of K2[-1, -1], vectors straight into rows 2..N of U (ldz = N)
+    std::vector<double> A((size_t)m * m);
+    for (int j = 0; j < m; ++j) for (int i = 0; i < m; ++i) A[i + (size_t)j * m] = K1(i + 1, j + 1) - 2 * (u[i + 1] * z[j + 1]);
+    for (double a : A) if (!std::isfinite(a)) Rcpp::stop("non-finite values in sample_kernel");
+    char jobv = 'V', range = 'A', uplo = 'L'; double vl = 0, vu = 0, abstol = 0, tmp; int il = 0, iu = 0, mf, info = 0, lwork = -1, liwork = -1, itmp;
+    std::vector<int> isuppz(2 * (size_t)m);
+    F77_CALL(dsyevr)(&jobv, &range, &uplo, &m, A.data(), &m, &vl, &vu, &il, &iu, &abstol, &mf, diag.data(), buf + 1, &n, isuppz.data(),
+                     &tmp, &lwork, &itmp, &liwork, &info FCONE FCONE FCONE);
+    lwork = (int)tmp; liwork = itmp; std::vector<double> work(lwork); std::vector<int> iwork(liwork);
+    F77_CALL(dsyevr)(&jobv, &range, &uplo, &m, A.data(), &m, &vl, &vu, &il, &iu, &abstol, &mf, diag.data(), buf + 1, &n, isuppz.data(),
+                     work.data(), &lwork, iwork.data(), &liwork, &info FCONE FCONE FCONE);
+    if (info != 0) Rcpp::stop("error code %d from Lapack routine 'dsyevr'", info);
+    for (int j = 0; j < m; ++j) buf[(size_t)j * n] = 0;
+  }
+  // decreasing order, as eigen(); then V - 2 outer(u, crossprod(u, V)), V = rbind(0, vectors)
+  for (int j = 0; j < m / 2; ++j) std::swap_ranges(buf + (size_t)j * n, buf + (size_t)(j + 1) * n, buf + (size_t)(m - 1 - j) * n);
+  std::vector<double> zv(m); const char T = 'T'; const double one = 1, zero = 0; const int ione = 1;
+  F77_CALL(dgemv)(&T, &n, &m, &one, buf, &n, u, &ione, &zero, zv.data(), &ione FCONE);   // R: crossprod(u, V)
+  for (int j = 0; j < m; ++j) { double* v = buf + (size_t)j * n; for (int i = 0; i < n; ++i) v[i] = v[i] - 2 * (u[i] * zv[j]); }
+  return Rcpp::List::create(Rcpp::Named("vectors") = U, Rcpp::Named("values") = VectorXd(diag.reverse()));
   END_RCPP
 }

@@ -1,0 +1,4 @@
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+baseline  max|dl| 2.8e-14  beta: max rel err 2.8e-11, NaN 0  se: max rel err 1.1e-09, NaN 0, zero 0
+candidate max|dl| 5.7e-14  beta: max rel err 3e-10, NaN 0  se: max rel err 2.3e-09, NaN 0, zero 0

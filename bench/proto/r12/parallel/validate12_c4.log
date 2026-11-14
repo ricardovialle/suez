@@ -1,0 +1,2 @@
+integ_c4 vs integ_c3b: 1118 checks, INFO=145 PASS=973 (298 s) -> bench/proto/r12/review/results/v12_integ_c4_vs_integ_c3b.tsv
+VERDICT: PASS 

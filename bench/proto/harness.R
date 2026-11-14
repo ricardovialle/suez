@@ -5,7 +5,7 @@
 #   base = run_impl(baseline_fit, P)                   # list of per-gene results + time
 #   Rcpp::sourceCpp("bench/proto/p1_gemm_grid.cpp")    # defines fit_gene_proto()
 #   new = run_impl(fit_gene_proto, P); compare(base, new)
-suppressPackageStartupMessages({ library(suez, lib.loc = "bench/lib/baseline"); library(Rcpp) })
+suppressPackageStartupMessages({ library(suez, lib.loc = Sys.getenv("SUEZ_HARNESS_LIB", "bench/lib/base12")); library(Rcpp) })
 
 prepare = function(dsn, n_genes = Inf, boot = TRUE) {
   d = readRDS(file.path("bench/data", paste0(dsn, ".rds")))

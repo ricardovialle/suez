@@ -1,0 +1,1119 @@
+cand	ref	part	dataset	check	value	threshold	status	detail
+integ_c3b	base12	equiv	S	wall_s cand/ref (indicative, not a benchmark)	0.3214	-	INFO	0.46 / 1.43 s
+integ_c3b	base12	equiv	S	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+integ_c3b	base12	equiv	S	columns	0	0	PASS	
+integ_c3b	base12	equiv	S	l0 max abs	5.542e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S	l_geno max abs	5.826e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S	l_interact max abs	5.684e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S	p_geno max|dlog10p|	8.804e-11	-	INFO	n=19942 na/inf mismatches=0 identical=6739
+integ_c3b	base12	equiv	S	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+integ_c3b	base12	equiv	S	p_interact max|dlog10p|	7.028e-11	-	INFO	n=19942 na/inf mismatches=0 identical=6326
+integ_c3b	base12	equiv	S	beta_geno max rel	2.127e-14	1e-06	PASS	n=19942 na/inf mismatches=0 identical=268
+integ_c3b	base12	equiv	S	se_geno max rel	1.409e-08	1e-06	PASS	n=19942 na/inf mismatches=0 identical=2097
+integ_c3b	base12	equiv	S	l_boot_geno max abs	12.62	1e-05	INFO	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S	l_boot_interact max abs	10.98	1e-05	INFO	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S	p_geno sig p<0.001	0	0	PASS	ref 16 cand 16 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	S	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S	p_interact sig p<0.001	0	0	PASS	ref 22 cand 22 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	S	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S	p_interact_boot sig p<0.001	3	0	INFO	ref 17 cand 14 flips 3 (borderline 0)
+integ_c3b	base12	equiv	S	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999985 median 1.000000
+integ_c3b	base12	equiv	S	boot LR distribution KS p	0.5751	>= 0.01	PASS	q0.5 0.4671/0.4707 q0.9 2.758/2.815 q0.99 6.589/6.972 q0.999 11.11/11.24
+integ_c3b	base12	equiv	S	l_boot_geno - l_geno distribution KS p	0.9855	>= 0.01	PASS	q0.5 1.723/1.711 q0.9 15/14.95 q0.99 26.05/25.84 q0.999 34.87/34.7
+integ_c3b	base12	stat	S	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000
+integ_c3b	base12	equiv	M	wall_s cand/ref (indicative, not a benchmark)	0.2381	-	INFO	1.73 / 7.25 s
+integ_c3b	base12	equiv	M	rows	0	0	PASS	ref 60199 rows / 300 genes, cand 60199 / 300
+integ_c3b	base12	equiv	M	columns	0	0	PASS	
+integ_c3b	base12	equiv	M	l0 max abs	1.734e-12	1e-09	PASS	n=60199 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M	l_geno max abs	1.791e-12	1e-09	PASS	n=60199 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M	l_interact max abs	1.791e-12	1e-09	PASS	n=60199 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M	p_geno max|dlog10p|	2.391e-09	-	INFO	n=60199 na/inf mismatches=0 identical=19301
+integ_c3b	base12	equiv	M	df_interact max abs	0	0	PASS	n=60199 na/inf mismatches=0 identical=60199
+integ_c3b	base12	equiv	M	p_interact max|dlog10p|	1.304e-09	-	INFO	n=60199 na/inf mismatches=0 identical=19205
+integ_c3b	base12	equiv	M	beta_geno max rel	5.131e-14	1e-06	PASS	n=60199 na/inf mismatches=0 identical=409
+integ_c3b	base12	equiv	M	se_geno max rel	1.375e-08	1e-06	PASS	n=60199 na/inf mismatches=0 identical=3717
+integ_c3b	base12	equiv	M	l_boot_geno max abs	11.07	1e-05	INFO	n=60199 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M	l_boot_interact max abs	10.89	1e-05	INFO	n=60199 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M	p_geno lead SNP per gene	0	0	PASS	300 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M	p_geno sig p<0.001	0	0	PASS	ref 76 cand 76 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_geno sig p<1e-05	0	0	PASS	ref 6 cand 6 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_geno eGenes BH 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M	p_interact lead SNP per gene	0	0	PASS	300 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M	p_interact sig p<0.001	0	0	PASS	ref 66 cand 66 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_interact sig p<1e-05	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M	p_interact_boot lead SNP per gene	0	0	PASS	300 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M	p_interact_boot sig p<0.001	5	0	INFO	ref 57 cand 62 flips 5 (borderline 0)
+integ_c3b	base12	equiv	M	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999999 median 1.000000
+integ_c3b	base12	equiv	M	boot LR distribution KS p	0.7989	>= 0.01	PASS	q0.5 0.462/0.4641 q0.9 2.763/2.785 q0.99 6.748/6.806 q0.999 11.04/10.98
+integ_c3b	base12	equiv	M	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.818/1.802 q0.9 20.33/20.37 q0.99 35.77/35.7 q0.999 46.95/46.82
+integ_c3b	base12	stat	M	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.083/0.083 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.100/0.100 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.033/0.033 fdr 0.500/0.500
+integ_c3b	base12	equiv	L	wall_s cand/ref (indicative, not a benchmark)	0.186	-	INFO	3.16 / 16.97 s
+integ_c3b	base12	equiv	L	rows	0	0	PASS	ref 59949 rows / 150 genes, cand 59949 / 150
+integ_c3b	base12	equiv	L	columns	0	0	PASS	
+integ_c3b	base12	equiv	L	l0 max abs	7.617e-12	1e-09	PASS	n=59949 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	L	l_geno max abs	7.731e-12	1e-09	PASS	n=59949 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	L	l_interact max abs	7.731e-12	1e-09	PASS	n=59949 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	L	p_geno max|dlog10p|	3.501e-09	-	INFO	n=59949 na/inf mismatches=0 identical=17925
+integ_c3b	base12	equiv	L	df_interact max abs	0	0	PASS	n=59949 na/inf mismatches=0 identical=59949
+integ_c3b	base12	equiv	L	p_interact max|dlog10p|	5.367e-09	-	INFO	n=59949 na/inf mismatches=0 identical=17678
+integ_c3b	base12	equiv	L	beta_geno max rel	1.098e-13	1e-06	PASS	n=59949 na/inf mismatches=0 identical=149
+integ_c3b	base12	equiv	L	se_geno max rel	1.579e-08	1e-06	PASS	n=59949 na/inf mismatches=0 identical=2324
+integ_c3b	base12	equiv	L	l_boot_geno max abs	12.32	1e-05	INFO	n=59949 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	L	l_boot_interact max abs	13.07	1e-05	INFO	n=59949 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	L	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	L	p_geno sig p<0.001	0	0	PASS	ref 80 cand 80 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_geno sig p<1e-05	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_geno sig p<1e-08	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_geno eGenes BH 5%	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	L	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	L	p_interact sig p<0.001	0	0	PASS	ref 51 cand 51 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_interact sig p<1e-05	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_interact eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	L	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	L	p_interact_boot sig p<0.001	16	0	INFO	ref 33 cand 49 flips 16 (borderline 0)
+integ_c3b	base12	equiv	L	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	L	boot LR distribution KS p	0.009555	>= 0.01	WARN	q0.5 0.4632/0.4504 q0.9 2.745/2.732 q0.99 6.643/6.704 q0.999 11.55/10.91
+integ_c3b	base12	equiv	L	l_boot_geno - l_geno distribution KS p	0.9996	>= 0.01	PASS	q0.5 1.841/1.798 q0.9 30.65/30.66 q0.99 54.84/54.72 q0.999 72.71/72.64
+integ_c3b	base12	stat	L	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.233/0.233 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.233/0.233 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.067/0.067 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.133/0.133 fdr 0.000/0.000
+integ_c3b	base12	equiv	XL	wall_s cand/ref (indicative, not a benchmark)	0.09938	-	INFO	2.32 / 23.39 s
+integ_c3b	base12	equiv	XL	rows	0	0	PASS	ref 23859 rows / 60 genes, cand 23859 / 60
+integ_c3b	base12	equiv	XL	columns	0	0	PASS	
+integ_c3b	base12	equiv	XL	l0 max abs	2.876e-11	1e-09	PASS	n=23859 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	XL	l_geno max abs	2.922e-11	1e-09	PASS	n=23859 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	XL	l_interact max abs	2.922e-11	1e-09	PASS	n=23859 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	XL	p_geno max|dlog10p|	2.118e-09	-	INFO	n=23859 na/inf mismatches=0 identical=6791
+integ_c3b	base12	equiv	XL	df_interact max abs	0	0	PASS	n=23859 na/inf mismatches=0 identical=23859
+integ_c3b	base12	equiv	XL	p_interact max|dlog10p|	3.607e-09	-	INFO	n=23859 na/inf mismatches=0 identical=7137
+integ_c3b	base12	equiv	XL	beta_geno max rel	2.293e-13	1e-06	PASS	n=23859 na/inf mismatches=0 identical=25
+integ_c3b	base12	equiv	XL	se_geno max rel	1.276e-08	1e-06	PASS	n=23859 na/inf mismatches=0 identical=602
+integ_c3b	base12	equiv	XL	l_boot_geno max abs	11.45	1e-05	INFO	n=23859 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	XL	l_boot_interact max abs	11.51	1e-05	INFO	n=23859 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	XL	p_geno lead SNP per gene	0	0	PASS	60 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	XL	p_geno sig p<0.001	0	0	PASS	ref 42 cand 42 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_geno sig p<1e-05	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_geno sig p<1e-08	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_geno eGenes BH 5%	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	XL	p_interact lead SNP per gene	0	0	PASS	60 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	XL	p_interact sig p<0.001	0	0	PASS	ref 25 cand 25 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_interact sig p<1e-05	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_interact sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_interact eGenes BH 5%	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	XL	p_interact_boot lead SNP per gene	0	0	PASS	60 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	XL	p_interact_boot sig p<0.001	3	0	INFO	ref 20 cand 23 flips 3 (borderline 0)
+integ_c3b	base12	equiv	XL	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999999 median 1.000000
+integ_c3b	base12	equiv	XL	boot LR distribution KS p	0.4094	>= 0.01	PASS	q0.5 0.4594/0.4461 q0.9 2.753/2.75 q0.99 6.648/6.44 q0.999 11.11/10.88
+integ_c3b	base12	equiv	XL	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.774/1.791 q0.9 42.83/42.8 q0.99 75.95/76.07 q0.999 98.58/96.98
+integ_c3b	base12	stat	XL	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.583/0.583 fdr 0.222/0.222; p_geno lead p<1e-5: power 0.500/0.500 fdr 0.143/0.143; p_interact eGene BH 5%: power 0.667/0.667 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.667/0.667 fdr 0.000/0.000
+integ_c3b	base12	equiv	XXL	wall_s cand/ref (indicative, not a benchmark)	0.01642	-	INFO	1.27 / 77.53 s
+integ_c3b	base12	equiv	XXL	rows	0	0	PASS	ref 6215 rows / 16 genes, cand 6215 / 16
+integ_c3b	base12	equiv	XXL	columns	0	0	PASS	
+integ_c3b	base12	equiv	XXL	l0 max abs	1.144e-10	1e-09	PASS	n=6215 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	XXL	l_geno max abs	1.148e-10	1e-09	PASS	n=6215 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	XXL	l_interact max abs	1.151e-10	1e-09	PASS	n=6215 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	XXL	p_geno max|dlog10p|	6.842e-10	-	INFO	n=6215 na/inf mismatches=0 identical=1773
+integ_c3b	base12	equiv	XXL	df_interact max abs	0	0	PASS	n=6215 na/inf mismatches=0 identical=6215
+integ_c3b	base12	equiv	XXL	p_interact max|dlog10p|	8.049e-10	-	INFO	n=6215 na/inf mismatches=0 identical=1854
+integ_c3b	base12	equiv	XXL	beta_geno max rel	3.922e-13	1e-06	PASS	n=6215 na/inf mismatches=0 identical=6
+integ_c3b	base12	equiv	XXL	se_geno max rel	1.182e-08	1e-06	PASS	n=6215 na/inf mismatches=0 identical=104
+integ_c3b	base12	equiv	XXL	l_boot_geno max abs	7.669	1e-05	INFO	n=6215 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	XXL	l_boot_interact max abs	8.996	1e-05	INFO	n=6215 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	XXL	p_geno lead SNP per gene	0	0	PASS	16 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	XXL	p_geno sig p<0.001	0	0	PASS	ref 14 cand 14 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_geno sig p<1e-05	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_geno sig p<1e-08	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_geno eGenes BH 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	XXL	p_interact lead SNP per gene	0	0	PASS	16 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	XXL	p_interact sig p<0.001	0	0	PASS	ref 10 cand 10 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_interact sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_interact sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_interact eGenes BH 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	XXL	p_interact_boot lead SNP per gene	0	0	PASS	16 genes, 1 different leads (1 ties within the band)
+integ_c3b	base12	equiv	XXL	p_interact_boot sig p<0.001	0	0	PASS	ref 10 cand 10 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XXL	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999998 median 0.999999
+integ_c3b	base12	equiv	XXL	boot LR distribution KS p	0.5616	>= 0.01	PASS	q0.5 0.463/0.4583 q0.9 2.718/2.679 q0.99 6.734/6.059 q0.999 10.49/10.39
+integ_c3b	base12	equiv	XXL	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.542/1.646 q0.9 60.84/61.09 q0.99 108.7/108.6 q0.999 152.8/152.6
+integ_c3b	base12	stat	XXL	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.667/0.667 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.667/0.667 fdr 0.000/0.000; p_interact eGene BH 5%: power 1.000/1.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 1.000/1.000 fdr 0.000/0.000
+integ_c3b	base12	equiv	M_grm	wall_s cand/ref (indicative, not a benchmark)	0.4145	-	INFO	2.35 / 5.68 s
+integ_c3b	base12	equiv	M_grm	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+integ_c3b	base12	equiv	M_grm	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_grm	l0 max abs	1.99e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=7186
+integ_c3b	base12	equiv	M_grm	l_geno max abs	4.263e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=6360
+integ_c3b	base12	equiv	M_grm	l_interact max abs	4.547e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=6064
+integ_c3b	base12	equiv	M_grm	p_geno max|dlog10p|	1.243e-09	-	INFO	n=30049 na/inf mismatches=0 identical=5855
+integ_c3b	base12	equiv	M_grm	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+integ_c3b	base12	equiv	M_grm	p_interact max|dlog10p|	1.764e-10	-	INFO	n=30049 na/inf mismatches=0 identical=6031
+integ_c3b	base12	equiv	M_grm	beta_geno max rel	3.126e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=4205
+integ_c3b	base12	equiv	M_grm	se_geno max rel	2.316e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=8155
+integ_c3b	base12	equiv	M_grm	l_boot_geno max abs	7.488e-07	1e-05	PASS	n=30049 na/inf mismatches=0 identical=3149
+integ_c3b	base12	equiv	M_grm	l_boot_interact max abs	7.481e-07	1e-05	PASS	n=30049 na/inf mismatches=0 identical=3179
+integ_c3b	base12	equiv	M_grm	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_grm	p_geno sig p<0.001	0	0	PASS	ref 43 cand 43 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_geno sig p<1e-05	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_grm	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_grm	p_interact sig p<0.001	0	0	PASS	ref 23 cand 23 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_grm	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_grm	p_interact_boot sig p<0.001	0	0	PASS	ref 18 cand 18 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_grm	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4677/0.4677 q0.9 2.742/2.742 q0.99 6.747/6.747 q0.999 11.06/11.06
+integ_c3b	base12	equiv	M_grm	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.76/1.76 q0.9 20.26/20.26 q0.99 36.3/36.3 q0.999 47.16/47.16
+integ_c3b	base12	stat	M_grm	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.067/0.067 fdr 0.333/0.333; p_geno lead p<1e-5: power 0.133/0.133 fdr 0.200/0.200; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000
+integ_c3b	base12	equiv	L_grm	wall_s cand/ref (indicative, not a benchmark)	0.3603	-	INFO	10.12 / 28.09 s
+integ_c3b	base12	equiv	L_grm	rows	0	0	PASS	ref 39899 rows / 100 genes, cand 39899 / 100
+integ_c3b	base12	equiv	L_grm	columns	0	0	PASS	
+integ_c3b	base12	equiv	L_grm	l0 max abs	9.663e-13	1e-09	PASS	n=39899 na/inf mismatches=0 identical=4010
+integ_c3b	base12	equiv	L_grm	l_geno max abs	1.251e-12	1e-09	PASS	n=39899 na/inf mismatches=0 identical=5175
+integ_c3b	base12	equiv	L_grm	l_interact max abs	1.705e-12	1e-09	PASS	n=39899 na/inf mismatches=0 identical=5093
+integ_c3b	base12	equiv	L_grm	p_geno max|dlog10p|	1.57e-09	-	INFO	n=39899 na/inf mismatches=0 identical=6279
+integ_c3b	base12	equiv	L_grm	df_interact max abs	0	0	PASS	n=39899 na/inf mismatches=0 identical=39899
+integ_c3b	base12	equiv	L_grm	p_interact max|dlog10p|	6.958e-09	-	INFO	n=39899 na/inf mismatches=0 identical=6288
+integ_c3b	base12	equiv	L_grm	beta_geno max rel	9.456e-08	1e-06	PASS	n=39899 na/inf mismatches=0 identical=3817
+integ_c3b	base12	equiv	L_grm	se_geno max rel	2.754e-08	1e-06	PASS	n=39899 na/inf mismatches=0 identical=9818
+integ_c3b	base12	equiv	L_grm	l_boot_geno max abs	1.42e-06	1e-05	PASS	n=39899 na/inf mismatches=0 identical=3008
+integ_c3b	base12	equiv	L_grm	l_boot_interact max abs	1.418e-06	1e-05	PASS	n=39899 na/inf mismatches=0 identical=2954
+integ_c3b	base12	equiv	L_grm	p_geno lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	L_grm	p_geno sig p<0.001	0	0	PASS	ref 68 cand 68 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_geno sig p<1e-05	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_geno sig p<1e-08	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_geno eGenes BH 5%	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	L_grm	p_interact lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	L_grm	p_interact sig p<0.001	0	0	PASS	ref 49 cand 49 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	L_grm	p_interact_boot lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	L_grm	p_interact_boot sig p<0.001	0	0	PASS	ref 41 cand 41 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	L_grm	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	L_grm	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4538/0.4538 q0.9 2.76/2.76 q0.99 6.832/6.832 q0.999 11.11/11.11
+integ_c3b	base12	equiv	L_grm	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.829/1.829 q0.9 30.7/30.7 q0.99 54.29/54.29 q0.999 72.13/72.13
+integ_c3b	base12	stat	L_grm	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.350/0.350 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.350/0.350 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000
+integ_c3b	base12	equiv	XL_grm	wall_s cand/ref (indicative, not a benchmark)	0.3768	-	INFO	12.73 / 33.79 s
+integ_c3b	base12	equiv	XL_grm	rows	0	0	PASS	ref 15839 rows / 40 genes, cand 15839 / 40
+integ_c3b	base12	equiv	XL_grm	columns	0	0	PASS	
+integ_c3b	base12	equiv	XL_grm	l0 max abs	1.705e-12	1e-09	PASS	n=15839 na/inf mismatches=0 identical=802
+integ_c3b	base12	equiv	XL_grm	l_geno max abs	3.865e-12	1e-09	PASS	n=15839 na/inf mismatches=0 identical=1418
+integ_c3b	base12	equiv	XL_grm	l_interact max abs	3.865e-12	1e-09	PASS	n=15839 na/inf mismatches=0 identical=1328
+integ_c3b	base12	equiv	XL_grm	p_geno max|dlog10p|	4.504e-09	-	INFO	n=15839 na/inf mismatches=0 identical=1954
+integ_c3b	base12	equiv	XL_grm	df_interact max abs	0	0	PASS	n=15839 na/inf mismatches=0 identical=15839
+integ_c3b	base12	equiv	XL_grm	p_interact max|dlog10p|	2.673e-09	-	INFO	n=15839 na/inf mismatches=0 identical=1926
+integ_c3b	base12	equiv	XL_grm	beta_geno max rel	1.071e-07	1e-06	PASS	n=15839 na/inf mismatches=0 identical=971
+integ_c3b	base12	equiv	XL_grm	se_geno max rel	2.85e-08	1e-06	PASS	n=15839 na/inf mismatches=0 identical=3107
+integ_c3b	base12	equiv	XL_grm	l_boot_geno max abs	1.222e-06	1e-05	PASS	n=15839 na/inf mismatches=0 identical=733
+integ_c3b	base12	equiv	XL_grm	l_boot_interact max abs	1.199e-06	1e-05	PASS	n=15839 na/inf mismatches=0 identical=742
+integ_c3b	base12	equiv	XL_grm	p_geno lead SNP per gene	0	0	PASS	40 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	XL_grm	p_geno sig p<0.001	0	0	PASS	ref 41 cand 41 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_geno sig p<1e-05	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_geno sig p<1e-08	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_geno eGenes BH 5%	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	XL_grm	p_interact lead SNP per gene	0	0	PASS	40 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	XL_grm	p_interact sig p<0.001	0	0	PASS	ref 14 cand 14 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_interact sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_interact eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	XL_grm	p_interact_boot lead SNP per gene	0	0	PASS	40 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	XL_grm	p_interact_boot sig p<0.001	0	0	PASS	ref 6 cand 6 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	XL_grm	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4531/0.4531 q0.9 2.744/2.744 q0.99 6.854/6.854 q0.999 11.62/11.62
+integ_c3b	base12	equiv	XL_grm	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.742/1.742 q0.9 43.14/43.14 q0.99 76.67/76.67 q0.999 98.39/98.39
+integ_c3b	base12	stat	XL_grm	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.875/0.875 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.875/0.875 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.750/0.750 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.750/0.750 fdr 0.000/0.000
+integ_c3b	base12	equiv	M_learn	wall_s cand/ref (indicative, not a benchmark)	0.5363	-	INFO	1.65 / 3.08 s
+integ_c3b	base12	equiv	M_learn	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+integ_c3b	base12	equiv	M_learn	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_learn	l0 max abs	1.705e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=8592
+integ_c3b	base12	equiv	M_learn	l_geno max abs	2.274e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=8879
+integ_c3b	base12	equiv	M_learn	l_interact max abs	2.558e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=8316
+integ_c3b	base12	equiv	M_learn	p_geno max|dlog10p|	3.035e-10	-	INFO	n=30049 na/inf mismatches=0 identical=15295
+integ_c3b	base12	equiv	M_learn	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+integ_c3b	base12	equiv	M_learn	p_interact max|dlog10p|	1.016e-10	-	INFO	n=30049 na/inf mismatches=0 identical=13424
+integ_c3b	base12	equiv	M_learn	beta_geno max rel	7.302e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=2506
+integ_c3b	base12	equiv	M_learn	se_geno max rel	2.026e-09	1e-06	PASS	n=30049 na/inf mismatches=0 identical=8426
+integ_c3b	base12	equiv	M_learn	l_boot_geno max abs	4.987e-07	1e-05	PASS	n=30049 na/inf mismatches=0 identical=4989
+integ_c3b	base12	equiv	M_learn	l_boot_interact max abs	4.984e-07	1e-05	PASS	n=30049 na/inf mismatches=0 identical=4720
+integ_c3b	base12	equiv	M_learn	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_learn	p_geno sig p<0.001	0	0	PASS	ref 65 cand 65 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_geno sig p<1e-05	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_geno eGenes BH 5%	0	0	PASS	ref 6 cand 6 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_learn	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_learn	p_interact sig p<0.001	0	0	PASS	ref 11 cand 11 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_learn	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_learn	p_interact_boot sig p<0.001	0	0	PASS	ref 10 cand 10 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_learn	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_learn	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4661/0.4661 q0.9 2.746/2.746 q0.99 6.732/6.732 q0.999 11.06/11.06
+integ_c3b	base12	equiv	M_learn	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.55/1.55 q0.9 20.05/20.05 q0.99 36.03/36.03 q0.999 46.92/46.92
+integ_c3b	base12	stat	M_learn	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.133/0.133 fdr 0.333/0.333; p_geno lead p<1e-5: power 0.133/0.133 fdr 0.333/0.333; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+integ_c3b	base12	equiv	M_lc	wall_s cand/ref (indicative, not a benchmark)	0.4327	-	INFO	1.62 / 3.73 s
+integ_c3b	base12	equiv	M_lc	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+integ_c3b	base12	equiv	M_lc	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_lc	l0 max abs	1.705e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=3618
+integ_c3b	base12	equiv	M_lc	l_geno max abs	2.558e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=4488
+integ_c3b	base12	equiv	M_lc	l_interact max abs	2.842e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=4365
+integ_c3b	base12	equiv	M_lc	p_geno max|dlog10p|	4.336e-09	-	INFO	n=30049 na/inf mismatches=0 identical=5352
+integ_c3b	base12	equiv	M_lc	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+integ_c3b	base12	equiv	M_lc	p_interact max|dlog10p|	2.856e-09	-	INFO	n=30049 na/inf mismatches=0 identical=5670
+integ_c3b	base12	equiv	M_lc	beta_geno max rel	2.016e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=1891
+integ_c3b	base12	equiv	M_lc	se_geno max rel	1.517e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=4513
+integ_c3b	base12	equiv	M_lc	l_boot_geno max abs	3.157e-07	1e-05	PASS	n=30049 na/inf mismatches=0 identical=2188
+integ_c3b	base12	equiv	M_lc	l_boot_interact max abs	3.179e-07	1e-05	PASS	n=30049 na/inf mismatches=0 identical=2064
+integ_c3b	base12	equiv	M_lc	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_lc	p_geno sig p<0.001	0	0	PASS	ref 43 cand 43 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_geno sig p<1e-05	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_geno sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_lc	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_lc	p_interact sig p<0.001	0	0	PASS	ref 29 cand 29 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_lc	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_lc	p_interact_boot sig p<0.001	0	0	PASS	ref 27 cand 27 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_lc	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_lc	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4611/0.4611 q0.9 2.797/2.797 q0.99 6.832/6.832 q0.999 11.15/11.15
+integ_c3b	base12	equiv	M_lc	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.823/1.823 q0.9 20.37/20.37 q0.99 36.56/36.56 q0.999 46.9/46.9
+integ_c3b	base12	stat	M_lc	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.100/0.100 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.100/0.100 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+integ_c3b	base12	equiv	M_num	wall_s cand/ref (indicative, not a benchmark)	0.4716	-	INFO	3.23 / 6.86 s
+integ_c3b	base12	equiv	M_num	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+integ_c3b	base12	equiv	M_num	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_num	l0 max abs	2.274e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=5829
+integ_c3b	base12	equiv	M_num	l_geno max abs	3.979e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=5697
+integ_c3b	base12	equiv	M_num	l_interact max abs	6.253e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=5561
+integ_c3b	base12	equiv	M_num	p_geno max|dlog10p|	1.114e-09	-	INFO	n=30049 na/inf mismatches=0 identical=6040
+integ_c3b	base12	equiv	M_num	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+integ_c3b	base12	equiv	M_num	p_interact max|dlog10p|	9.116e-10	-	INFO	n=30049 na/inf mismatches=0 identical=5754
+integ_c3b	base12	equiv	M_num	beta_geno max rel	3.677e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=3577
+integ_c3b	base12	equiv	M_num	se_geno max rel	2.322e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=8145
+integ_c3b	base12	equiv	M_num	l_boot_geno max abs	1.039e-06	1e-05	PASS	n=30049 na/inf mismatches=0 identical=2975
+integ_c3b	base12	equiv	M_num	l_boot_interact max abs	1.027e-06	1e-05	PASS	n=30049 na/inf mismatches=0 identical=2958
+integ_c3b	base12	equiv	M_num	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_num	p_geno sig p<0.001	0	0	PASS	ref 54 cand 54 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_geno sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_num	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_num	p_interact sig p<0.001	0	0	PASS	ref 46 cand 46 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_interact sig p<1e-05	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_interact sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_interact eGenes BH 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_num	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_num	p_interact_boot sig p<0.001	0	0	PASS	ref 47 cand 47 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_num	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_num	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4741/0.4741 q0.9 2.725/2.725 q0.99 6.642/6.642 q0.999 10.69/10.69
+integ_c3b	base12	equiv	M_num	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.79/1.79 q0.9 20.22/20.22 q0.99 36.22/36.22 q0.999 46.54/46.54
+integ_c3b	base12	stat	M_num	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.067/0.067 fdr 0.333/0.333; p_interact eGene BH 5%: power 0.133/0.133 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.133/0.133 fdr 0.000/0.000
+integ_c3b	base12	equiv	M_fac3	wall_s cand/ref (indicative, not a benchmark)	0.3547	-	INFO	1.80 / 5.07 s
+integ_c3b	base12	equiv	M_fac3	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+integ_c3b	base12	equiv	M_fac3	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_fac3	l0 max abs	1.819e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_fac3	l_geno max abs	1.933e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_fac3	l_interact max abs	1.933e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_fac3	p_geno max|dlog10p|	5.978e-10	-	INFO	n=30049 na/inf mismatches=0 identical=11127
+integ_c3b	base12	equiv	M_fac3	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+integ_c3b	base12	equiv	M_fac3	p_interact max|dlog10p|	1.234e-13	-	INFO	n=30049 na/inf mismatches=0 identical=10465
+integ_c3b	base12	equiv	M_fac3	beta_geno max rel	3.564e-14	1e-06	PASS	n=30049 na/inf mismatches=0 identical=235
+integ_c3b	base12	equiv	M_fac3	se_geno max rel	2.171e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=2225
+integ_c3b	base12	equiv	M_fac3	l_boot_geno max abs	12.66	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_fac3	l_boot_interact max abs	13.16	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_fac3	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_fac3	p_geno sig p<0.001	0	0	PASS	ref 65 cand 65 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_geno sig p<1e-05	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_geno sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_geno eGenes BH 5%	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_fac3	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_fac3	p_interact sig p<0.001	0	0	PASS	ref 30 cand 30 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_fac3	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_fac3	p_interact_boot sig p<0.001	6	0	INFO	ref 30 cand 24 flips 6 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_fac3	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999998 median 1.000000
+integ_c3b	base12	equiv	M_fac3	boot LR distribution KS p	0.7356	>= 0.01	PASS	q0.5 1.404/1.417 q0.9 4.638/4.671 q0.99 9.201/9.236 q0.999 13.84/14.3
+integ_c3b	base12	equiv	M_fac3	l_boot_geno - l_geno distribution KS p	0.9998	>= 0.01	PASS	q0.5 2.085/2.089 q0.9 24.86/24.83 q0.99 43.93/43.78 q0.999 57.16/56.87
+integ_c3b	base12	stat	M_fac3	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.233/0.233 fdr 0.222/0.222; p_geno lead p<1e-5: power 0.200/0.200 fdr 0.250/0.250; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.067/0.067 fdr 0.000/0.000
+integ_c3b	base12	equiv	M_eqtl	wall_s cand/ref (indicative, not a benchmark)	0.5379	-	INFO	0.92 / 1.71 s
+integ_c3b	base12	equiv	M_eqtl	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+integ_c3b	base12	equiv	M_eqtl	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_eqtl	l0 max abs	5.684e-14	1e-09	PASS	n=30049 na/inf mismatches=0 identical=21004
+integ_c3b	base12	equiv	M_eqtl	l_geno max abs	1.421e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=19804
+integ_c3b	base12	equiv	M_eqtl	l_interact max abs	0	1e-09	PASS	n=0 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_eqtl	p_geno max|dlog10p|	6.528e-11	-	INFO	n=30049 na/inf mismatches=0 identical=17992
+integ_c3b	base12	equiv	M_eqtl	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+integ_c3b	base12	equiv	M_eqtl	p_interact max|dlog10p|	0	-	INFO	n=0 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_eqtl	beta_geno max rel	8.064e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=15604
+integ_c3b	base12	equiv	M_eqtl	se_geno max rel	7.332e-09	1e-06	PASS	n=30049 na/inf mismatches=0 identical=19930
+integ_c3b	base12	equiv	M_eqtl	l_boot_geno max abs	7.606e-07	1e-05	PASS	n=30049 na/inf mismatches=0 identical=12489
+integ_c3b	base12	equiv	M_eqtl	l_boot_interact max abs	0	1e-05	PASS	n=0 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_eqtl	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_eqtl	p_geno sig p<0.001	0	0	PASS	ref 39 cand 39 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_eqtl	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_eqtl	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_eqtl	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_eqtl	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_eqtl	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_eqtl	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.123/1.123 q0.9 14.27/14.27 q0.99 25.52/25.52 q0.999 34.17/34.17
+integ_c3b	base12	stat	M_eqtl	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+integ_c3b	base12	equiv	M_cov	wall_s cand/ref (indicative, not a benchmark)	0.3734	-	INFO	2.48 / 6.64 s
+integ_c3b	base12	equiv	M_cov	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+integ_c3b	base12	equiv	M_cov	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_cov	l0 max abs	1.648e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_cov	l_geno max abs	1.705e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_cov	l_interact max abs	1.734e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_cov	p_geno max|dlog10p|	1.748e-10	-	INFO	n=30049 na/inf mismatches=0 identical=9460
+integ_c3b	base12	equiv	M_cov	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+integ_c3b	base12	equiv	M_cov	p_interact max|dlog10p|	2.631e-09	-	INFO	n=30049 na/inf mismatches=0 identical=10044
+integ_c3b	base12	equiv	M_cov	beta_geno max rel	1.15e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=132
+integ_c3b	base12	equiv	M_cov	se_geno max rel	1.389e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=1812
+integ_c3b	base12	equiv	M_cov	l_boot_geno max abs	17.78	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_cov	l_boot_interact max abs	19.01	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_cov	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_cov	p_geno sig p<0.001	0	0	PASS	ref 41 cand 41 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_cov	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_cov	p_interact sig p<0.001	0	0	PASS	ref 35 cand 35 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_cov	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_cov	p_interact_boot sig p<0.001	3	0	INFO	ref 23 cand 26 flips 3 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999998 median 1.000000
+integ_c3b	base12	equiv	M_cov	boot LR distribution KS p	0.2217	>= 0.01	PASS	q0.5 0.4809/0.4653 q0.9 2.851/2.82 q0.99 6.84/6.987 q0.999 11.38/11.19
+integ_c3b	base12	equiv	M_cov	l_boot_geno - l_geno distribution KS p	0.9991	>= 0.01	PASS	q0.5 6.936/6.977 q0.9 25.67/25.72 q0.99 42.27/41.71 q0.999 52.79/53.29
+integ_c3b	base12	stat	M_cov	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.033/0.033 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+integ_c3b	base12	equiv	M_cov30	wall_s cand/ref (indicative, not a benchmark)	0.2324	-	INFO	5.62 / 24.18 s
+integ_c3b	base12	equiv	M_cov30	rows	0	0	PASS	ref 19999 rows / 100 genes, cand 19999 / 100
+integ_c3b	base12	equiv	M_cov30	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_cov30	l0 max abs	1.677e-12	1e-09	PASS	n=19999 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_cov30	l_geno max abs	1.734e-12	1e-09	PASS	n=19999 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_cov30	l_interact max abs	1.762e-12	1e-09	PASS	n=19999 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_cov30	p_geno max|dlog10p|	1.965e-10	-	INFO	n=19999 na/inf mismatches=0 identical=5610
+integ_c3b	base12	equiv	M_cov30	df_interact max abs	0	0	PASS	n=19999 na/inf mismatches=0 identical=19999
+integ_c3b	base12	equiv	M_cov30	p_interact max|dlog10p|	5.66e-10	-	INFO	n=19999 na/inf mismatches=0 identical=6189
+integ_c3b	base12	equiv	M_cov30	beta_geno max rel	1.427e-08	1e-06	PASS	n=19999 na/inf mismatches=0 identical=80
+integ_c3b	base12	equiv	M_cov30	se_geno max rel	1.314e-08	1e-06	PASS	n=19999 na/inf mismatches=0 identical=1224
+integ_c3b	base12	equiv	M_cov30	l_boot_geno max abs	26.9	1e-05	INFO	n=19999 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_cov30	l_boot_interact max abs	28.5	1e-05	INFO	n=19999 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_cov30	p_geno lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_cov30	p_geno sig p<0.001	0	0	PASS	ref 39 cand 39 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_geno sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_cov30	p_interact lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_cov30	p_interact sig p<0.001	0	0	PASS	ref 50 cand 50 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_cov30	p_interact_boot lead SNP per gene	0	0	PASS	100 genes, 2 different leads (2 ties within the band)
+integ_c3b	base12	equiv	M_cov30	p_interact_boot sig p<0.001	15	0	INFO	ref 31 cand 16 flips 15 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_cov30	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999998 median 0.999999
+integ_c3b	base12	equiv	M_cov30	boot LR distribution KS p	0.7195	>= 0.01	PASS	q0.5 0.5109/0.5087 q0.9 3.032/3.051 q0.99 7.422/7.398 q0.999 11.57/12.47
+integ_c3b	base12	equiv	M_cov30	l_boot_geno - l_geno distribution KS p	0.9777	>= 0.01	PASS	q0.5 17.47/17.42 q0.9 36.8/36.87 q0.99 53.29/53.31 q0.999 65.55/64.29
+integ_c3b	base12	stat	M_cov30	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.100/0.100 fdr 0.333/0.333; p_geno lead p<1e-5: power 0.100/0.100 fdr 0.333/0.333; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+integ_c3b	base12	equiv	M_miss	wall_s cand/ref (indicative, not a benchmark)	0.5997	-	INFO	2.93 / 4.88 s
+integ_c3b	base12	equiv	M_miss	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+integ_c3b	base12	equiv	M_miss	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_miss	l0 max abs	1.791e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_miss	l_geno max abs	1.847e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_miss	l_interact max abs	1.819e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_miss	p_geno max|dlog10p|	6.173e-11	-	INFO	n=30049 na/inf mismatches=0 identical=10021
+integ_c3b	base12	equiv	M_miss	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+integ_c3b	base12	equiv	M_miss	p_interact max|dlog10p|	7.902e-11	-	INFO	n=30049 na/inf mismatches=0 identical=9603
+integ_c3b	base12	equiv	M_miss	beta_geno max rel	4.644e-14	1e-06	PASS	n=30049 na/inf mismatches=0 identical=202
+integ_c3b	base12	equiv	M_miss	se_geno max rel	1.317e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=1701
+integ_c3b	base12	equiv	M_miss	l_boot_geno max abs	10.14	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_miss	l_boot_interact max abs	10.62	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_miss	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_miss	p_geno sig p<0.001	0	0	PASS	ref 55 cand 55 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_geno sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_geno sig p<1e-08	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_miss	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_miss	p_interact sig p<0.001	0	0	PASS	ref 43 cand 43 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_miss	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_miss	p_interact_boot sig p<0.001	9	0	INFO	ref 33 cand 42 flips 9 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_miss	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999997 median 1.000000
+integ_c3b	base12	equiv	M_miss	boot LR distribution KS p	0.7288	>= 0.01	PASS	q0.5 0.4642/0.4564 q0.9 2.756/2.734 q0.99 6.758/6.839 q0.999 11.19/10.87
+integ_c3b	base12	equiv	M_miss	l_boot_geno - l_geno distribution KS p	0.9997	>= 0.01	PASS	q0.5 1.838/1.751 q0.9 20.25/20.29 q0.99 36.41/36.27 q0.999 47.09/46.85
+integ_c3b	base12	stat	M_miss	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.100/0.100 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.100/0.100 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+integ_c3b	base12	equiv	M_dense	wall_s cand/ref (indicative, not a benchmark)	0.2798	-	INFO	5.08 / 18.14 s
+integ_c3b	base12	equiv	M_dense	rows	0	0	PASS	ref 148125 rows / 150 genes, cand 148125 / 150
+integ_c3b	base12	equiv	M_dense	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_dense	l0 max abs	1.677e-12	1e-09	PASS	n=148125 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_dense	l_geno max abs	1.734e-12	1e-09	PASS	n=148125 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_dense	l_interact max abs	1.734e-12	1e-09	PASS	n=148125 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_dense	p_geno max|dlog10p|	2.636e-09	-	INFO	n=148125 na/inf mismatches=0 identical=49776
+integ_c3b	base12	equiv	M_dense	df_interact max abs	0	0	PASS	n=148125 na/inf mismatches=0 identical=148125
+integ_c3b	base12	equiv	M_dense	p_interact max|dlog10p|	3.397e-10	-	INFO	n=148125 na/inf mismatches=0 identical=47178
+integ_c3b	base12	equiv	M_dense	beta_geno max rel	4.244e-14	1e-06	PASS	n=148125 na/inf mismatches=0 identical=932
+integ_c3b	base12	equiv	M_dense	se_geno max rel	1.397e-08	1e-06	PASS	n=148125 na/inf mismatches=0 identical=9173
+integ_c3b	base12	equiv	M_dense	l_boot_geno max abs	14.24	1e-05	INFO	n=148125 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_dense	l_boot_interact max abs	13.77	1e-05	INFO	n=148125 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_dense	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_dense	p_geno sig p<0.001	0	0	PASS	ref 161 cand 161 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_geno sig p<1e-05	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_geno eGenes BH 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_dense	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_dense	p_interact sig p<0.001	0	0	PASS	ref 150 cand 150 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_dense	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 1 different leads (1 ties within the band)
+integ_c3b	base12	equiv	M_dense	p_interact_boot sig p<0.001	19	0	INFO	ref 148 cand 129 flips 19 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_interact_boot sig p<1e-05	1	0	INFO	ref 0 cand 1 flips 1 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_dense	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_dense	boot LR distribution KS p	0.9019	>= 0.01	PASS	q0.5 0.4636/0.4611 q0.9 2.762/2.751 q0.99 6.741/6.811 q0.999 10.92/11.16
+integ_c3b	base12	equiv	M_dense	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.805/1.821 q0.9 20.18/20.14 q0.99 35.75/35.75 q0.999 47.21/47.25
+integ_c3b	base12	stat	M_dense	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.067/0.067 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.067/0.067 fdr 0.500/0.500; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000
+integ_c3b	base12	equiv	M_unbal	wall_s cand/ref (indicative, not a benchmark)	0.4973	-	INFO	1.38 / 2.78 s
+integ_c3b	base12	equiv	M_unbal	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+integ_c3b	base12	equiv	M_unbal	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_unbal	l0 max abs	1.648e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_unbal	l_geno max abs	1.734e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_unbal	l_interact max abs	1.734e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_unbal	p_geno max|dlog10p|	1.749e-10	-	INFO	n=30049 na/inf mismatches=0 identical=6689
+integ_c3b	base12	equiv	M_unbal	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+integ_c3b	base12	equiv	M_unbal	p_interact max|dlog10p|	2.214e-08	-	INFO	n=30049 na/inf mismatches=0 identical=7236
+integ_c3b	base12	equiv	M_unbal	beta_geno max rel	3.211e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=205
+integ_c3b	base12	equiv	M_unbal	se_geno max rel	1.961e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=2845
+integ_c3b	base12	equiv	M_unbal	l_boot_geno max abs	10.02	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_unbal	l_boot_interact max abs	10.12	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	M_unbal	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_unbal	p_geno sig p<0.001	0	0	PASS	ref 50 cand 50 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_geno eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_unbal	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_unbal	p_interact sig p<0.001	0	0	PASS	ref 33 cand 33 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_interact eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_unbal	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_unbal	p_interact_boot sig p<0.001	10	0	INFO	ref 40 cand 30 flips 10 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_unbal	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999998 median 1.000000
+integ_c3b	base12	equiv	M_unbal	boot LR distribution KS p	0.1767	>= 0.01	PASS	q0.5 0.4496/0.4624 q0.9 2.709/2.714 q0.99 6.541/6.836 q0.999 10.33/10.98
+integ_c3b	base12	equiv	M_unbal	l_boot_geno - l_geno distribution KS p	0.9996	>= 0.01	PASS	q0.5 1.87/1.868 q0.9 22.05/22.08 q0.99 39.39/39.24 q0.999 51.96/52.01
+integ_c3b	base12	stat	M_unbal	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.033/0.033 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.033/0.033 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.067/0.067 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.067/0.067 fdr 0.000/0.000
+integ_c3b	base12	equiv	S_rare	wall_s cand/ref (indicative, not a benchmark)	0.5464	-	INFO	0.60 / 1.10 s
+integ_c3b	base12	equiv	S_rare	rows	0	0	PASS	ref 19104 rows / 200 genes, cand 19104 / 200
+integ_c3b	base12	equiv	S_rare	columns	0	0	PASS	
+integ_c3b	base12	equiv	S_rare	l0 max abs	5.542e-13	1e-09	PASS	n=19104 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S_rare	l_geno max abs	5.684e-13	1e-09	PASS	n=19104 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S_rare	l_interact max abs	5.826e-13	1e-09	PASS	n=19104 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S_rare	p_geno max|dlog10p|	1.438e-10	-	INFO	n=19104 na/inf mismatches=0 identical=6378
+integ_c3b	base12	equiv	S_rare	df_interact max abs	0	0	PASS	n=19104 na/inf mismatches=0 identical=19104
+integ_c3b	base12	equiv	S_rare	p_interact max|dlog10p|	4.955e-11	-	INFO	n=19104 na/inf mismatches=0 identical=6045
+integ_c3b	base12	equiv	S_rare	beta_geno max rel	1.832e-14	1e-06	PASS	n=19104 na/inf mismatches=0 identical=281
+integ_c3b	base12	equiv	S_rare	se_geno max rel	1.299e-08	1e-06	PASS	n=19104 na/inf mismatches=0 identical=2030
+integ_c3b	base12	equiv	S_rare	l_boot_geno max abs	10.59	1e-05	INFO	n=19104 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S_rare	l_boot_interact max abs	11.91	1e-05	INFO	n=19104 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S_rare	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S_rare	p_geno sig p<0.001	0	0	PASS	ref 26 cand 26 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	S_rare	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S_rare	p_interact sig p<0.001	0	0	PASS	ref 26 cand 26 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	S_rare	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 1 different leads (1 ties within the band)
+integ_c3b	base12	equiv	S_rare	p_interact_boot sig p<0.001	0	0	PASS	ref 18 cand 18 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S_rare	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999986 median 1.000000
+integ_c3b	base12	equiv	S_rare	boot LR distribution KS p	0.2782	>= 0.01	PASS	q0.5 0.4682/0.4799 q0.9 2.799/2.803 q0.99 6.763/6.813 q0.999 11.12/11.05
+integ_c3b	base12	equiv	S_rare	l_boot_geno - l_geno distribution KS p	0.9988	>= 0.01	PASS	q0.5 1.742/1.746 q0.9 15.03/14.91 q0.99 25.89/26.04 q0.999 34.64/34.56
+integ_c3b	base12	stat	S_rare	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+integ_c3b	base12	equiv	HS	wall_s cand/ref (indicative, not a benchmark)	0.4874	-	INFO	1.91 / 3.92 s
+integ_c3b	base12	equiv	HS	rows	0	0	PASS	ref 19950 rows / 200 genes, cand 19950 / 200
+integ_c3b	base12	equiv	HS	columns	0	0	PASS	
+integ_c3b	base12	equiv	HS	l0 max abs	2.558e-13	1e-09	PASS	n=19950 na/inf mismatches=0 identical=3100
+integ_c3b	base12	equiv	HS	l_geno max abs	3.411e-13	1e-09	PASS	n=19950 na/inf mismatches=0 identical=3887
+integ_c3b	base12	equiv	HS	l_interact max abs	3.411e-13	1e-09	PASS	n=19950 na/inf mismatches=0 identical=3830
+integ_c3b	base12	equiv	HS	p_geno max|dlog10p|	3.927e-10	-	INFO	n=19950 na/inf mismatches=0 identical=4080
+integ_c3b	base12	equiv	HS	df_interact max abs	0	0	PASS	n=19950 na/inf mismatches=0 identical=19950
+integ_c3b	base12	equiv	HS	p_interact max|dlog10p|	6.677e-09	-	INFO	n=19950 na/inf mismatches=0 identical=4004
+integ_c3b	base12	equiv	HS	beta_geno max rel	3.277e-08	1e-06	PASS	n=19950 na/inf mismatches=0 identical=2825
+integ_c3b	base12	equiv	HS	se_geno max rel	2.286e-08	1e-06	PASS	n=19950 na/inf mismatches=0 identical=5374
+integ_c3b	base12	equiv	HS	l_boot_geno max abs	4.664e-07	1e-05	PASS	n=19950 na/inf mismatches=0 identical=2143
+integ_c3b	base12	equiv	HS	l_boot_interact max abs	4.657e-07	1e-05	PASS	n=19950 na/inf mismatches=0 identical=2069
+integ_c3b	base12	equiv	HS	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	HS	p_geno sig p<0.001	0	0	PASS	ref 78 cand 78 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_geno sig p<1e-05	0	0	PASS	ref 30 cand 30 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_geno sig p<1e-08	0	0	PASS	ref 17 cand 17 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 18 cand 18 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_geno eGenes BH 5%	0	0	PASS	ref 26 cand 26 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	HS	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	HS	p_interact sig p<0.001	0	0	PASS	ref 49 cand 49 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_interact sig p<1e-05	0	0	PASS	ref 11 cand 11 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_interact sig p<1e-08	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_interact eGenes BH 5%	0	0	PASS	ref 10 cand 10 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	HS	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	HS	p_interact_boot sig p<0.001	0	0	PASS	ref 37 cand 37 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	HS	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	HS	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4797/0.4797 q0.9 2.797/2.797 q0.99 6.974/6.974 q0.999 11.47/11.47
+integ_c3b	base12	equiv	HS	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.802/1.802 q0.9 20.14/20.14 q0.99 35.99/35.99 q0.999 46.98/46.98
+integ_c3b	base12	stat	HS	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.650/0.650 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.525/0.525 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.400/0.400 fdr 0.200/0.200; p_interact lead p<1e-5: power 0.400/0.400 fdr 0.200/0.200
+integ_c3b	base12	equiv	LA	wall_s cand/ref (indicative, not a benchmark)	0.4924	-	INFO	1.75 / 3.56 s
+integ_c3b	base12	equiv	LA	rows	0	0	PASS	ref 9950 rows / 100 genes, cand 9950 / 100
+integ_c3b	base12	equiv	LA	columns	0	0	PASS	
+integ_c3b	base12	equiv	LA	l0 max abs	1.108e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	LA	l_geno max abs	1.108e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	LA	l_geno_shared max abs	1.108e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	LA	l_interact_null max abs	1.108e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	LA	l_interact max abs	1.137e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	LA	l_interact_shared max abs	1.137e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	LA	df_geno max abs	0	0	PASS	n=9950 na/inf mismatches=0 identical=9950
+integ_c3b	base12	equiv	LA	p_geno max|dlog10p|	8.155e-14	-	INFO	n=9950 na/inf mismatches=0 identical=3442
+integ_c3b	base12	equiv	LA	df_het max abs	0	0	PASS	n=9950 na/inf mismatches=0 identical=9950
+integ_c3b	base12	equiv	LA	p_het max|dlog10p|	4.543e-10	-	INFO	n=9946 na/inf mismatches=0 identical=3378
+integ_c3b	base12	equiv	LA	df_interact max abs	0	0	PASS	n=9950 na/inf mismatches=0 identical=9950
+integ_c3b	base12	equiv	LA	p_interact max|dlog10p|	1.967e-13	-	INFO	n=9950 na/inf mismatches=0 identical=2981
+integ_c3b	base12	equiv	LA	p_interact_het max|dlog10p|	6.598e-11	-	INFO	n=9946 na/inf mismatches=0 identical=2762
+integ_c3b	base12	equiv	LA	af_anc0 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+integ_c3b	base12	equiv	LA	laprop_anc0 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+integ_c3b	base12	equiv	LA	beta_anc0 max rel	1.997e-14	1e-06	PASS	n=9950 na/inf mismatches=0 identical=88
+integ_c3b	base12	equiv	LA	se_anc0 max rel	1.313e-08	1e-06	PASS	n=9950 na/inf mismatches=0 identical=939
+integ_c3b	base12	equiv	LA	p_anc0 max|dlog10p|	9.728e-08	-	INFO	n=9950 na/inf mismatches=0 identical=117
+integ_c3b	base12	equiv	LA	beta_interact_anc0 max rel	3.186e-14	1e-06	PASS	n=9950 na/inf mismatches=0 identical=98
+integ_c3b	base12	equiv	LA	se_interact_anc0 max rel	1.285e-08	1e-06	PASS	n=9950 na/inf mismatches=0 identical=470
+integ_c3b	base12	equiv	LA	p_interact_anc0 max|dlog10p|	3.535e-08	-	INFO	n=9950 na/inf mismatches=0 identical=93
+integ_c3b	base12	equiv	LA	af_anc1 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+integ_c3b	base12	equiv	LA	laprop_anc1 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+integ_c3b	base12	equiv	LA	beta_anc1 max rel	2.176e-14	1e-06	PASS	n=9946 na/inf mismatches=0 identical=115
+integ_c3b	base12	equiv	LA	se_anc1 max rel	1.313e-08	1e-06	PASS	n=9946 na/inf mismatches=0 identical=794
+integ_c3b	base12	equiv	LA	p_anc1 max|dlog10p|	3.014e-08	-	INFO	n=9946 na/inf mismatches=0 identical=127
+integ_c3b	base12	equiv	LA	beta_interact_anc1 max rel	4.274e-14	1e-06	PASS	n=9946 na/inf mismatches=0 identical=126
+integ_c3b	base12	equiv	LA	se_interact_anc1 max rel	1.285e-08	1e-06	PASS	n=9946 na/inf mismatches=0 identical=351
+integ_c3b	base12	equiv	LA	p_interact_anc1 max|dlog10p|	3.42e-08	-	INFO	n=9946 na/inf mismatches=0 identical=107
+integ_c3b	base12	equiv	LA	l_boot_interact_null max abs	16.87	1e-05	INFO	n=9950 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	LA	l_boot_interact max abs	18.69	1e-05	INFO	n=9950 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	LA	p_geno lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	LA	p_geno sig p<0.001	0	0	PASS	ref 36 cand 36 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_geno sig p<1e-05	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_geno sig p<1e-08	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_geno eGenes BH 5%	0	0	PASS	ref 13 cand 13 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	LA	p_interact lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	LA	p_interact sig p<0.001	0	0	PASS	ref 15 cand 15 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	LA	p_het lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	LA	p_het sig p<0.001	0	0	PASS	ref 14 cand 14 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_het sig p<1e-05	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_het sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_het eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_het eGenes BH 5%	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_het rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	LA	p_interact_het lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	LA	p_interact_het sig p<0.001	0	0	PASS	ref 14 cand 14 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_interact_het sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_interact_het sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_interact_het eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_interact_het eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	LA	p_interact_het rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	LA	boot LR distribution KS p	0.05519	>= 0.01	PASS	q0.5 1.398/1.464 q0.9 4.714/4.809 q0.99 9.609/9.399 q0.999 14.16/14.07
+integ_c3b	base12	equiv	P_many	wall_s cand/ref (indicative, not a benchmark)	0.3098	-	INFO	6.08 / 19.61 s
+integ_c3b	base12	equiv	P_many	rows	0	0	PASS	ref 206669 rows / 3000 genes, cand 206669 / 3000
+integ_c3b	base12	equiv	P_many	columns	0	0	PASS	
+integ_c3b	base12	equiv	P_many	l0 max abs	5.826e-13	1e-09	PASS	n=206669 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	P_many	l_geno max abs	6.111e-13	1e-09	PASS	n=206669 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	P_many	l_interact max abs	5.969e-13	1e-09	PASS	n=206669 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	P_many	p_geno max|dlog10p|	2.996e-10	-	INFO	n=206669 na/inf mismatches=0 identical=69897
+integ_c3b	base12	equiv	P_many	df_interact max abs	0	0	PASS	n=206669 na/inf mismatches=0 identical=206669
+integ_c3b	base12	equiv	P_many	p_interact max|dlog10p|	1.437e-09	-	INFO	n=206669 na/inf mismatches=0 identical=65330
+integ_c3b	base12	equiv	P_many	beta_geno max rel	1.995e-14	1e-06	PASS	n=206669 na/inf mismatches=0 identical=3052
+integ_c3b	base12	equiv	P_many	se_geno max rel	1.445e-08	1e-06	PASS	n=206669 na/inf mismatches=0 identical=20773
+integ_c3b	base12	equiv	P_many	l_boot_geno max abs	12.78	1e-05	INFO	n=206669 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	P_many	l_boot_interact max abs	12.81	1e-05	INFO	n=206669 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	P_many	p_geno lead SNP per gene	0	0	PASS	3000 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	P_many	p_geno sig p<0.001	0	0	PASS	ref 274 cand 274 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_geno sig p<1e-05	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	P_many	p_interact lead SNP per gene	0	0	PASS	3000 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	P_many	p_interact sig p<0.001	0	0	PASS	ref 239 cand 239 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_interact sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_interact eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	P_many	p_interact_boot lead SNP per gene	0	0	PASS	3000 genes, 1 different leads (1 ties within the band)
+integ_c3b	base12	equiv	P_many	p_interact_boot sig p<0.001	0	0	PASS	ref 209 cand 209 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_interact_boot sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999990 median 1.000000
+integ_c3b	base12	equiv	P_many	boot LR distribution KS p	0.5886	>= 0.01	PASS	q0.5 0.4688/0.4718 q0.9 2.809/2.8 q0.99 6.856/6.855 q0.999 11.08/11.08
+integ_c3b	base12	equiv	P_many	l_boot_geno - l_geno distribution KS p	0.9994	>= 0.01	PASS	q0.5 1.815/1.812 q0.9 15/14.98 q0.99 26.34/26.33 q0.999 34.67/34.55
+integ_c3b	base12	stat	P_many	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.005/0.005 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.010/0.010 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.003/0.003 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.003/0.003 fdr 0.500/0.500
+integ_c3b	base12	equiv	P_many10	wall_s cand/ref (indicative, not a benchmark)	0.27	-	INFO	1.72 / 6.36 s
+integ_c3b	base12	equiv	P_many10	rows	0	0	PASS	ref 29986 rows / 3000 genes, cand 29986 / 3000
+integ_c3b	base12	equiv	P_many10	columns	0	0	PASS	
+integ_c3b	base12	equiv	P_many10	l0 max abs	5.826e-13	1e-09	PASS	n=29986 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	P_many10	l_geno max abs	5.969e-13	1e-09	PASS	n=29986 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	P_many10	l_interact max abs	5.826e-13	1e-09	PASS	n=29986 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	P_many10	p_geno max|dlog10p|	8.019e-11	-	INFO	n=29986 na/inf mismatches=0 identical=10101
+integ_c3b	base12	equiv	P_many10	df_interact max abs	0	0	PASS	n=29986 na/inf mismatches=0 identical=29986
+integ_c3b	base12	equiv	P_many10	p_interact max|dlog10p|	1.205e-10	-	INFO	n=29986 na/inf mismatches=0 identical=9391
+integ_c3b	base12	equiv	P_many10	beta_geno max rel	1.764e-14	1e-06	PASS	n=29986 na/inf mismatches=0 identical=459
+integ_c3b	base12	equiv	P_many10	se_geno max rel	1.443e-08	1e-06	PASS	n=29986 na/inf mismatches=0 identical=3052
+integ_c3b	base12	equiv	P_many10	l_boot_geno max abs	11.08	1e-05	INFO	n=29986 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	P_many10	l_boot_interact max abs	11.53	1e-05	INFO	n=29986 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	P_many10	p_geno lead SNP per gene	0	0	PASS	3000 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	P_many10	p_geno sig p<0.001	0	0	PASS	ref 95 cand 95 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_geno sig p<1e-05	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_geno eGenes BH 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	P_many10	p_interact lead SNP per gene	0	0	PASS	3000 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	P_many10	p_interact sig p<0.001	0	0	PASS	ref 50 cand 50 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_interact sig p<1e-05	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_interact eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	P_many10	p_interact_boot lead SNP per gene	0	0	PASS	3000 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	P_many10	p_interact_boot sig p<0.001	12	0	INFO	ref 50 cand 38 flips 12 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	P_many10	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.996965 median 1.000000
+integ_c3b	base12	equiv	P_many10	boot LR distribution KS p	0.8416	>= 0.01	PASS	q0.5 0.46/0.4663 q0.9 2.791/2.792 q0.99 6.72/6.921 q0.999 10.71/11.13
+integ_c3b	base12	equiv	P_many10	l_boot_geno - l_geno distribution KS p	0.9993	>= 0.01	PASS	q0.5 1.863/1.886 q0.9 15.09/15.07 q0.99 26.14/26.26 q0.999 35.27/34.8
+integ_c3b	base12	stat	P_many10	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.008/0.008 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.008/0.008 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.003/0.003 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.003/0.003 fdr 0.000/0.000
+integ_c3b	base12	equiv	XL_grm_many	wall_s cand/ref (indicative, not a benchmark)	0.4967	-	INFO	16.69 / 33.60 s
+integ_c3b	base12	equiv	XL_grm_many	rows	0	0	PASS	ref 10000 rows / 400 genes, cand 10000 / 400
+integ_c3b	base12	equiv	XL_grm_many	columns	0	0	PASS	
+integ_c3b	base12	equiv	XL_grm_many	l0 max abs	3.183e-12	1e-09	PASS	n=10000 na/inf mismatches=0 identical=800
+integ_c3b	base12	equiv	XL_grm_many	l_geno max abs	3.638e-12	1e-09	PASS	n=10000 na/inf mismatches=0 identical=856
+integ_c3b	base12	equiv	XL_grm_many	l_interact max abs	3.638e-12	1e-09	PASS	n=10000 na/inf mismatches=0 identical=903
+integ_c3b	base12	equiv	XL_grm_many	p_geno max|dlog10p|	7.852e-10	-	INFO	n=10000 na/inf mismatches=0 identical=1287
+integ_c3b	base12	equiv	XL_grm_many	df_interact max abs	0	0	PASS	n=10000 na/inf mismatches=0 identical=10000
+integ_c3b	base12	equiv	XL_grm_many	p_interact max|dlog10p|	1.788e-09	-	INFO	n=10000 na/inf mismatches=0 identical=1224
+integ_c3b	base12	equiv	XL_grm_many	beta_geno max rel	1.171e-07	1e-06	PASS	n=10000 na/inf mismatches=0 identical=637
+integ_c3b	base12	equiv	XL_grm_many	se_geno max rel	2.654e-08	1e-06	PASS	n=10000 na/inf mismatches=0 identical=2062
+integ_c3b	base12	equiv	XL_grm_many	l_boot_geno max abs	6.385e-07	1e-05	PASS	n=10000 na/inf mismatches=0 identical=497
+integ_c3b	base12	equiv	XL_grm_many	l_boot_interact max abs	6.365e-07	1e-05	PASS	n=10000 na/inf mismatches=0 identical=443
+integ_c3b	base12	equiv	XL_grm_many	p_geno lead SNP per gene	0	0	PASS	400 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	XL_grm_many	p_geno sig p<0.001	0	0	PASS	ref 147 cand 147 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_geno sig p<1e-05	0	0	PASS	ref 75 cand 75 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_geno sig p<1e-08	0	0	PASS	ref 40 cand 40 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 49 cand 49 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_geno eGenes BH 5%	0	0	PASS	ref 69 cand 69 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	XL_grm_many	p_interact lead SNP per gene	0	0	PASS	400 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	XL_grm_many	p_interact sig p<0.001	0	0	PASS	ref 47 cand 47 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_interact sig p<1e-05	0	0	PASS	ref 19 cand 19 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_interact sig p<1e-08	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 15 cand 15 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_interact eGenes BH 5%	0	0	PASS	ref 26 cand 26 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	XL_grm_many	p_interact_boot lead SNP per gene	0	0	PASS	400 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	XL_grm_many	p_interact_boot sig p<0.001	0	0	PASS	ref 44 cand 44 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_interact_boot eGenes BH 5%	0	0	PASS	ref 29 cand 29 flips 0 (borderline 0)
+integ_c3b	base12	equiv	XL_grm_many	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	XL_grm_many	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4577/0.4577 q0.9 2.778/2.778 q0.99 6.683/6.683 q0.999 10.93/10.93
+integ_c3b	base12	equiv	XL_grm_many	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.498/1.498 q0.9 42.83/42.83 q0.99 75.72/75.72 q0.999 98.01/98.01
+integ_c3b	base12	stat	XL_grm_many	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.775/0.775 fdr 0.101/0.101; p_geno lead p<1e-5: power 0.637/0.637 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.625/0.625 fdr 0.038/0.038; p_interact lead p<1e-5: power 0.450/0.450 fdr 0.053/0.053
+integ_c3b	base12	equiv	R_real	wall_s cand/ref (indicative, not a benchmark)	0.4098	-	INFO	47.72 / 116.44 s
+integ_c3b	base12	equiv	R_real	rows	0	0	PASS	ref 59046 rows / 200 genes, cand 59046 / 200
+integ_c3b	base12	equiv	R_real	columns	0	0	PASS	
+integ_c3b	base12	equiv	R_real	l0 max abs	8.527e-13	1e-09	PASS	n=59046 na/inf mismatches=0 identical=7089
+integ_c3b	base12	equiv	R_real	l_geno max abs	1.364e-12	1e-09	PASS	n=59046 na/inf mismatches=0 identical=6813
+integ_c3b	base12	equiv	R_real	l_interact max abs	1.364e-12	1e-09	PASS	n=59046 na/inf mismatches=0 identical=6662
+integ_c3b	base12	equiv	R_real	p_geno max|dlog10p|	5.184e-09	-	INFO	n=59046 na/inf mismatches=0 identical=9568
+integ_c3b	base12	equiv	R_real	df_interact max abs	0	0	PASS	n=59046 na/inf mismatches=0 identical=59046
+integ_c3b	base12	equiv	R_real	p_interact max|dlog10p|	2.005e-09	-	INFO	n=59046 na/inf mismatches=0 identical=9223
+integ_c3b	base12	equiv	R_real	beta_geno max rel	1.167e-07	1e-06	PASS	n=59046 na/inf mismatches=0 identical=4521
+integ_c3b	base12	equiv	R_real	se_geno max rel	3.034e-08	1e-06	PASS	n=59046 na/inf mismatches=0 identical=12172
+integ_c3b	base12	equiv	R_real	l_boot_geno max abs	9.376e-07	1e-05	PASS	n=59046 na/inf mismatches=0 identical=3630
+integ_c3b	base12	equiv	R_real	l_boot_interact max abs	9.182e-07	1e-05	PASS	n=59046 na/inf mismatches=0 identical=3686
+integ_c3b	base12	equiv	R_real	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	R_real	p_geno sig p<0.001	0	0	PASS	ref 106 cand 106 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_geno sig p<1e-05	0	0	PASS	ref 11 cand 11 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_geno sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_geno eGenes BH 5%	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	R_real	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	R_real	p_interact sig p<0.001	0	0	PASS	ref 78 cand 78 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	R_real	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	R_real	p_interact_boot sig p<0.001	0	0	PASS	ref 76 cand 76 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	R_real	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	R_real	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4641/0.4641 q0.9 2.77/2.77 q0.99 6.751/6.751 q0.999 10.9/10.9
+integ_c3b	base12	equiv	R_real	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 6.712/6.712 q0.9 33.66/33.66 q0.99 56.44/56.44 q0.999 72.92/72.92
+integ_c3b	base12	stat	R_real	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.200/0.200 fdr 0.111/0.111; p_geno lead p<1e-5: power 0.200/0.200 fdr 0.111/0.111; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+integ_c3b	base12	equiv	S@none	wall_s cand/ref (indicative, not a benchmark)	0.4362	-	INFO	0.38 / 0.86 s
+integ_c3b	base12	equiv	S@none	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+integ_c3b	base12	equiv	S@none	columns	0	0	PASS	
+integ_c3b	base12	equiv	S@none	l0 max abs	5.542e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S@none	l_geno max abs	5.826e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S@none	l_interact max abs	5.684e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S@none	p_geno max|dlog10p|	8.804e-11	-	INFO	n=19942 na/inf mismatches=0 identical=6739
+integ_c3b	base12	equiv	S@none	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+integ_c3b	base12	equiv	S@none	p_interact max|dlog10p|	7.028e-11	-	INFO	n=19942 na/inf mismatches=0 identical=6326
+integ_c3b	base12	equiv	S@none	beta_geno max rel	2.127e-14	1e-06	PASS	n=19942 na/inf mismatches=0 identical=268
+integ_c3b	base12	equiv	S@none	se_geno max rel	1.409e-08	1e-06	PASS	n=19942 na/inf mismatches=0 identical=2097
+integ_c3b	base12	equiv	S@none	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S@none	p_geno sig p<0.001	0	0	PASS	ref 16 cand 16 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@none	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@none	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@none	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@none	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@none	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	S@none	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S@none	p_interact sig p<0.001	0	0	PASS	ref 22 cand 22 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@none	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@none	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@none	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@none	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@none	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	S@permute	wall_s cand/ref (indicative, not a benchmark)	0.5013	-	INFO	0.37 / 0.74 s
+integ_c3b	base12	equiv	S@permute	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+integ_c3b	base12	equiv	S@permute	columns	0	0	PASS	
+integ_c3b	base12	equiv	S@permute	l0 max abs	5.542e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S@permute	l_geno max abs	5.684e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S@permute	l_interact max abs	5.684e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S@permute	p_geno max|dlog10p|	4.238e-10	-	INFO	n=19942 na/inf mismatches=0 identical=6853
+integ_c3b	base12	equiv	S@permute	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+integ_c3b	base12	equiv	S@permute	p_interact max|dlog10p|	1.487e-10	-	INFO	n=19942 na/inf mismatches=0 identical=6377
+integ_c3b	base12	equiv	S@permute	beta_geno max rel	1.802e-14	1e-06	PASS	n=19942 na/inf mismatches=0 identical=280
+integ_c3b	base12	equiv	S@permute	se_geno max rel	1.277e-08	1e-06	PASS	n=19942 na/inf mismatches=0 identical=2170
+integ_c3b	base12	equiv	S@permute	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S@permute	p_geno sig p<0.001	0	0	PASS	ref 15 cand 15 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@permute	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@permute	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@permute	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@permute	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@permute	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	S@permute	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S@permute	p_interact sig p<0.001	0	0	PASS	ref 29 cand 29 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@permute	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@permute	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@permute	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@permute	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S@permute	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	S#null	wall_s cand/ref (indicative, not a benchmark)	0.5051	-	INFO	0.64 / 1.27 s
+integ_c3b	base12	equiv	S#null	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+integ_c3b	base12	equiv	S#null	columns	0	0	PASS	
+integ_c3b	base12	equiv	S#null	l0 max abs	5.542e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S#null	l_geno max abs	5.684e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S#null	l_interact max abs	5.684e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S#null	p_geno max|dlog10p|	2.836e-10	-	INFO	n=19942 na/inf mismatches=0 identical=6788
+integ_c3b	base12	equiv	S#null	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+integ_c3b	base12	equiv	S#null	p_interact max|dlog10p|	4.127e-10	-	INFO	n=19942 na/inf mismatches=0 identical=6484
+integ_c3b	base12	equiv	S#null	beta_geno max rel	1.992e-14	1e-06	PASS	n=19942 na/inf mismatches=0 identical=290
+integ_c3b	base12	equiv	S#null	se_geno max rel	1.419e-08	1e-06	PASS	n=19942 na/inf mismatches=0 identical=2025
+integ_c3b	base12	equiv	S#null	l_boot_geno max abs	10.99	1e-05	INFO	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S#null	l_boot_interact max abs	11.45	1e-05	INFO	n=19942 na/inf mismatches=0 identical=0
+integ_c3b	base12	equiv	S#null	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S#null	p_geno sig p<0.001	0	0	PASS	ref 19 cand 19 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	S#null	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S#null	p_interact sig p<0.001	0	0	PASS	ref 15 cand 15 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	S#null	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	S#null	p_interact_boot sig p<0.001	8	0	INFO	ref 7 cand 15 flips 8 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	S#null	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999988 median 1.000000
+integ_c3b	base12	equiv	S#null	boot LR distribution KS p	0.5341	>= 0.01	PASS	q0.5 0.4824/0.4817 q0.9 2.838/2.869 q0.99 6.865/7.061 q0.999 11.45/10.84
+integ_c3b	base12	equiv	S#null	l_boot_geno - l_geno distribution KS p	0.9872	>= 0.01	PASS	q0.5 1.758/1.721 q0.9 14.95/14.89 q0.99 25.86/25.87 q0.999 34.42/34.31
+integ_c3b	base12	stat	S#null	null lambda_GC p_geno all SNPs	1.033	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.033; cand KS p 0.232 (ref 0.232)
+integ_c3b	base12	stat	S#null	null lambda_GC p_geno 1 SNP/gene	1.059	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.059; cand KS p 0.717 (ref 0.717)
+integ_c3b	base12	stat	S#null	null lambda_GC p_interact all SNPs	1.006	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.006; cand KS p 0.0451 (ref 0.0451)
+integ_c3b	base12	stat	S#null	null lambda_GC p_interact 1 SNP/gene	0.8621	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.862; cand KS p 0.564 (ref 0.564)
+integ_c3b	base12	stat	S#null	null lambda_GC boot LR vs chi2(df)	1.059	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.060; cand KS p 1.98e-06 (ref 0.000958)
+integ_c3b	base12	equiv	M_grm#null	wall_s cand/ref (indicative, not a benchmark)	0.6191	-	INFO	3.45 / 5.57 s
+integ_c3b	base12	equiv	M_grm#null	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+integ_c3b	base12	equiv	M_grm#null	columns	0	0	PASS	
+integ_c3b	base12	equiv	M_grm#null	l0 max abs	1.99e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=7186
+integ_c3b	base12	equiv	M_grm#null	l_geno max abs	3.979e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=6403
+integ_c3b	base12	equiv	M_grm#null	l_interact max abs	3.695e-13	1e-09	PASS	n=30049 na/inf mismatches=0 identical=6014
+integ_c3b	base12	equiv	M_grm#null	p_geno max|dlog10p|	7.221e-09	-	INFO	n=30049 na/inf mismatches=0 identical=5800
+integ_c3b	base12	equiv	M_grm#null	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+integ_c3b	base12	equiv	M_grm#null	p_interact max|dlog10p|	1.383e-09	-	INFO	n=30049 na/inf mismatches=0 identical=6051
+integ_c3b	base12	equiv	M_grm#null	beta_geno max rel	4.039e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=4350
+integ_c3b	base12	equiv	M_grm#null	se_geno max rel	2.526e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=8269
+integ_c3b	base12	equiv	M_grm#null	l_boot_geno max abs	5.927e-07	1e-05	PASS	n=30049 na/inf mismatches=0 identical=3168
+integ_c3b	base12	equiv	M_grm#null	l_boot_interact max abs	5.927e-07	1e-05	PASS	n=30049 na/inf mismatches=0 identical=3182
+integ_c3b	base12	equiv	M_grm#null	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_grm#null	p_geno sig p<0.001	0	0	PASS	ref 29 cand 29 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_grm#null	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_grm#null	p_interact sig p<0.001	0	0	PASS	ref 31 cand 31 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_grm#null	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+integ_c3b	base12	equiv	M_grm#null	p_interact_boot sig p<0.001	0	0	PASS	ref 27 cand 27 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+integ_c3b	base12	equiv	M_grm#null	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+integ_c3b	base12	equiv	M_grm#null	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4718/0.4718 q0.9 2.749/2.749 q0.99 6.682/6.682 q0.999 10.98/10.98
+integ_c3b	base12	equiv	M_grm#null	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.791/1.791 q0.9 20.25/20.25 q0.99 36.37/36.37 q0.999 47.43/47.43
+integ_c3b	base12	stat	M_grm#null	null lambda_GC p_geno all SNPs	0.9803	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.980; cand KS p 0.0722 (ref 0.0722)
+integ_c3b	base12	stat	M_grm#null	null lambda_GC p_geno 1 SNP/gene	1.24	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.240; cand KS p 0.786 (ref 0.786)
+integ_c3b	base12	stat	M_grm#null	null lambda_GC p_interact all SNPs	0.9837	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.984; cand KS p 0.0597 (ref 0.0597)
+integ_c3b	base12	stat	M_grm#null	null lambda_GC p_interact 1 SNP/gene	0.7631	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.763; cand KS p 0.0301 (ref 0.0301)
+integ_c3b	base12	stat	M_grm#null	null lambda_GC boot LR vs chi2(df)	1.037	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.037; cand KS p 0.0119 (ref 0.0119)
+integ_c3b	base12	repro	S	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+integ_c3b	base12	repro	S	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+integ_c3b	base12	repro	S	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+integ_c3b	base12	repro	M_dense	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+integ_c3b	base12	repro	M_dense	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+integ_c3b	base12	repro	M_dense	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+integ_c3b	base12	repro	M_grm	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+integ_c3b	base12	repro	M_grm	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+integ_c3b	base12	repro	M_grm	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+integ_c3b	base12	repro	LA	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+integ_c3b	base12	repro	LA	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+integ_c3b	base12	repro	LA	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+integ_c3b	base12	edge	default_kernel_balanced	edge case exact	1.137e-13	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.14e-13 boot 3.46e-08 rel_beta 1.74e-15 rel_se 6.24e-09 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	default_kernel_unbalanced	edge case exact	5.684e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 5.68e-14 boot 2.89e-08 rel_beta 9.95e-09 rel_se 1.71e-08 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	grm_numeric_cond_h0_to_1	edge case exact	2.046e-12	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 2.05e-12 boot 9.25e-09 rel_beta 4.87e-09 rel_se 1.45e-08 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	wide_spectrum_kernel_x1	edge case exact	1.137e-13	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.14e-13 boot 4.13e-08 rel_beta 1.03e-08 rel_se 1.1e-08 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	wide_spectrum_kernel_x1e+06	edge case exact	1.705e-13	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.71e-13 boot 1.84e-07 rel_beta 3.22e-08 rel_se 3.1e-08 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	wide_spectrum_kernel_x1e-06	edge case exact	4.547e-13	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.55e-13 boot 6.42e-08 rel_beta 2.37e-08 rel_se 1.54e-08 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	bimodal_likelihood	edge case exact	8.527e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 8.53e-14 boot 3.29e-08 rel_beta 1.39e-08 rel_se 8.52e-09 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	flat_likelihood_identity_kernel	edge case exact	4.263e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.26e-14 boot 9.95e-14 rel_beta 1.75e-15 rel_se 5.59e-16 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	rare_snps_factor3_mixed_df	edge case exact	4.263e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.26e-14 boot 9.32e-08 rel_beta 8.87e-09 rel_se 5.71e-09 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	rare_snps_factor2	edge case exact	7.105e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 7.11e-14 boot 9.11e-09 rel_beta 2.44e-09 rel_se 1.14e-09 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	collinear_interaction_and_snps	edge case report	5.684e-14	l 1e-9 (WARN 1e-6), rel 1e-6	WARN	max_dl 5.68e-14 boot 1.23e-08 rel_beta 5.13e-11 rel_se 6.89e-12 df TRUE na/inf mismatches 2 (report-only case: rank-deficient / near-perfect, list any difference)
+integ_c3b	base12	edge	eqtl_only_p0_0	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 7.11e-14 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	duplicated_covariate	edge case report	8.527e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 8.53e-14 boot 6.55e-08 rel_beta 1.5e-09 rel_se 7.41e-09 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+integ_c3b	base12	edge	raw_scale_covariate	edge case exact	2.842e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 2.84e-14 boot 1.14e-08 rel_beta 2.85e-11 rel_se 1.66e-09 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	near_perfect_fit	edge case report	7.954e-07	l 1e-9 (WARN 1e-6), rel 1e-6	WARN	max_dl 7.95e-07 boot 1.71e-06 rel_beta 1.98e-15 rel_se 3.5e-08 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+integ_c3b	base12	edge	n_snps_1	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 1.42e-14 rel_beta 3.9e-16 rel_se 2.6e-16 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	n_snps_2	edge case exact	2.842e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 2.84e-14 boot 5.07e-12 rel_beta 1.96e-12 rel_se 9.42e-13 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	n_snps_7	edge case exact	1.421e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.42e-14 boot 2.26e-11 rel_beta 1.1e-10 rel_se 4.13e-12 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	n_snps_64	edge case exact	4.263e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.26e-14 boot 1.32e-08 rel_beta 1.05e-08 rel_se 3.17e-09 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	n_snps_65	edge case exact	4.263e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.26e-14 boot 1.97e-09 rel_beta 2e-09 rel_se 3.64e-10 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	n_snps_257	edge case exact	2.842e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 2.84e-14 boot 9.96e-08 rel_beta 4.29e-08 rel_se 4.26e-10 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	small_odd_n31	edge case exact	3.553e-15	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 3.55e-15 boot 1.68e-10 rel_beta 3.1e-10 rel_se 6.68e-11 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	no_bootstrap	edge case exact	1.137e-13	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.14e-13 boot 0 rel_beta 1.74e-15 rel_se 6.24e-09 df TRUE na/inf mismatches 0
+integ_c3b	base12	edge	kernel_scale f=1	max |l - exact ML| (l0, l_geno, l_interact)	6.821e-13	1e-9 or <= ref + 1e-9 (WARN to 1e-6)	PASS	ref 4.41e-13; cand min/max l - exact -6.82e-13/1.28e-13; 144 fits; NA mismatches 0
+integ_c3b	base12	edge	kernel_scale f=1e+06	max |l - exact ML| (l0, l_geno, l_interact)	1.478e-12	1e-9	PASS	ref 1.48e-12; cand min/max l - exact -1.48e-12/5.54e-13; 144 fits; NA mismatches 0
+integ_c3b	base12	edge	kernel_scale f=1e-06	max |l - exact ML| (l0, l_geno, l_interact)	8.996e-08	1e-9 or <= ref + 1e-9 (WARN to 1e-6)	PASS	ref 9e-08; cand min/max l - exact -9e-08/2.98e-13; 144 fits; NA mismatches 0
+integ_c3b	base12	edge	boundary_h0 f=1	max |l - exact ML| (l0, l_geno, l_interact)	1.137e-13	1e-9	PASS	ref 1.56e-13; cand min/max l - exact -1.14e-13/6.39e-14; 72 fits; NA mismatches 0
+integ_c3b	base12	edge	boundary_h0 f=1000	max |l - exact ML| (l0, l_geno, l_interact)	8.527e-14	1e-9	PASS	ref 9.95e-14; cand min/max l - exact -8.53e-14/2.84e-14; 72 fits; NA mismatches 0
+integ_c3b	base12	edge	boundary_h0 f=1e+06	max |l - exact ML| (l0, l_geno, l_interact)	8.527e-14	1e-9	PASS	ref 8.53e-14; cand min/max l - exact -8.53e-14/2.84e-14; 72 fits; NA mismatches 0
+integ_c3b	base12	edge	boundary_h1 f=1	max |l - exact ML| (l0, l_geno, l_interact)	2.16e-12	1e-9	PASS	ref 2.16e-12; cand min/max l - exact -2.16e-12/-1.62e-12; 36 fits; NA mismatches 0
+integ_c3b	base12	edge	boundary_h1 f=1000	max |l - exact ML| (l0, l_geno, l_interact)	2.359e-12	1e-9	PASS	ref 2.42e-12; cand min/max l - exact -2.36e-12/-1.55e-12; 36 fits; NA mismatches 0
+integ_c3b	base12	edge	boundary_h1 f=1e+06	max |l - exact ML| (l0, l_geno, l_interact)	2.878e-12	1e-9	PASS	ref 2.83e-12; cand min/max l - exact -2.88e-12/-1.85e-12; 36 fits; NA mismatches 0
+integ_c3b	base12	edge	kernel_scale	max |dl| across f = 1, 1e6, 1e-6 (tests/model_checks.R)	8.632e-08	1e-6	PASS	
+integ_c3b	base12	tests	learn_covariance_checks.R	PASS / FAIL lines, error	6 / 0	0 FAIL, no error	PASS	source bench/proto/r12/integ/pkg_c3b
+integ_c3b	base12	tests	local_ancestry_checks.R	PASS / FAIL lines, error	12 / 0	0 FAIL, no error	PASS	source bench/proto/r12/integ/pkg_c3b
+integ_c3b	base12	tests	model_checks.R	PASS / FAIL lines, error	17 / 0	0 FAIL, no error	PASS	source bench/proto/r12/integ/pkg_c3b
+integ_c3b	base12	stress	bimodal, tuned peak gap	fits below the exact ML by > 1e-6 (cand)	0	<= ref; |cand-ref| <= 1e-9	PASS	6 cases; ref misses 0; max shortfall ref 5.68e-14 cand 5.68e-14; max |cand-ref| 2.84e-14; NA mismatches 0
+integ_c3b	base12	stress	random 3-block spectrum	fits below the exact ML by > 1e-6 (cand)	0	<= ref; |cand-ref| <= 1e-9	PASS	150 cases; ref misses 0; max shortfall ref 1.71e-13 cand 1.42e-13; max |cand-ref| 1.63e-13; NA mismatches 0

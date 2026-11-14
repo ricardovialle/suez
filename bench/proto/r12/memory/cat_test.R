@@ -1,0 +1,6 @@
+zz = file("/dev/null", open = "wt"); sink(zz); sink(zz, type = "message")
+t1 = system.time(for (i in 1:3000) cat("ENSG000001", 10L, " cis snps\n"))
+t2 = system.time(for (i in 1:3000) paste("ENSG000001", 10L))
+x = rnorm(1e6); t3 = system.time(for (i in 1:3000) { cat("g", 10L, "\n"); y = numeric(10) })
+sink(type = "message"); sink(); close(zz)
+print(rbind(cat = t1, paste = t2, cat_alloc = t3)[, 1:3])

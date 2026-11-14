@@ -1,0 +1,36 @@
+S        N=200 snps=2975  base 0.225  proto 0.175  ratio(base/proto) 1.286  [1.29]
+   dl0 3.8e-12 dl_geno 8.6e-12 dl_int 7.9e-12 ddf 0 dbeta/max(|b|,se) 1.8e-15 rel_se 1.2e-08 dl_boot 3.3e-07/3.3e-07 NAmis 0
+M        N=400 snps=3970  base 0.468  proto 0.390  ratio(base/proto) 1.200  [1.2]
+   dl0 1.4e-13 dl_geno 2.0e-13 dl_int 2.0e-13 ddf 0 dbeta/max(|b|,se) 2.6e-15 rel_se 1.2e-08 dl_boot 3.1e-07/3.1e-07 NAmis 0
+M_grm    N=400 snps=3970  base 1.021  proto 0.870  ratio(base/proto) 1.174  [1.17]
+   dl0 2.0e-13 dl_geno 6.2e-12 dl_int 6.1e-12 ddf 0 dbeta/max(|b|,se) 2.4e-08 rel_se 2.1e-08 dl_boot 3.2e-07/3.1e-07 NAmis 0
+M_cov30  N=400 snps=1558  base 2.026  proto 1.138  ratio(base/proto) 1.780  [1.78]
+   dl0 3.4e-13 dl_geno 6.8e-12 dl_int 6.7e-12 ddf 0 dbeta/max(|b|,se) 1.1e-08 rel_se 1.3e-08 dl_boot 2.7e-07/2.6e-07 NAmis 0
+M_cov    N=400 snps=2965  base 0.995  proto 0.666  ratio(base/proto) 1.494  [1.49]
+   dl0 1.4e-13 dl_geno 2.3e-13 dl_int 2.3e-13 ddf 0 dbeta/max(|b|,se) 7.4e-09 rel_se 1.1e-08 dl_boot 1.2e-07/1.2e-07 NAmis 0
+M_fac3   N=600 snps=2965  base 0.718  proto 0.562  ratio(base/proto) 1.278  [1.28]
+   dl0 2.8e-13 dl_geno 3.4e-13 dl_int 3.4e-13 ddf 0 dbeta/max(|b|,se) 2.5e-15 rel_se 1.5e-08 dl_boot 1.5e-07/1.3e-07 NAmis 0
+M_eqtl   N=200 snps=3970  base 0.552  proto 0.404  ratio(base/proto) 1.366  [1.37]
+   dl0 2.7e-12 dl_geno 3.8e-12 dl_int -Inf ddf 0 dbeta/max(|b|,se) 5.4e-08 rel_se 4.5e-09 dl_boot 2.7e-07/-Inf NAmis 0
+M_num    N=400 snps=3970  base 1.711  proto 1.350  ratio(base/proto) 1.267  [1.27]
+   dl0 1.5e-11 dl_geno 1.8e-11 dl_int 1.9e-11 ddf 0 dbeta/max(|b|,se) 3.4e-08 rel_se 2.3e-08 dl_boot 5.9e-07/5.8e-07 NAmis 0
+M_unbal  N=488 snps=3970  base 0.570  proto 0.462  ratio(base/proto) 1.234  [1.23]
+   dl0 1.1e-13 dl_geno 2.3e-13 dl_int 2.6e-13 ddf 0 dbeta/max(|b|,se) 2.3e-08 rel_se 1.7e-08 dl_boot 4.3e-07/4.3e-07 NAmis 0
+S_rare   N=200 snps=2863  base 0.207  proto 0.184  ratio(base/proto) 1.125  [1.12]
+   dl0 5.2e-12 dl_geno 8.9e-12 dl_int 8.8e-12 ddf 0 dbeta/max(|b|,se) 1.8e-15 rel_se 1.1e-08 dl_boot 2.4e-07/2.4e-07 NAmis 0
+HS       N=400 snps=1975  base 0.492  proto 0.372  ratio(base/proto) 1.323  [1.32]
+   dl0 5.0e-12 dl_geno 7.3e-12 dl_int 6.7e-12 ddf 0 dbeta/max(|b|,se) 1.9e-08 rel_se 1.9e-08 dl_boot 3.3e-07/3.3e-07 NAmis 0
+M_lc     N=400 snps=3970  base 0.528  proto 0.419  ratio(base/proto) 1.260  [1.26]
+   dl0 1.1e-13 dl_geno 2.3e-13 dl_int 2.3e-13 ddf 0 dbeta/max(|b|,se) 1.8e-08 rel_se 1.1e-08 dl_boot 1.0e-07/1.0e-07 NAmis 0
+M_learn  N=400 snps=3970  base 0.517  proto 0.438  ratio(base/proto) 1.180  [1.18]
+   dl0 1.5e-10 dl_geno 1.6e-10 dl_int 1.6e-10 ddf 0 dbeta/max(|b|,se) 3.4e-08 rel_se 1.7e-09 dl_boot 2.8e-07/2.8e-07 NAmis 0
+M_miss   N=400 snps=2965  base 0.330  proto 0.276  ratio(base/proto) 1.196  [1.2]
+   dl0 1.1e-13 dl_geno 1.4e-13 dl_int 1.4e-13 ddf 0 dbeta/max(|b|,se) 2.5e-15 rel_se 1.3e-08 dl_boot 4.5e-07/4.5e-07 NAmis 0
+M_dense  N=400 snps=4544  base 0.499  proto 0.444  ratio(base/proto) 1.124  [1.12]
+   dl0 1.7e-13 dl_geno 1.7e-13 dl_int 2.0e-13 ddf 0 dbeta/max(|b|,se) 2.4e-15 rel_se 1.1e-08 dl_boot 3.7e-09/3.4e-09 NAmis 0
+P_many   N=200 snps=13722  base 1.046  proto 0.977  ratio(base/proto) 1.071  [1.07]
+   dl0 1.7e-11 dl_geno 1.9e-11 dl_int 1.9e-11 ddf 0 dbeta/max(|b|,se) 2.0e-15 rel_se 1.4e-08 dl_boot 3.8e-07/3.8e-07 NAmis 0
+L_grm    N=1000 snps=2306  base 1.612  proto 1.248  ratio(base/proto) 1.292  [1.29]
+   dl0 3.4e-13 dl_geno 1.1e-12 dl_int 1.1e-12 ddf 0 dbeta/max(|b|,se) 6.3e-08 rel_se 1.9e-08 dl_boot 8.4e-07/8.4e-07 NAmis 0
+L        N=1000 snps=2306  base 0.684  proto 0.598  ratio(base/proto) 1.144  [1.14]
+   dl0 5.1e-13 dl_geno 6.3e-13 dl_int 6.8e-13 ddf 0 dbeta/max(|b|,se) 3.7e-15 rel_se 1.3e-08 dl_boot 1.6e-07/1.6e-07 NAmis 0

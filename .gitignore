@@ -8,3 +8,12 @@ bench/results/out/
 bench/proto/*/pkg*/
 bench/proto/*/out/
 bench/**/.cache/
+bench/proto/r12/*/pkg*/
+bench/proto/r12/*/out/
+bench/proto/r12/review/data/
+bench/proto/r12/**/*.o
+bench/proto/r12/**/*.so
+bench/proto/r12/numerical/gemm/gemm_*
+!bench/proto/r12/numerical/gemm/gemm_*.*
+bench/proto/r12/numerical/gemm/shape_*
+!bench/proto/r12/numerical/gemm/shape_*.*

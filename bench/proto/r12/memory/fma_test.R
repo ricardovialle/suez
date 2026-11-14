@@ -1,0 +1,7 @@
+Rcpp::sourceCpp("fma_test.cpp")
+set.seed(1); n = 700; A = matrix(rnorm(n * n), n); x = rnorm(n)
+r1 = drop(crossprod(x, A)); r2 = drop(A %*% x)
+cat("crossprod(u, A): plain", identical(r1, tdot(A, x, FALSE)), " fma", identical(r1, tdot(A, x, TRUE)), "\n")
+cat("A %*% u:        plain", identical(r2, ndot(A, x, FALSE)), " fma", identical(r2, ndot(A, x, TRUE)), "\n")
+o = outer(x, r1); cat("outer = x_i*z_j:", identical(o, x %o% r1), identical(o[3, 5], x[3] * r1[5]), "\n")
+print(body(outer)[[length(body(outer)) - 2]])

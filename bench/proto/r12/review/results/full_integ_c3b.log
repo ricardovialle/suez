@@ -1,0 +1,11 @@
+integ_c3b vs base12: 1118 checks, INFO=138 PASS=977 WARN=3 (334 s) -> bench/proto/r12/review/results/v12_integ_c3b_vs_base12.tsv
+  part                        dataset                     check     value                    threshold status
+ equiv                              L boot LR distribution KS p  0.009555                      >= 0.01   WARN
+  edge collinear_interaction_and_snps          edge case report 5.684e-14 l 1e-9 (WARN 1e-6), rel 1e-6   WARN
+  edge               near_perfect_fit          edge case report 7.954e-07 l 1e-9 (WARN 1e-6), rel 1e-6   WARN
+                                                                                                                                                             detail
+                                                                                           q0.5 0.4632/0.4504 q0.9 2.745/2.732 q0.99 6.643/6.704 q0.999 11.55/10.91
+ max_dl 5.68e-14 boot 1.23e-08 rel_beta 5.13e-11 rel_se 6.89e-12 df TRUE na/inf mismatches 2 (report-only case: rank-deficient / near-perfect, list any difference)
+  max_dl 7.95e-07 boot 1.71e-06 rel_beta 1.98e-15 rel_se 3.5e-08 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+VERDICT: PASS with warnings 
+Rscript bench/proto/r12/review/validate12.R integ_c3b --ds all --boot dist  2  403.19s user 3.87s system 121% cpu 5:34.18 total

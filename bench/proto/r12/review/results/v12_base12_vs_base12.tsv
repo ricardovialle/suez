@@ -1,0 +1,37 @@
+cand	ref	part	dataset	check	value	threshold	status	detail
+base12	base12	edge	default_kernel_balanced	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	default_kernel_unbalanced	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	grm_numeric_cond_h0_to_1	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	wide_spectrum_kernel_x1	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	wide_spectrum_kernel_x1e+06	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	wide_spectrum_kernel_x1e-06	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	bimodal_likelihood	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	flat_likelihood_identity_kernel	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	rare_snps_factor3_mixed_df	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	rare_snps_factor2	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	collinear_interaction_and_snps	edge case report	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+base12	base12	edge	eqtl_only_p0_0	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	duplicated_covariate	edge case report	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+base12	base12	edge	raw_scale_covariate	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	near_perfect_fit	edge case report	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+base12	base12	edge	n_snps_1	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	n_snps_2	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	n_snps_7	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	n_snps_64	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	n_snps_65	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	n_snps_257	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	small_odd_n31	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	no_bootstrap	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+base12	base12	edge	kernel_scale f=1	max |l - exact ML| (l0, l_geno, l_interact)	4.405e-13	1e-9 or <= ref + 1e-9 (WARN to 1e-6)	PASS	ref 4.41e-13; cand min/max l - exact -4.41e-13/1.71e-13; 144 fits; NA mismatches 0
+base12	base12	edge	kernel_scale f=1e+06	max |l - exact ML| (l0, l_geno, l_interact)	1.478e-12	1e-9	PASS	ref 1.48e-12; cand min/max l - exact -1.48e-12/7.53e-13; 144 fits; NA mismatches 0
+base12	base12	edge	kernel_scale f=1e-06	max |l - exact ML| (l0, l_geno, l_interact)	8.996e-08	1e-9 or <= ref + 1e-9 (WARN to 1e-6)	PASS	ref 9e-08; cand min/max l - exact -9e-08/3.41e-13; 144 fits; NA mismatches 0
+base12	base12	edge	boundary_h0 f=1	max |l - exact ML| (l0, l_geno, l_interact)	1.563e-13	1e-9	PASS	ref 1.56e-13; cand min/max l - exact -1.56e-13/7.82e-14; 72 fits; NA mismatches 0
+base12	base12	edge	boundary_h0 f=1000	max |l - exact ML| (l0, l_geno, l_interact)	9.948e-14	1e-9	PASS	ref 9.95e-14; cand min/max l - exact -9.95e-14/6.39e-14; 72 fits; NA mismatches 0
+base12	base12	edge	boundary_h0 f=1e+06	max |l - exact ML| (l0, l_geno, l_interact)	8.527e-14	1e-9	PASS	ref 8.53e-14; cand min/max l - exact -8.53e-14/2.84e-14; 72 fits; NA mismatches 0
+base12	base12	edge	boundary_h1 f=1	max |l - exact ML| (l0, l_geno, l_interact)	2.16e-12	1e-9	PASS	ref 2.16e-12; cand min/max l - exact -2.16e-12/-1.62e-12; 36 fits; NA mismatches 0
+base12	base12	edge	boundary_h1 f=1000	max |l - exact ML| (l0, l_geno, l_interact)	2.416e-12	1e-9	PASS	ref 2.42e-12; cand min/max l - exact -2.42e-12/-1.61e-12; 36 fits; NA mismatches 0
+base12	base12	edge	boundary_h1 f=1e+06	max |l - exact ML| (l0, l_geno, l_interact)	2.828e-12	1e-9	PASS	ref 2.83e-12; cand min/max l - exact -2.83e-12/-1.8e-12; 36 fits; NA mismatches 0
+base12	base12	edge	kernel_scale	max |dl| across f = 1, 1e6, 1e-6 (tests/model_checks.R)	8.632e-08	1e-6	PASS	
+base12	base12	tests	learn_covariance_checks.R	PASS / FAIL lines, error	6 / 0	0 FAIL, no error	PASS	source .
+base12	base12	tests	local_ancestry_checks.R	PASS / FAIL lines, error	12 / 0	0 FAIL, no error	PASS	source .
+base12	base12	tests	model_checks.R	PASS / FAIL lines, error	17 / 0	0 FAIL, no error	PASS	source .

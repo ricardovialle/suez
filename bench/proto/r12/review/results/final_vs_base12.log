@@ -1,0 +1,3 @@
+final vs base12: 1105 checks, INFO=145 PASS=960 (576 s) -> bench/proto/r12/review/results/v12_final_vs_base12.tsv
+VERDICT: PASS 
+Rscript bench/proto/r12/review/validate12.R final --jobs 2  735.85s user 13.80s system 130% cpu 9:35.83 total

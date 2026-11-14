@@ -194,3 +194,141 @@ End-to-end, reference R (solver = Eigen, so this checks the rotation change): r1
 as 0.5's own (bootstrap draws, round 7).
 Not checked here: GCC builds (no GCC on this Mac), R CMD check, end-to-end equivalence and the bootstrap
 distribution with the LAPACK solver chosen (round 7 did both for the Eigen basis change).
+
+# Round 12+ campaign (baseline = tag `perf-baseline-r12` = suez 0.5 + round 11, lib bench/lib/base12)
+Brief: bench/CONTEXT_R12.md. Benchmark: bench/round12_bench.sh (interleaved implementations; RUNS tsv).
+New workloads: XL_grm (N = 2000, GRM), XXL (N = 4000), M_cov30 (30 covariates), P_many (3000 genes x 10 SNPs).
+Harness: bench/proto/harness.R with SUEZ_HARNESS_LIB=bench/lib/base12; bench/proto/r12/p12_base.cpp (base12
+engine as sourceCpp, identical() to the installed build on 14 datasets), p12_timed.cpp + profile12.R (phases).
+
+## Round 12.0 — baseline and profile (coordinator)
+Scouting baseline, 1 rep (bench/results/runs_r12_baseline.tsv), 1 core wall / peak RSS: S 0.62 s / 194 MB,
+M 2.92 / 231, L 7.79 / 423, XL 10.9 / 760, XXL 29.6 / 1264, M_grm 2.97, L_grm 10.7, XL_grm 12.1 / 656,
+M_cov30 9.5, M_dense 6.5 / 402, P_many 6.8 / 247; XL_grm 2/4/8 cores 7.8 / 5.8 / 4.5 s (efficiency 0.33 at 8),
+tree RSS 2.4 GB at 8. Step 1: S 1.11 s / 340 MB, M 4.06 s / 470 MB.
+C++ phase shares (bench/results/r12_profile_base.tsv; % of fit_gene time):
+| ds | N | rotate | data moments+grid | data refine+Wald | boot sim+moments | boot grid | boot refine |
+| S | 200 | 14 | 16 | 16 | 15 | 14 | 19 |
+| M | 400 | 29 | 14 | 11 | 20 | 9 | 14 |
+| L | 1000 | 54 | 10 | 4 | 20 | 3 | 5 |
+| XL | 2000 | 70 | 7 | 1 | 15 | 1 | 2 |
+| XXL | 4000 | 86 | 3 | 0.4 | 9 | 0.3 | 0.5 |
+| M_grm | 400 | 12 | 12 | 23 | 10 | 11 | 30 |
+| XL_grm | 2000 | 37 | 8 | 16 | 8 | 7 | 23 |
+| M_cov30 | 400 | 2 | 25 | 18 | 8 | 21 | 23 |
+R level (bench/results/r12_profile_e2e_base.log): XXL kernel_contrast_eigen 74% of wall (16.7 s); XL_grm 19%;
+P_many: cat() 38% of wall (one cat per gene into the /dev/null sink), pchisq + data.frame 13%.
+Bottlenecks: (1) large N: eigen set-up O(N^3) and rotation U'G O(N^2 S); (2) bootstrap ~45% at small N;
+(3) Newton refine with GRM kernels (no eigenvalue ties); (4) per-gene R overhead (cat!) for many small genes;
+(5) multi-core efficiency with few large genes; (6) RAM at large N (N x N copies in set-up).
+
+## Round 12.1 — algorithm specialist (bench/proto/r12/algorithm/REPORT.md)
+zz (analytic sparse Z Z' basis, default kernel): end-to-end 1.27x (S) .. 4.3x (XL) .. 21x (XXL), RSS -14..-57% at
+N >= 1000; data l <= 1.2e-10; bootstrap draws change (needs distribution check, L KS p 0.010 -> second seed).
+p12_schur (Schur reuse across models / bootstrap, identical()): 1.05-1.25x. p12_parab: methodological, 1.1x, held.
+
+## Round 12.1b — reviewer audit and validation suite (bench/proto/r12/review/REPORT.md)
+validate12.R (equiv / stat / repro / edge / stress; TSV + VERDICT): sanity base12 vs base12 PASS (1105 checks),
+final vs base12 PASS; negative control MAX_PEAKS = 1 caught only by M_learn, edge and stress parts -> mandatory.
+Audit fixes applied: P_many is really ~69 SNPs/gene (206,669 tests, overlapping windows; kept as a many-dense-genes
+workload); new P_many10 (10 SNPs/gene), XL_grm_many (N = 2000 GRM, 400 genes), R_real (GRM + 10 covariates +
+missing + uneven windows; ~20x M_cov cost per test) linked into bench/data; harness default -> base12; MKL /
+FlexiBLAS / GOTO threads pinned in bench.sh; round12_bench.sh alternates implementation order per repetition.
+Open risks for candidates: R1 unblocked per-gene O(N S) memory (883 MB for 4000 SNPs at N = 2000), R4 Newton on
+GRM + covariates, R2 latent use-after-free in fit_models.
+Baseline on the reviewer datasets (1 rep, machine contended by agents; indicative): R_real 198 s at 1 core (59,046
+tests, 3.4 ms/test), 49.5 s at 4 cores, 352 MB; XL_grm_many 47.5 s / 516 MB; P_many10 7.5 s for 29,986 tests
+(3000 genes: ~2.5 ms fixed cost per gene).
+
+## Round 12.1c — parallel specialist (bench/proto/r12/parallel/REPORT.md)
+P1 opt-in suez.threads (std::thread over SNP blocks; normals drawn on the main thread; identical() at 1-8 threads):
+kernel 3.3-3.4x at 8 threads for XL_grm / XXL, ~1.0 at small N; end-to-end equal-ish to 8 forks at 28-31% of the
+tree RAM. P2 macOS Accelerate dsyevd for explicit kernels: eigen 7x at N = 2000; XL_grm 1.53x at 1 core (draws
+change). Rejected: Eigen+OpenMP (no libomp; <= 8% parallel), dynamic / largest-first scheduling (neutral).
+zz validation (validate12.R algorithm_zz --boot dist, all 25 datasets): 966 PASS, 1 WARN (L bootstrap LR KS p 0.0096,
+seed 42), 0 FAIL; data -log10 p <= 1.6e-8, lead SNPs / significant sets / eGenes identical, edge + stress PASS.
+Three new seeds on L (bench/proto/r12/review/boot_seeds.R): KS p 0.061 / 0.35 / 0.67, Fisher pooled 0.21, quantiles
+match to q99.9 -> the warning was chance. zz ACCEPTED (documented bootstrap-draw change for sample_kernel = NULL).
+
+## Round 12.1d — numerical specialist (bench/proto/r12/numerical/REPORT.md)
+p_prof2 (pkg_comb, lib numerical_comb, Eigen only, ~+150 lines): Profile as 3 GEMVs + faster LDLT with Eigen's
+pivot order; refine reuses the best Newton call; grid covariate-block solve as one GEMM per column per SNP block;
+vectorised moments; cheaper log-det on GRM; residual derivatives when rows ~ n (reviewer R4: the 3-column moment
+product over all pairs on R ~ n rows was the cost). Kernel 1.13-1.17 (S), 1.2 (M), 1.4 (M_eqtl), 1.5 (M_cov),
+1.8-2.6 (M_cov30), 1.2-1.5 (GRM), 1.6-1.9 (R_real), 1.04-1.18 (L/XL/XXL). Data l <= 1.6e-10, beta 6.3e-8, se 2.3e-8,
+boot <= 8.4e-7 (same draws); LA 1.7e-13. validate12 quick: PASS with 3 warnings inside base12's own floor (one exactly
+collinear SNP finite vs NA; near-perfect fit 8e-7; stress 1e-7, candidate closer to exact). Newton now starts from
+Profile values (robustness fix: an extreme case returned the grid point 3.8e-9 below the max in both builds).
+GEMM GFLOP/s one M5 core: Eigen 17-19, OpenBLAS 20-66, Accelerate 108-141, R reference BLAS 1.2 -> BLAS dispatch
+only for optimised BLAS (Linux opt-in; macOS Accelerate a separate decision). Rejected: in-place moment columns,
+residual derivatives on default kernels, unpivoted Cholesky, low-rank grid weights.
+Next: c2 = c1 (zz + schur) + p_prof2, merged by the numerical specialist.
+c1 = zz + p12_schur (bench/proto/r12/integ/pkg_c1, lib integ_c1): validate12 vs algorithm_zz --boot exact, all
+datasets: PASS (960 PASS, 0 WARN/FAIL); every output column identical on every dataset (bootstrap included).
+
+## Round 12.1e — memory specialist (bench/proto/r12/memory/REPORT.md)
+All prototypes identical() to base12. Lazy per-chunk rotation in fit_gene: 829 -> 336 MB on a 4000-SNP gene at
+N = 2000. Lean set-up .Call (pkg_exact, identical under any BLAS): XL_grm 0.76x, XXL 0.78x peak footprint.
+R side: dplyr/readr not loaded in step 2 (library 124 -> 88 MB; tree RSS -12..-22% at 2-8 cores), cheaper per-gene
+table. Combined memory_gene: XL_grm_many 0.54x, XL_grm 0.62x, M 0.95x footprint, wall 0.90-1.00x.
+CORRECTION to round 12.0: cat() is not 38% of P_many (64 ms / 1000 calls measured directly); Rprof attributed the
+next .Call's time to it.
+
+## Round 12.2 — integration c2 = c1 + p_prof2 (numerical specialist; bench/proto/r12/integ/pkg_c2, lib integ_c2)
+p_prof2 engine + c1's zz sparse path + bootstrap y-free moment reuse; c1's SchurCache folded into p_prof2's per-column
+GEMM grid (data grid stores its y-free part per grid point, bootstrap grid reuses it); c1's final-value skip superseded
+by p_prof2's best-Newton-call reuse. c2 identical() to numerical_comb on M_grm, L_grm, R_real.
+validate12 vs integ_c1 --ds quick --boot exact: PASS with 3 warnings (same as p_prof2 vs base12, inside base12's floor);
+data l <= 1.7e-10, beta 1.2e-7, boot 9.4e-7 (same draws).
+Kernel (interleaved, 3 reps; base12 / c1 / c2 s): S 0.097/0.074/0.070, M 0.233/0.149/0.136, M_grm 0.529/0.502/0.400,
+M_cov30 1.89/1.22/0.80, R_real (8 genes) 1.43/1.35/0.79, XL 0.97/0.25/0.23 -> base12/c2 1.32-4.19x, c1/c2 1.06-1.71x.
+e2e 1 core: S 0.69/0.55/0.55 s, M_grm 3.38/3.10/2.42 s; RSS unchanged.
+c2 full validation vs base12 (--ds all --boot dist): PASS with 4 known warnings (L KS seed 42 = zz, cleared by 3 seeds;
+collinear edge case: an exactly collinear SNP finite vs NA, as base12 under a 2e-15 perturbation of y; near-perfect fit
+7.95e-7 inside base12's own floor 4.4-7.6e-7; stress |c2 - base12| 1.06e-7 with c2 closer to the exact ML, shortfall
+1.42e-13 vs 1.71e-13). Reproducibility identical() for rerun / 2 / 4 cores on S, M_dense, M_grm, LA.
+
+## Round 12.3 — integration c3 = c2 + memory changes (memory specialist; pkg_c3, lib integ_c3)
+Lazy per-chunk rotation (LazyRotated, same chunks as rotate_all -> bit-identical; fit_gene and fit_models; dense and
+sparse U); explicit-kernel set-up: K H in R, then .Call(suez_contrast_eigen) running the eigen solver in place in U
+(LAPACK path dsyevr as eigen()), remaining products through R's own dgemv -> identical under any BLAS; Makevars
+PKG_LIBS $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS); R side: positional lookups, list-built per-gene table + bind_tables(),
+dplyr/readr by namespace (not loaded in step 2). validate12 vs integ_c2 --ds all --boot exact: PASS, 0 WARN/FAIL;
+identical() to c2 on all 41 cached outputs (28 datasets, null/none/permute, 2/4 cores).
+Peak footprint base12 / c2 / c3 (MB, 1 core, median of 3): M 190/208/197, R_real 380/380/321, XL_grm 641/646/444,
+XL_grm_many 642/644/460, XXL 1467/414/313. mem_gene.R (N = 2000): set-up 424/424/281, one 4000-SNP gene 809/828/371.
+BLOCKER found: tests/model_checks.R kernel x1e6 / x1e-6 invariance FAILS in numerical_comb, c2, c3 (max |dl| 1.2e-5;
+base12, zz, c1 pass with 8.6e-8) -> introduced by p_prof2; the validate12 suite did not cover it. Sent back to the
+numerical specialist for diagnosis and fix (c3b). Lesson: run tests/*.R on every integrated candidate, not only validate12.
+c3b (pkg_c3b, lib integ_c3b): regression cause = p_prof2's Newton start at -Inf instead of the grid value: a peak at
+the grid boundary (h = 0 or 1) cannot be reached by Newton (x capped at +-12), so at kernel x1e6 a gene with optimum
+h = 0 was fitted at delta = 1e-6 (l 3.7e-6..9.7e-6 below the exact ML on 8 of 48 rows; base12 exact to 4e-14).
+Fix (1 line): boundary grid points start from P(m, hb). tests/*.R all PASS (model_checks 17/17, kernel-scale |dl|
+8.6e-8 = base12); validate12 vs integ_c3 quick: PASS, 2 known warnings; cost <= 0.5%.
+Build portability: $(FLIBS) removed from PKG_LIBS (Makevars, Makevars.win): it broke source installs on a Mac without
+gfortran; LAPACK_LIBS / BLAS_LIBS are R's shared libraries carrying their own Fortran runtime. Plain R CMD INSTALL OK.
+Suite extended (reviewer): kscale12.R (kernel scale + exact boundary optima) and a `tests` part; integ_c3 and
+numerical_comb FAIL it, base12 and integ_c3b PASS. integ_c3b vs base12 full run: PASS with 3 known warnings, 0 FAIL
+(1118 checks).
+
+## Round 12.4 — c4 = c3b + opt-in threads (parallel specialist; pkg_c4, lib integ_c4)
+Default identical() to c3b; identical() at 1/2/4/8 threads (S, M_grm, LA, R_real, XL_grm, XXL); validate12 vs c3b
+PASS 0 WARN; tests PASS incl. a new thread-identity test. 1 process x 8 threads = 0.51-0.73x of 8 forks' speed at
+20-24% of their tree RAM (XL_grm 516 vs 2183 MB); no gain on M. Integrated as opt-in (memory saver); forks default.
+Large-N explicit-kernel walls barely moved (XL_grm 11.6 s vs 12.1 base12): set-up eigen + O(N^2 S) rotation on the
+reference BLAS remain -> round 13 target.
+
+## Round 12.5 — final serial benchmark and integration (coordinator)
+bench/round12_bench.sh 3 base12 integ_c4 (serial, quiet machine, order alternated per rep;
+bench/results/runs_r12_final.tsv, summary bench/results/r12_final_summary.tsv). Step 2, 1 core, wall base12 -> c4
+(speed-up [min-max of reps]; peak RSS): S 0.66 -> 0.48 s (1.38x; -7%), M 2.92 -> 1.74 (1.68x; -6%), L 7.81 -> 3.15
+(2.48x; -33%), XL 11.07 -> 2.23 (4.97x; -59%), XXL 30.56 -> 1.20 (25.4x; -78%), M_grm 1.40x, L_grm 1.36x (-19%),
+XL_grm 12.18 -> 10.11 (1.20x; -30%), XL_grm_many 1.12x (-23%), M_cov 2.05x, M_cov30 2.29x, M_fac3 2.19x (-18%),
+M_dense 1.64x (-27%), M_miss 1.26x, M_learn 1.19x, M_lc 1.22x, M_num 1.39x, M_eqtl 1.37x, M_unbal 1.68x,
+S_rare 1.37x, HS 1.38x, LA 1.39x, P_many 1.42x, P_many10 1.56x, R_real 55.97 -> 35.07 (1.60x; -15%).
+Multi-core: M 1.56-1.65x (tree RSS -17..-25%), M_dense 1.62-1.69x (-22..-34%), R_real 1.50-1.57x (-8..-16%),
+XL_grm 1.06-1.16x (-7..-23%). Step 1 (code unchanged): 0.95x / 0.98x (noise). Minimum per-rep speed-up > 1 on every
+step-2 row. Integrated pkg_c4 into src/, R/, tests/ (NAMESPACE, Makevars); repo install: tests/*.R 0 failures.
+Reviewer datasets (P_many10, R_real, XL_grm_many) are regenerated by bench/proto/r12/review/datasets12.R.
+Remaining large-N cost with explicit kernels (XL_grm): serial eigen-decomposition + O(N^2 S) rotation on the
+reference BLAS (BLAS dispatch / Accelerate measured 2-7x on those parts but platform-specific: not integrated).

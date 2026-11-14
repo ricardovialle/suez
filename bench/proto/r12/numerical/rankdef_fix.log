@@ -1,0 +1,2 @@
+baseline  max|dl| 2.8e-14  beta: max rel err 7.2e-16, NaN 0  se: max rel err 2.2e-16, NaN 0, zero 0
+candidate max|dl| 2.8e-14  beta: max rel err 3e-10, NaN 0  se: max rel err 3.5e-09, NaN 0, zero 0

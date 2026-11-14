@@ -1,0 +1,5 @@
+[1] TRUE
+[1] TRUE
+base12 vs base12: 1105 checks, INFO=145 PASS=960 (890 s) -> bench/proto/r12/review/results/v12_base12_vs_base12.tsv
+VERDICT: PASS 
+Rscript bench/proto/r12/review/validate12.R base12 --jobs 2  1255.87s user 23.92s system 143% cpu 14:50.09 total

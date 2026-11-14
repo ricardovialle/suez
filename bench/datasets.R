@@ -26,5 +26,10 @@ DATASETS = list(
   M_lc     = ds(n_ind = 200, n_gene = 150, snps_per_gene = 100, kernel = "lc"),
   HS       = ds(n_ind = 200, n_gene = 200, snps_per_gene = 50, effect = 1.0, kernel = "grm"),
   # local ancestry (2 ancestries)
-  LA       = ds(type = "la", n_ind = 150, n_gene = 100, snps_per_gene = 50)
+  LA       = ds(type = "la", n_ind = 150, n_gene = 100, snps_per_gene = 50),
+  # round 12: large N with a GRM kernel, very large N, many covariates, many small genes
+  XL_grm   = ds(n_ind = 1000, n_gene = 40, snps_per_gene = 200, kernel = "grm"),        # N = 2000
+  XXL      = ds(n_ind = 2000, n_gene = 16, snps_per_gene = 200),                        # N = 4000
+  M_cov30  = ds(n_ind = 200, n_gene = 100, snps_per_gene = 100, n_cov = 30),
+  P_many   = ds(n_ind = 100, n_gene = 3000, snps_per_gene = 10, gene_spacing = 3e4, cis_span = 1e4)
 )

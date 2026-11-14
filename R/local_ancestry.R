@@ -14,7 +14,6 @@
 #'   (`.`) or duplicated.
 #' @details Each file holds every individual and SNP of one chromosome (or chunk) as a dense matrix:
 #'   read one chromosome at a time for large cohorts.
-#' @importFrom readr read_tsv
 #' @export
 read_tractor = function(prefix, ancestry_names = NULL) {
   find = function(type) {
@@ -27,7 +26,7 @@ read_tractor = function(prefix, ancestry_names = NULL) {
     stop("expected one dosage and one hapcount file per ancestry (at least 2) for prefix ", prefix, call. = FALSE)
   rd = function(f) {   # CHROM POS ID REF ALT, then one column per individual
     n = length(strsplit(readLines(f, n = 1), "\t")[[1]])
-    read_tsv(f, col_types = paste0("cdccc", strrep("d", n - 5)), progress = FALSE)
+    readr::read_tsv(f, col_types = paste0("cdccc", strrep("d", n - 5)), progress = FALSE)
   }
   first = rd(fd[1])
   meta = first[, 1:5]; names(meta) = c("chr", "pos", "id", "ref", "alt")

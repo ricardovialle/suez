@@ -10,7 +10,7 @@ impl=$1; ds=$2; cores=$3; rep=$4; step=${5:-step2}
 mkdir -p bench/results/out
 out=bench/results/out/${impl}_${ds}_${step}_c${cores}_r${rep}.rds
 log=$(mktemp)
-OMP_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 OPENBLAS_NUM_THREADS=1 RCPP_PARALLEL_NUM_THREADS=$cores \
+OMP_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 FLEXIBLAS_NUM_THREADS=1 GOTO_NUM_THREADS=1 RCPP_PARALLEL_NUM_THREADS=$cores \
   bench/proto/review/memwatch.sh /usr/bin/time -l Rscript bench/run.R bench/lib/$impl $ds $cores $out $step > $log.out 2> $log
 r=$(grep '^RESULT' $log.out | cut -f2-)
 rss=$(awk '/maximum resident set size/ {print $1/1048576}' $log)

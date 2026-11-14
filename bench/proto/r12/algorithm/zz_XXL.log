@@ -1,0 +1,38 @@
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+XXL N=4000 genes=4 snps=1504
+setup  base 56.778 s  zz 0.0800 s  ratio 709.7
+fit    base 5.705 s  zz 0.737 s  speed-up 6.11x (median of 3, ratios 8.61 6.11 5.63)
+zz sparse vs base12:
+             l0          l_geno      l_interact              df            beta 
+       1.13e-10        1.14e-10        1.14e-10        0.00e+00        1.44e-14 
+             se     l_boot_geno l_boot_interact        rel_beta          rel_se 
+       3.26e-10        7.61e+00        7.82e+00        5.48e-11        1.14e-08 
+    na_mismatch 
+       0.00e+00 
+zz sparse vs zz-basis dense base engine:
+             l0          l_geno      l_interact              df            beta 
+       0.00e+00        4.55e-13        4.55e-13        0.00e+00        3.61e-16 
+             se     l_boot_geno l_boot_interact        rel_beta          rel_se 
+       3.71e-10        8.19e-12        7.96e-12        3.26e-13        7.63e-09 
+    na_mismatch 
+       0.00e+00 
+bootstrap LR_int KS p (base vs zz): 0.862  quantiles base: 0.457 2.6 6.39  zz: 0.466 2.76 5.96 
+      256.19 real       238.08 user         3.51 sys
+           982253568  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              421801  page reclaims
+                  31  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  22  voluntary context switches
+              371607  involuntary context switches
+       1667655673780  instructions retired
+        563599612290  cycles elapsed
+          1301857984  peak memory footprint

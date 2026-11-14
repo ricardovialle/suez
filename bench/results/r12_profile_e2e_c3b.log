@@ -1,0 +1,56 @@
+Warning message:
+M wall 2.776 
+                    total.time total.pct
+"system.time"            1.810    100.00
+"<Anonymous>"            1.800     99.45
+"do.call"                1.800     99.45
+"%dopar%"                1.775     98.07
+"e$fun"                  1.775     98.07
+"doTryCatch"             1.740     96.13
+"tryCatch"               1.740     96.13
+"tryCatchList"           1.740     96.13
+"tryCatchOne"            1.740     96.13
+"lapply"                 1.730     95.58
+"FUN"                    1.730     95.58
+Warning message:
+P_many10 wall 2.238 
+                      total.time total.pct
+"system.time"              2.035    100.00
+"<Anonymous>"              2.020     99.26
+"do.call"                  2.020     99.26
+"%dopar%"                  1.845     90.66
+"e$fun"                    1.845     90.66
+"doTryCatch"               1.820     89.43
+"tryCatchList"             1.820     89.43
+"tryCatch"                 1.820     89.43
+"tryCatchOne"              1.820     89.43
+"FUN"                      1.810     88.94
+"lapply"                   1.795     88.21
+Warning message:
+XL_grm_many wall 19.254 
+                        total.time total.pct
+"system.time"               10.345    100.00
+"<Anonymous>"               10.335     99.90
+"do.call"                   10.335     99.90
+"%dopar%"                    8.400     81.20
+"e$fun"                      8.400     81.20
+"lapply"                     8.370     80.91
+"doTryCatch"                 8.365     80.86
+"FUN"                        8.365     80.86
+"tryCatch"                   8.365     80.86
+"tryCatchList"               8.365     80.86
+"tryCatchOne"                8.365     80.86
+Warning message:
+R_real wall 17.143 
+                        total.time total.pct
+"system.time"                9.335    100.00
+"<Anonymous>"                9.320     99.84
+"do.call"                    9.320     99.84
+"%dopar%"                    9.145     97.96
+"e$fun"                      9.145     97.96
+"FUN"                        9.120     97.70
+"doTryCatch"                 9.120     97.70
+"tryCatch"                   9.120     97.70
+"tryCatchList"               9.120     97.70
+"tryCatchOne"                9.120     97.70
+"eval"                       9.115     97.64

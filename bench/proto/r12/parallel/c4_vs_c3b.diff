@@ -1,0 +1,356 @@
+diff --git a/pkg_c3b/src/lmm.cpp b/pkg_c4/src/lmm.cpp
+index 7ab2e81..c6eaa7c 100644
+--- a/pkg_c3b/src/lmm.cpp
++++ b/pkg_c4/src/lmm.cpp
+@@ -26,6 +26,11 @@
+ #include <vector>
+ #include <cstdint>
+ #include <cstring>
++#include <atomic>
++#include <exception>
++#include <memory>
++#include <mutex>
++#include <thread>
+ using Eigen::ArrayXd; using Eigen::MatrixXd; using Eigen::VectorXd; using Eigen::VectorXi;
+ static const double NEG_INF = -std::numeric_limits<double>::infinity();
+ static const double POS_INF = std::numeric_limits<double>::infinity();
+@@ -68,6 +73,22 @@ static const double SCHUR_PIVOT = 1e-10;
+ // blocks of 16..256 SNPs so the GEMMs stay wide.
+ static const double MOMENT_BYTES = 4 << 20;
+ 
++// f(task, worker) for tasks [0, n) on up to nt threads (options(suez.threads)), tasks handed out one at a time. A
++// task's result must not depend on the worker that runs it (per-worker scratch only), so outputs are identical at
++// any thread count. f must not call the R API (no Rcpp::stop, no RNG); exceptions are rethrown on this thread.
++template <class F> static void par_for(int n, int nt, F f) {
++  nt = std::max(1, std::min(nt, n));
++  if (nt == 1) { for (int t = 0; t < n; ++t) f(t, 0); return; }
++  std::atomic<int> next(0); std::exception_ptr err; std::mutex mu;
++  auto work = [&](int w) {
++    for (int t; (t = next++) < n;)
++      try { f(t, w); } catch (...) { std::lock_guard<std::mutex> g(mu); if (!err) err = std::current_exception(); next = n; }
++  };
++  std::vector<std::thread> th; for (int w = 1; w < nt; ++w) th.emplace_back(work, w);
++  work(0); for (auto& x : th) x.join();
++  if (err) std::rethrow_exception(err);
++}
++
+ static inline int pidx(int a, int b, int N) { if (a > b) std::swap(a, b); return a * N - a * (a - 1) / 2 + (b - a); }
+ 
+ // ---------------------------------------------------------------- eigenvalue groups
+@@ -612,8 +633,12 @@ static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const
+ // ---------------------------------------------------------------- rotation
+ // U'M with repeated rows of M (samples of one individual share a genotype; the interaction column is constant
+ // over the reference condition): M = Z Mu, U'M = (Z'U)' Mu; only the summation order changes.
+-static MatrixXd rotate(const Eigen::Map<MatrixXd>& U, const MatrixXd& M) {
+-  const int N = M.rows(), S = M.cols();
++// Threaded (nt > 1): the result's rows (contrasts) in chunks of ROT_ROWS. Eigen's GEMM gives bitwise the same rows
++// for any row partition in multiples of 24 (3 x the packet size of the NEON / AVX / AVX-512 kernels; bench/proto/r12/
++// parallel/gemm_bits.cpp), and UZ is summed per element in sample order, so the result equals the serial one.
++static const int ROT_ROWS = 240;
++static MatrixXd rotate(const Eigen::Map<MatrixXd>& U, const MatrixXd& M, int nt) {
++  const int N = M.rows(), S = M.cols(), n = U.cols(), nch = (n + ROT_ROWS - 1) / ROT_ROWS;
+   if (S == 0) return MatrixXd(U.cols(), 0);
+   // NaN breaks the sort's strict weak ordering (undefined behaviour; libstdc++ can read out of bounds)
+   if (!M.allFinite()) Rcpp::stop("non-finite genotype or term values (impute missing genotypes first)");
+@@ -624,10 +649,26 @@ static MatrixXd rotate(const Eigen::Map<MatrixXd>& U, const MatrixXd& M) {
+   std::sort(ord.begin(), ord.end(), less);
+   std::vector<int> cls(N); int nc = 0;
+   for (int i = 0; i < N; ++i) cls[ord[i]] = (i > 0 && !less(ord[i - 1], ord[i])) ? nc - 1 : nc++;
+-  if (nc > 0.75 * N) return U.transpose() * M;   // few repeats: plain product
+-  MatrixXd UZ = MatrixXd::Zero(U.cols(), nc), Mu(nc, S);
+-  for (int i = 0; i < N; ++i) { UZ.col(cls[i]) += U.row(i).transpose(); Mu.row(cls[i]) = M.row(i); }
+-  return UZ * Mu;
++  if (nc > 0.75 * N) {   // few repeats: plain product
++    if (nt <= 1) return U.transpose() * M;
++    MatrixXd R(n, S);
++    par_for(nch, nt, [&](int c, int) { const int r0 = c * ROT_ROWS, h = std::min(ROT_ROWS, n - r0);
++      R.middleRows(r0, h).noalias() = U.middleCols(r0, h).transpose() * M; });
++    return R;
++  }
++  MatrixXd Mu(nc, S);
++  for (int i = 0; i < N; ++i) Mu.row(cls[i]) = M.row(i);
++  if (nt <= 1) {
++    MatrixXd UZ = MatrixXd::Zero(U.cols(), nc);
++    for (int i = 0; i < N; ++i) UZ.col(cls[i]) += U.row(i).transpose();
++    return UZ * Mu;
++  }
++  MatrixXd UZ(n, nc), R(n, S);
++  par_for(nch, nt, [&](int c, int) { const int r0 = c * ROT_ROWS, h = std::min(ROT_ROWS, n - r0);
++    UZ.middleRows(r0, h).setZero();
++    for (int i = 0; i < N; ++i) UZ.col(cls[i]).segment(r0, h) += U.row(i).segment(r0, h).transpose();
++    R.middleRows(r0, h).noalias() = UZ.middleRows(r0, h) * Mu; });
++  return R;
+ }
+ 
+ // U'M for all columns at once, in fixed 256-column chunks (independent of the moment block size). Rotating inside
+@@ -639,14 +680,14 @@ static SpMap sp_map(SEXP L_) {
+   Rcpp::List L(L_); Rcpp::IntegerVector i = L["i"], p = L["p"], d = L["dim"]; Rcpp::NumericVector x = L["x"];
+   return SpMap(d[0], d[1], x.size(), p.begin(), i.begin(), x.begin());
+ }
+-static MatrixXd rotate_all(const SpMap& U, const MatrixXd& M) {
++static MatrixXd rotate_all(const SpMap& U, const MatrixXd& M, int = 1) {   // O(nnz S): not threaded
+   if (!M.allFinite()) Rcpp::stop("non-finite genotype or term values (impute missing genotypes first)");
+   return U.transpose() * M;
+ }
+-static MatrixXd rotate_all(const Eigen::Map<MatrixXd>& U, const MatrixXd& M) {
++static MatrixXd rotate_all(const Eigen::Map<MatrixXd>& U, const MatrixXd& M, int nt = 1) {
+   MatrixXd R(U.cols(), M.cols());
+   for (int c0 = 0; c0 < M.cols(); c0 += 256) {
+-    const int w = std::min(256, (int)M.cols() - c0); R.middleCols(c0, w) = rotate(U, M.middleCols(c0, w));
++    const int w = std::min(256, (int)M.cols() - c0); R.middleCols(c0, w) = rotate(U, M.middleCols(c0, w), nt);
+   }
+   return R;
+ }
+@@ -693,7 +734,7 @@ struct LazyRotated {
+ // ---------------------------------------------------------------- fit_gene (suez_fit_gene)
+ template <class UT>
+ static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
+-                           const Eigen::Map<MatrixXd>& G, const MatrixXd& C, bool boot) {
++                           const Eigen::Map<MatrixXd>& G, const MatrixXd& C, bool boot, int nt) {
+   const int S = G.cols(), q = C.cols(), p0 = UX0_.cols(), n = Uy_.size();
+   const ArrayXd lam = lam_.array();
+   const Spectrum sp(lam); const GridW gw(sp, lam); Profile PR(sp);
+@@ -713,11 +754,11 @@ static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy
+     std::vector<MatrixXd> R;
+     MatrixXd Gc = G.middleCols(c0, w);
+     for (int s = 0; s < w; ++s) standardize(Gc.col(s), gsd[c0 + s]);
+-    R.push_back(rotate_all(U, Gc)); Gc.resize(0, 0);
++    R.push_back(rotate_all(U, Gc, nt)); Gc.resize(0, 0);
+     for (int j = 0; j < q; ++j) {
+       MatrixXd Ic = G.middleCols(c0, w).array().colwise() * C.col(j).array();
+       for (int s = 0; s < w; ++s) { const int t = c0 + s; double sd; iok[j][t] = standardize(Ic.col(s), sd); if (!iok[j][t]) Ic.col(s).setZero(); else ++df[t]; }
+-      R.push_back(rotate_all(U, Ic));
++      R.push_back(rotate_all(U, Ic, nt));
+     }
+     return R;
+   };
+@@ -735,62 +776,89 @@ static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy
+   std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
+   const int k1 = 1 + q, nper = p0 * k1 + k1 * (k1 + 1) / 2 + k1 + p0 + 1;   // per-SNP pairs of the bootstrap block
+   const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.R() * nper))));
+-  for (int s0 = 0; s0 < S; s0 += SB) {
+-    const int sb = std::min(SB, S - s0);
+-    std::vector<MatrixXd> B;
+-    for (int j = 0; j <= q; ++j) B.push_back(sp.permute(lr.cols(j, s0, sb, S, load)));
+-    std::vector<Fit> f1(sb); SchurCache scache;
+-    Block bd(sp, UX0, MX0, B, Y1, sb);
+-    {
+-      std::vector<MatrixXd> VV = grid_values(bd, gw, xg, mdata, &scache, false);
++  // SNP blocks (the serial blocks, so identical results at any thread count) in waves of nt: rotation and the
++  // bootstrap normals on this thread in block order (R's RNG in SNP order, as suez 0.4), the data fits and the
++  // bootstrap refits of a wave's blocks in parallel. nt = 1: block by block, as before. Workers write only their own
++  // rows of `out` (plain memory, no R API).
++  const int nb = (S + SB - 1) / SB, wave = std::max(1, nt);
++  double* O = out.begin(); auto o = [&](int s, int j) -> double& { return O[s + (size_t)S * j]; };
++  std::vector<Profile> PRs(std::max(1, std::min(nt, nb)), PR);
++  struct Blk { int s0 = 0, sb = 0; std::vector<MatrixXd> B; std::unique_ptr<Block> bd; SchurCache scache; std::vector<Fit> f1; MatrixXd Yb; };
++  for (int b0 = 0; b0 < nb; b0 += wave) {
++    const int nw = std::min(wave, nb - b0);
++    std::vector<Blk> wv(nw);
++    for (int w = 0; w < nw; ++w) {
++      Blk& k = wv[w]; k.s0 = (b0 + w) * SB; k.sb = std::min(SB, S - k.s0); k.f1.resize(k.sb);
++      for (int j = 0; j <= q; ++j) k.B.push_back(sp.permute(lr.cols(j, k.s0, k.sb, S, load)));
++    }
++    par_for(nw, nt, [&](int w, int t) {
++      Blk& k = wv[w]; Profile& P = PRs[t]; const int s0 = k.s0, sb = k.sb;
++      k.bd.reset(new Block(sp, UX0, MX0, k.B, Y1, sb)); const Block& bd = *k.bd;
++      std::vector<MatrixXd> VV = grid_values(bd, gw, xg, mdata, &k.scache, false);
+       for (int sl = 0; sl < sb; ++sl) {
+-        const int s = s0 + sl; out(s, 2) = df[s];
+-        VectorXd v1 = VV[0].row(sl).transpose(); f1[sl] = refine(PR, make_model(bd, sl, cols1()), v1.data()); ok_nested(f1[sl], f0);
+-        if (!f1[sl].ok) continue;
+-        out(s, 0) = f1[sl].value;
+-        VectorXd be, se; wald(PR, be, se); out(s, 3) = be[p0] / gsd[s]; out(s, 4) = se[p0] / gsd[s];
++        const int s = s0 + sl; o(s, 2) = df[s];
++        VectorXd v1 = VV[0].row(sl).transpose(); k.f1[sl] = refine(P, make_model(bd, sl, cols1()), v1.data()); ok_nested(k.f1[sl], f0);
++        if (!k.f1[sl].ok) continue;
++        o(s, 0) = k.f1[sl].value;
++        VectorXd be, se; wald(P, be, se); o(s, 3) = be[p0] / gsd[s]; o(s, 4) = se[p0] / gsd[s];
+         if (df[s] > 0) {
+-          VectorXd v2 = VV[1].row(sl).transpose(); Fit f2 = refine(PR, make_model(bd, sl, cols2(s)), v2.data()); ok_nested(f2, f1[sl]);
+-          if (f2.ok) out(s, 1) = f2.value;
++          VectorXd v2 = VV[1].row(sl).transpose(); Fit f2 = refine(P, make_model(bd, sl, cols2(s)), v2.data()); ok_nested(f2, k.f1[sl]);
++          if (f2.ok) o(s, 1) = f2.value;
+         }
+       }
+-    }
++    });
+     if (!boot) continue;
+     // bootstrap: one y per SNP, drawn in SNP order and in the original contrast order (as suez 0.4)
+-    MatrixXd Yb = MatrixXd::Zero(n, sb);
+-    for (int sl = 0; sl < sb; ++sl) {
+-      const Fit& f = f1[sl]; if (!f.ok) continue;
+-      for (int i = 0; i < n; ++i) Yb(pos[i], sl) = std::sqrt(f.s2k * lam[i] + f.s2) * R::norm_rand();
+-      Yb.col(sl) += UX0 * f.b.head(p0) + B[0].col(sl) * f.b[p0];
+-    }
+-    Block bb(sp, UX0, MX0, B, Yb, sb, &bd);
+-    std::vector<MatrixXd> WW = grid_values(bb, gw, xg, mboot, &scache, true);
+-    for (int sl = 0; sl < sb; ++sl) {
+-      const int s = s0 + sl; if (!f1[sl].ok) continue;
+-      VectorXd v = WW[0].row(sl).transpose(); Fit g0 = refine(PR, make_model(bb, sl, c0), v.data());
+-      if (!g0.ok) continue;
+-      v = WW[1].row(sl).transpose(); Fit g1 = refine(PR, make_model(bb, sl, cols1()), v.data()); ok_nested(g1, g0);
+-      if (!g1.ok) continue;
+-      out(s, 5) = g1.value;
+-      if (df[s] > 0) {
+-        v = WW[2].row(sl).transpose(); Fit g2 = refine(PR, make_model(bb, sl, cols2(s)), v.data()); ok_nested(g2, g1);
+-        if (g2.ok) out(s, 6) = g2.value;
++    for (Blk& k : wv) {
++      k.Yb = MatrixXd::Zero(n, k.sb);
++      for (int sl = 0; sl < k.sb; ++sl) {
++        const Fit& f = k.f1[sl]; if (!f.ok) continue;
++        for (int i = 0; i < n; ++i) k.Yb(pos[i], sl) = std::sqrt(f.s2k * lam[i] + f.s2) * R::norm_rand();
++        k.Yb.col(sl) += UX0 * f.b.head(p0) + k.B[0].col(sl) * f.b[p0];
+       }
+     }
++    par_for(nw, nt, [&](int w, int t) {
++      Blk& k = wv[w]; Profile& P = PRs[t]; const int s0 = k.s0, sb = k.sb;
++      Block bb(sp, UX0, MX0, k.B, k.Yb, sb, k.bd.get());
++      std::vector<MatrixXd> WW = grid_values(bb, gw, xg, mboot, &k.scache, true);
++      for (int sl = 0; sl < sb; ++sl) {
++        const int s = s0 + sl; if (!k.f1[sl].ok) continue;
++        VectorXd v = WW[0].row(sl).transpose(); Fit g0 = refine(P, make_model(bb, sl, c0), v.data());
++        if (!g0.ok) continue;
++        v = WW[1].row(sl).transpose(); Fit g1 = refine(P, make_model(bb, sl, cols1()), v.data()); ok_nested(g1, g0);
++        if (!g1.ok) continue;
++        o(s, 5) = g1.value;
++        if (df[s] > 0) {
++          v = WW[2].row(sl).transpose(); Fit g2 = refine(P, make_model(bb, sl, cols2(s)), v.data()); ok_nested(g2, g1);
++          if (g2.ok) o(s, 6) = g2.value;
++        }
++      }
++    });
+   }
+   return Rcpp::List::create(Rcpp::Named("l0") = f0.value, Rcpp::Named("res") = out);
+ }
+ 
+-extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot) {
+-  BEGIN_RCPP
++static SEXP fit_gene_call(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, int nt) {
+   const Rcpp::NumericMatrix Gd(G);   // not copied when G is double (map_interaction_qtl); integer G is converted
+   const Eigen::Map<MatrixXd> Gm(const_cast<double*>(Gd.begin()), Gd.nrow(), Gd.ncol());
+   if (TYPEOF(U) == VECSXP)
+     return fit_gene(sp_map(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
+-                    Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot));
++                    Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt);
+   return fit_gene(Rcpp::as<Eigen::Map<MatrixXd>>(U),   // U (N x N-1) used in place, not copied per gene
+                   Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
+-                  Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot));
++                  Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt);
++}
++
++extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot) {
++  BEGIN_RCPP
++  return fit_gene_call(U, lambda, Uy, UX0, G, C, boot, 1);
++  END_RCPP
++}
++
++// As suez_fit_gene on `threads` threads (options(suez.threads)): identical results at any thread count.
++extern "C" SEXP suez_fit_gene_threads(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, SEXP threads) {
++  BEGIN_RCPP
++  return fit_gene_call(U, lambda, Uy, UX0, G, C, boot, std::max(1, Rcpp::as<int>(threads)));
+   END_RCPP
+ }
+ 
+diff --git a/pkg_c3b/src/init.cpp b/pkg_c4/src/init.cpp
+index 806d9a8..0a46d9c 100644
+--- a/pkg_c3b/src/init.cpp
++++ b/pkg_c4/src/init.cpp
+@@ -9,6 +9,7 @@
+ 
+ 
+ extern "C" SEXP suez_fit_gene(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
++extern "C" SEXP suez_fit_gene_threads(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_fit_models(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_eigen_sym(SEXP);
+ extern "C" SEXP suez_sp_crossprod(SEXP, SEXP);
+@@ -16,6 +17,7 @@ extern "C" SEXP suez_contrast_eigen(SEXP, SEXP, SEXP, SEXP);
+ 
+ static const R_CallMethodDef CallEntries[] = {
+   {"suez_fit_gene", (DL_FUNC) &suez_fit_gene, 7},
++  {"suez_fit_gene_threads", (DL_FUNC) &suez_fit_gene_threads, 8},
+   {"suez_fit_models", (DL_FUNC) &suez_fit_models, 8},
+   {"suez_eigen_sym", (DL_FUNC) &suez_eigen_sym, 1},
+   {"suez_sp_crossprod", (DL_FUNC) &suez_sp_crossprod, 2},
+diff --git a/pkg_c3b/R/lmm.R b/pkg_c4/R/lmm.R
+index 559bf0b..c55a6e4 100644
+--- a/pkg_c3b/R/lmm.R
++++ b/pkg_c4/R/lmm.R
+@@ -137,3 +137,13 @@ zz_contrast_basis = function(individual) {
+ 
+ # U'M for a dense U or the sparse structured basis
+ crossprod_U = function(U, M) if (is.list(U)) .Call(suez_sp_crossprod, U, as.matrix(M)) else crossprod(U, M)
++
++# C++ threads per gene fit (per doMC worker): options(suez.threads = n), or the environment variable SUEZ_THREADS;
++# default 1. Results are identical() at any thread count (SNP blocks are the parallel tasks; bootstrap normals are
++# drawn on the R thread in the same order). Useful for few genes at large N, or to use cores with less RAM than
++# forked workers (e.g. registerDoMC(2) with options(suez.threads = 4)).
++suez_threads = function() {
++  t = suppressWarnings(as.integer(getOption("suez.threads", Sys.getenv("SUEZ_THREADS", "1"))))
++  if (length(t) != 1 || is.na(t) || t < 1) stop("options(suez.threads) must be a positive integer.", call. = FALSE)
++  t
++}
+diff --git a/pkg_c3b/R/map_interaction_qtl.R b/pkg_c4/R/map_interaction_qtl.R
+index f656dee..26a64b5 100644
+--- a/pkg_c3b/R/map_interaction_qtl.R
++++ b/pkg_c4/R/map_interaction_qtl.R
+@@ -112,6 +112,12 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
+ #' semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
+ #' default kernel with condition fitting every within-individual contrast).
+ #'
++#' Parallelism: genes run on the registered doMC workers (forked processes). `options(suez.threads = n)`
++#' (or the environment variable SUEZ_THREADS) also fits each gene's SNP blocks on n threads (default 1;
++#' local-ancestry mode is not threaded). Results are identical at any thread count. Threads help when there are
++#' few genes or N is large (e.g. a GRM kernel with N >= 1000), and use much less memory than the same number of
++#' forked workers; total CPUs used = workers x threads.
++#'
+ #' @section Local-ancestry models:
+ #' With `local_ancestry` (k ancestries), each SNP is fitted with the models of Tractor (Atkinson et al.
+ #' 2021) inside the suez mixed model: LA = haplotype counts of the first k - 1 ancestries, G_a = ALT
+@@ -217,6 +223,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
+   k_anc = if (la_mode) length(local_ancestry$dosage) else 1
+   check_identifiable(eig, X0, need = 1 + if (within) (2 * k_anc - 1) * df_interact else 0)
+ 
++  threads = suez_threads()
+   errorhandling=if (debug) 'stop' else 'remove'
+ 
+   if (!debug) {
+@@ -294,7 +301,8 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
+     Uy = drop(crossprod_U(U, as.numeric(input[g_row[j],])))
+ 
+     if (debug) cat("Fitting", ncol(G), "SNPs...\n")
+-    fit = .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot")   # src/lmm.cpp
++    fit = if (threads > 1) .Call(suez_fit_gene_threads, U, lambda, Uy, UX0, G, C, permutation_approach=="boot", threads)
++      else .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot")   # src/lmm.cpp
+     m = fit$res
+     # columns as a list (data.frame() + 8 `$<-` cost ~0.5 ms per gene)
+     S = nrow(m)
+diff --git a/pkg_c3b/tests/model_checks.R b/pkg_c4/tests/model_checks.R
+index b6b75d0..bee1ee0 100644
+--- a/pkg_c3b/tests/model_checks.R
++++ b/pkg_c4/tests/model_checks.R
+@@ -176,5 +176,24 @@ check("non-finite genotypes refused (no sort on NaN)", grepl("non-finite", errms
+       e1$vectors, e1$values, drop(crossprod(e1$vectors, rnorm(N))), crossprod(e1$vectors, matrix(1, N, 1)),
+       G1, matrix(0, N, 0), FALSE))))
+ 
++# options(suez.threads): identical results at any thread count, on a dense GRM basis (several SNP blocks and
++# 240-row rotation chunks) and the default kernel's sparse basis, with the bootstrap
++set.seed(11)
++nt_ind = sprintf("J%03d", 1:300); nt_s = rep(nt_ind, each = 2); n2 = length(nt_s)
++Zt = scale(matrix(rbinom(300 * 500, 2, 0.3), 300)); Kt = (tcrossprod(Zt) / ncol(Zt))[rep(1:300, each = 2), rep(1:300, each = 2)]
++Gt = matrix(rbinom(300 * 300, 2, 0.3), 300, 300, dimnames = list(paste0("t", 1:300), nt_ind))
++slt = data.frame(snpid = rownames(Gt), chr = "1", pos = 1:300)
++glt = data.frame(geneid = "tg", chr = "1", left = 100, right = 101)
++at = data.frame(individual = nt_s, condition = rep(c(0, 1), 300))
++Yt = matrix(rnorm(n2) + 0.3 * Gt[1, nt_s], 1, dimnames = list("tg", paste0("u", 1:n2)))
++thr_run = function(nt, K) { op = options(suez.threads = nt); on.exit(options(op)); set.seed(3)
++  map_interaction_qtl(Yt, Gt, glt, slt, at, sample_kernel = K, permutation_approach = "boot", cisdist = 1000) }
++for (K in list(Kt, NULL)) {
++  r1 = thr_run(1, K)
++  same = sapply(c(2, 4, 8), function(nt) identical(thr_run(nt, K), r1))
++  check(sprintf("identical results at 1/2/4/8 threads (%s kernel, %d SNPs)", if (is.null(K)) "default" else "GRM",
++                nrow(r1)), all(same) && nrow(r1) == 300 && !anyNA(r1$l_boot_geno))
++}
++
+ cat(fails, "failure(s)\n")
+ if (fails > 0) stop(fails, " check(s) failed")

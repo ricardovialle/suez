@@ -1,0 +1,14 @@
+1	grm	1000	eigen=0.46	dsyevd=0.07	dsyevr=0.10	dval=5.1e-13	dproj1=3.7e-13
+1	default	1000	eigen=0.38	dsyevd=0.05	dsyevr=0.21	dval=7.1e-14	dproj1=NA
+1	grm	2000	eigen=5.12	dsyevd=0.73	dsyevr=1.04	dval=1.3e-12	dproj1=7.1e-15
+1	default	2000	eigen=4.27	dsyevd=0.72	dsyevr=1.50	dval=1.2e-13	dproj1=NA
+1	grm	4000	eigen=NA	dsyevd=14.00	dsyevr=12.44	dval=NA	dproj1=NA
+1	default	4000	eigen=NA	dsyevd=8.45	dsyevr=15.20	dval=NA	dproj1=NA
+4	grm	2000	eigen=7.02	dsyevd=1.20	dsyevr=1.44	dval=1.3e-12	dproj1=5.3e-16
+4	default	2000	eigen=5.77	dsyevd=1.24	dsyevr=2.39	dval=1.2e-13	dproj1=NA
+4	grm	4000	eigen=NA	dsyevd=13.10	dsyevr=15.27	dval=NA	dproj1=NA
+4	default	4000	eigen=NA	dsyevd=11.83	dsyevr=16.00	dval=NA	dproj1=NA
+10	grm	2000	eigen=10.02	dsyevd=1.89	dsyevr=1.85	dval=1.3e-12	dproj1=5.3e-16
+10	default	2000	eigen=8.45	dsyevd=1.69	dsyevr=2.69	dval=1.2e-13	dproj1=NA
+10	grm	4000	eigen=NA	dsyevd=7.40	dsyevr=9.89	dval=NA	dproj1=NA
+10	default	4000	eigen=NA	dsyevd=8.34	dsyevr=14.16	dval=NA	dproj1=NA

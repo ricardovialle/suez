@@ -1,0 +1,8 @@
+integ_c3b vs integ_c3: 624 checks, INFO=80 PASS=542 WARN=2 (157 s) -> bench/proto/r12/review/results/v12_integ_c3b_vs_integ_c3.tsv
+   part                 dataset                                    check     value                    threshold status
+   edge        near_perfect_fit                         edge case report 7.854e-07 l 1e-9 (WARN 1e-6), rel 1e-6   WARN
+ stress random 3-block spectrum fits below the exact ML by > 1e-6 (cand)         0   <= ref; |cand-ref| <= 1e-9   WARN
+                                                                                                                                                             detail
+ max_dl 7.85e-07 boot 5.04e-07 rel_beta 2.55e-16 rel_se 6.29e-13 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+                                                        150 cases; ref misses 0; max shortfall ref 1.42e-13 cand 1.42e-13; max |cand-ref| 1.06e-07; NA mismatches 0
+VERDICT: PASS with warnings 

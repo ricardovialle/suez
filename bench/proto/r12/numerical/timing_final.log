@@ -1,0 +1,14 @@
+Warning message:
+S        N=200 snps=3975  base 0.278 s; mode 0: 0.239 s ratio 1.17 (dl 1.6e-11, dl_boot 3.3e-07, NAmis 0); mode 2: 0.202 s ratio 1.21 (dl 1.6e-11, dl_boot 3.3e-07, NAmis 0); 
+M        N=400 snps=5980  base 0.793 s; mode 0: 0.662 s ratio 1.20 (dl 2.3e-13, dl_boot 3.1e-07, NAmis 0); mode 2: 0.841 s ratio 1.24 (dl 2.3e-13, dl_boot 3.1e-07, NAmis 0); 
+M_grm    N=400 snps=5980  base 1.723 s; mode 0: 1.205 s ratio 1.43 (dl 6.2e-12, dl_boot 5.9e-07, NAmis 0); mode 2: 0.956 s ratio 1.80 (dl 6.2e-12, dl_boot 5.9e-07, NAmis 0); 
+M_cov30  N=400 snps=3970  base 4.664 s; mode 0: 2.498 s ratio 1.79 (dl 6.8e-12, dl_boot 2.7e-07, NAmis 0); mode 2: 2.364 s ratio 1.90 (dl 6.8e-12, dl_boot 2.7e-07, NAmis 0); 
+M_cov    N=400 snps=5980  base 1.672 s; mode 0: 1.154 s ratio 1.48 (dl 3.2e-12, dl_boot 2.2e-07, NAmis 0); mode 2: 1.076 s ratio 1.55 (dl 3.2e-12, dl_boot 2.2e-07, NAmis 0); 
+M_fac3   N=600 snps=3970  base 0.864 s; mode 0: 0.700 s ratio 1.23 (dl 4.0e-13, dl_boot 2.6e-07, NAmis 0); mode 2: 0.575 s ratio 1.50 (dl 4.0e-13, dl_boot 2.6e-07, NAmis 0); 
+M_eqtl   N=200 snps=5980  base 0.395 s; mode 0: 0.285 s ratio 1.39 (dl 4.8e-12, dl_boot 2.7e-07, NAmis 0); mode 2: 0.235 s ratio 1.82 (dl 4.8e-12, dl_boot 2.7e-07, NAmis 0); 
+P_many   N=200 snps=20615  base 1.455 s; mode 0: 1.279 s ratio 1.09 (dl 1.9e-11, dl_boot 3.8e-07, NAmis 0); mode 2: 1.182 s ratio 1.06 (dl 1.9e-11, dl_boot 3.8e-07, NAmis 0); 
+L_grm    N=1000 snps=4712  base 3.230 s; mode 0: 3.122 s ratio 1.19 (dl 2.4e-12, dl_boot 8.4e-07, NAmis 0); mode 2: 2.021 s ratio 1.78 (dl 2.4e-12, dl_boot 8.4e-07, NAmis 0); 
+L        N=1000 snps=5915  base 2.325 s; mode 0: 1.945 s ratio 1.14 (dl 6.8e-13, dl_boot 5.9e-07, NAmis 0); mode 2: 1.303 s ratio 1.78 (dl 6.3e-13, dl_boot 5.9e-07, NAmis 0); 
+XL_grm   N=2000 snps=2306  base 4.527 s; mode 0: 3.119 s ratio 1.32 (dl 3.4e-12, dl_boot 5.6e-07, NAmis 0); mode 2: 2.306 s ratio 2.21 (dl 3.4e-12, dl_boot 5.6e-07, NAmis 0); 
+XL       N=2000 snps=3108  base 2.918 s; mode 0: 2.516 s ratio 1.12 (dl 1.4e-12, dl_boot 2.1e-07, NAmis 0); mode 2: 1.490 s ratio 1.87 (dl 1.4e-12, dl_boot 2.1e-07, NAmis 0); 
+XXL      N=4000 snps=1504  base 6.832 s; mode 0: 5.236 s ratio 1.10 (dl 3.2e-12, dl_boot 8.2e-12, NAmis 0); mode 2: 2.848 s ratio 2.40 (dl 3.2e-12, dl_boot 8.2e-12, NAmis 0); 

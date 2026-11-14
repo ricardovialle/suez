@@ -1,0 +1,18 @@
+S vs base12: integ_c1_S.rds: identical FALSE; dl0 4.8e-13 dl_geno 5.3e-13 dl_int 5.1e-13 ddf 0 dbeta/max(|b|,se) 1.6e-14 rel_se 1.2e-08 dl_boot 1.3e+01/1.1e+01 NAmis 0
+S vs base12: integ_c2_S.rds: identical FALSE; dl0 1.1e-11 dl_geno 1.6e-11 dl_int 1.6e-11 ddf 0 dbeta/max(|b|,se) 1.6e-14 rel_se 1.3e-08 dl_boot 1.3e+01/1.1e+01 NAmis 0
+S c2 vs c1: integ_c2_S.rds: identical FALSE; dl0 1.1e-11 dl_geno 1.6e-11 dl_int 1.6e-11 ddf 0 dbeta/max(|b|,se) 2.0e-15 rel_se 1.3e-08 dl_boot 2.6e-07/2.2e-07 NAmis 0
+M vs base12: integ_c1_M.rds: identical FALSE; dl0 1.6e-12 dl_geno 1.7e-12 dl_int 1.7e-12 ddf 0 dbeta/max(|b|,se) 3.5e-14 rel_se 1.2e-08 dl_boot 9.2e+00/1.0e+01 NAmis 0
+M vs base12: integ_c2_M.rds: identical FALSE; dl0 1.6e-12 dl_geno 1.6e-12 dl_int 1.6e-12 ddf 0 dbeta/max(|b|,se) 3.4e-14 rel_se 1.2e-08 dl_boot 9.2e+00/1.0e+01 NAmis 0
+M c2 vs c1: integ_c2_M.rds: identical FALSE; dl0 1.1e-13 dl_geno 1.7e-13 dl_int 2.0e-13 ddf 0 dbeta/max(|b|,se) 3.5e-15 rel_se 1.1e-08 dl_boot 3.0e-07/2.9e-07 NAmis 0
+M_grm vs base12: integ_c1_M_grm.rds: identical TRUE; dl0 0.0e+00 dl_geno 0.0e+00 dl_int 0.0e+00 ddf 0 dbeta/max(|b|,se) 0.0e+00 rel_se 0.0e+00 dl_boot 0.0e+00/0.0e+00 NAmis 0
+M_grm vs base12: integ_c2_M_grm.rds: identical FALSE; dl0 2.0e-13 dl_geno 6.2e-12 dl_int 6.1e-12 ddf 0 dbeta/max(|b|,se) 2.5e-08 rel_se 2.1e-08 dl_boot 5.9e-07/5.9e-07 NAmis 0
+M_grm c2 vs c1: integ_c2_M_grm.rds: identical FALSE; dl0 2.0e-13 dl_geno 6.2e-12 dl_int 6.1e-12 ddf 0 dbeta/max(|b|,se) 2.5e-08 rel_se 2.1e-08 dl_boot 5.9e-07/5.9e-07 NAmis 0
+M_cov30 vs base12: integ_c1_M_cov30.rds: identical FALSE; dl0 1.7e-12 dl_geno 1.8e-12 dl_int 1.8e-12 ddf 0 dbeta/max(|b|,se) 1.6e-08 rel_se 1.3e-08 dl_boot 2.3e+01/2.2e+01 NAmis 0
+M_cov30 vs base12: integ_c2_M_cov30.rds: identical FALSE; dl0 1.7e-12 dl_geno 5.5e-12 dl_int 5.5e-12 ddf 0 dbeta/max(|b|,se) 1.4e-08 rel_se 1.3e-08 dl_boot 2.3e+01/2.2e+01 NAmis 0
+M_cov30 c2 vs c1: integ_c2_M_cov30.rds: identical FALSE; dl0 2.8e-13 dl_geno 6.7e-12 dl_int 6.7e-12 ddf 0 dbeta/max(|b|,se) 1.6e-08 rel_se 1.3e-08 dl_boot 3.1e-07/3.0e-07 NAmis 0
+R_real vs base12: integ_c1_R_real.rds: identical TRUE; dl0 0.0e+00 dl_geno 0.0e+00 dl_int 0.0e+00 ddf 0 dbeta/max(|b|,se) 0.0e+00 rel_se 0.0e+00 dl_boot 0.0e+00/0.0e+00 NAmis 0
+R_real vs base12: integ_c2_R_real.rds: identical FALSE; dl0 2.8e-13 dl_geno 9.1e-13 dl_int 9.1e-13 ddf 0 dbeta/max(|b|,se) 5.4e-08 rel_se 2.3e-08 dl_boot 6.0e-07/6.0e-07 NAmis 0
+R_real c2 vs c1: integ_c2_R_real.rds: identical FALSE; dl0 2.8e-13 dl_geno 9.1e-13 dl_int 9.1e-13 ddf 0 dbeta/max(|b|,se) 5.4e-08 rel_se 2.3e-08 dl_boot 6.0e-07/6.0e-07 NAmis 0
+XL vs base12: integ_c1_XL.rds: identical FALSE; dl0 2.8e-11 dl_geno 2.8e-11 dl_int 2.8e-11 ddf 0 dbeta/max(|b|,se) 1.8e-13 rel_se 1.1e-08 dl_boot 7.7e+00/9.2e+00 NAmis 0
+XL vs base12: integ_c2_XL.rds: identical FALSE; dl0 2.8e-11 dl_geno 2.8e-11 dl_int 2.8e-11 ddf 0 dbeta/max(|b|,se) 1.8e-13 rel_se 1.1e-08 dl_boot 7.7e+00/9.2e+00 NAmis 0
+XL c2 vs c1: integ_c2_XL.rds: identical FALSE; dl0 1.8e-12 dl_geno 2.0e-12 dl_int 2.2e-12 ddf 0 dbeta/max(|b|,se) 1.2e-14 rel_se 1.0e-08 dl_boot 1.6e-09/1.6e-09 NAmis 0

@@ -1,0 +1,37 @@
+cand	ref	part	dataset	check	value	threshold	status	detail
+numerical_comb	base12	edge	default_kernel_balanced	edge case exact	1.08e-12	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.08e-12 boot 3.46e-08 rel_beta 1.74e-15 rel_se 6.24e-09 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	default_kernel_unbalanced	edge case exact	5.684e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 5.68e-14 boot 2.89e-08 rel_beta 9.95e-09 rel_se 1.71e-08 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	grm_numeric_cond_h0_to_1	edge case exact	2.046e-12	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 2.05e-12 boot 9.25e-09 rel_beta 4.87e-09 rel_se 1.45e-08 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	wide_spectrum_kernel_x1	edge case exact	1.137e-13	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.14e-13 boot 4.13e-08 rel_beta 1.03e-08 rel_se 1.1e-08 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	wide_spectrum_kernel_x1e+06	edge case exact	1.705e-13	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.71e-13 boot 1.84e-07 rel_beta 3.22e-08 rel_se 3.1e-08 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	wide_spectrum_kernel_x1e-06	edge case exact	4.547e-13	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.55e-13 boot 6.42e-08 rel_beta 2.37e-08 rel_se 1.54e-08 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	bimodal_likelihood	edge case exact	8.527e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 8.53e-14 boot 3.29e-08 rel_beta 1.39e-08 rel_se 8.52e-09 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	flat_likelihood_identity_kernel	edge case exact	4.263e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.26e-14 boot 9.95e-14 rel_beta 1.75e-15 rel_se 5.59e-16 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	rare_snps_factor3_mixed_df	edge case exact	4.263e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.26e-14 boot 9.32e-08 rel_beta 8.87e-09 rel_se 5.71e-09 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	rare_snps_factor2	edge case exact	1.862e-12	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.86e-12 boot 9.11e-09 rel_beta 2.44e-09 rel_se 1.14e-09 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	collinear_interaction_and_snps	edge case report	6.153e-12	l 1e-9 (WARN 1e-6), rel 1e-6	WARN	max_dl 6.15e-12 boot 1.23e-08 rel_beta 5.13e-11 rel_se 6.89e-12 df TRUE na/inf mismatches 2 (report-only case: rank-deficient / near-perfect, list any difference)
+numerical_comb	base12	edge	eqtl_only_p0_0	edge case exact	6.111e-12	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 6.11e-12 boot 7.19e-12 rel_beta 7.5e-13 rel_se 4.99e-14 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	duplicated_covariate	edge case report	7.816e-13	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 7.82e-13 boot 6.55e-08 rel_beta 1.5e-09 rel_se 7.41e-09 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+numerical_comb	base12	edge	raw_scale_covariate	edge case exact	4.15e-12	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.15e-12 boot 1.14e-08 rel_beta 2.85e-11 rel_se 1.66e-09 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	near_perfect_fit	edge case report	7.954e-07	l 1e-9 (WARN 1e-6), rel 1e-6	WARN	max_dl 7.95e-07 boot 2.18e-06 rel_beta 1.98e-15 rel_se 3.5e-08 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+numerical_comb	base12	edge	n_snps_1	edge case exact	1.197e-11	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.2e-11 boot 1.1e-11 rel_beta 1.55e-12 rel_se 1.19e-13 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	n_snps_2	edge case exact	2.842e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 2.84e-14 boot 5.07e-12 rel_beta 1.96e-12 rel_se 9.42e-13 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	n_snps_7	edge case exact	1.421e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.42e-14 boot 2.26e-11 rel_beta 1.1e-10 rel_se 4.13e-12 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	n_snps_64	edge case exact	4.263e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.26e-14 boot 1.32e-08 rel_beta 1.05e-08 rel_se 3.17e-09 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	n_snps_65	edge case exact	4.263e-14	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.26e-14 boot 1.97e-09 rel_beta 2e-09 rel_se 3.64e-10 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	n_snps_257	edge case exact	6.665e-12	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 6.66e-12 boot 9.96e-08 rel_beta 4.29e-08 rel_se 4.26e-10 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	small_odd_n31	edge case exact	4.707e-13	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 4.71e-13 boot 1.68e-10 rel_beta 3.1e-10 rel_se 6.68e-11 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	no_bootstrap	edge case exact	1.08e-12	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 1.08e-12 boot 0 rel_beta 1.74e-15 rel_se 6.24e-09 df TRUE na/inf mismatches 0
+numerical_comb	base12	edge	kernel_scale f=1	max |l - exact ML| (l0, l_geno, l_interact)	1.165e-11	1e-9 or <= ref + 1e-9 (WARN to 1e-6)	PASS	ref 4.41e-13; cand min/max l - exact -1.17e-11/1.28e-13; 144 fits; NA mismatches 0
+numerical_comb	base12	edge	kernel_scale f=1e+06	max |l - exact ML| (l0, l_geno, l_interact)	1.164e-05	1e-9	FAIL	ref 1.48e-12; cand min/max l - exact -1.16e-05/5.54e-13; 144 fits; NA mismatches 0
+numerical_comb	base12	edge	kernel_scale f=1e-06	max |l - exact ML| (l0, l_geno, l_interact)	8.996e-08	1e-9 or <= ref + 1e-9 (WARN to 1e-6)	PASS	ref 9e-08; cand min/max l - exact -9e-08/2.98e-13; 144 fits; NA mismatches 0
+numerical_comb	base12	edge	boundary_h0 f=1	max |l - exact ML| (l0, l_geno, l_interact)	3.908e-11	1e-9	PASS	ref 1.56e-13; cand min/max l - exact -3.91e-11/-2.95e-11; 72 fits; NA mismatches 0
+numerical_comb	base12	edge	boundary_h0 f=1000	max |l - exact ML| (l0, l_geno, l_interact)	3.908e-08	1e-9	FAIL	ref 9.95e-14; cand min/max l - exact -3.91e-08/-2.95e-08; 72 fits; NA mismatches 0
+numerical_comb	base12	edge	boundary_h0 f=1e+06	max |l - exact ML| (l0, l_geno, l_interact)	3.908e-05	1e-9	FAIL	ref 8.53e-14; cand min/max l - exact -3.91e-05/-2.95e-05; 72 fits; NA mismatches 0
+numerical_comb	base12	edge	boundary_h1 f=1	max |l - exact ML| (l0, l_geno, l_interact)	9.933e-12	1e-9	PASS	ref 2.16e-12; cand min/max l - exact -9.93e-12/-7.53e-12; 36 fits; NA mismatches 0
+numerical_comb	base12	edge	boundary_h1 f=1000	max |l - exact ML| (l0, l_geno, l_interact)	2.359e-12	1e-9	PASS	ref 2.42e-12; cand min/max l - exact -2.36e-12/-1.55e-12; 36 fits; NA mismatches 0
+numerical_comb	base12	edge	boundary_h1 f=1e+06	max |l - exact ML| (l0, l_geno, l_interact)	2.878e-12	1e-9	PASS	ref 2.83e-12; cand min/max l - exact -2.88e-12/-1.85e-12; 36 fits; NA mismatches 0
+numerical_comb	base12	edge	kernel_scale	max |dl| across f = 1, 1e6, 1e-6 (tests/model_checks.R)	1.164e-05	1e-6	FAIL	
+numerical_comb	base12	tests	learn_covariance_checks.R	PASS / FAIL lines, error	6 / 0	0 FAIL, no error	PASS	source bench/proto/r12/numerical/pkg_comb
+numerical_comb	base12	tests	local_ancestry_checks.R	PASS / FAIL lines, error	12 / 0	0 FAIL, no error	PASS	source bench/proto/r12/numerical/pkg_comb
+numerical_comb	base12	tests	model_checks.R	PASS / FAIL lines, error	16 / 1, error	0 FAIL, no error	FAIL	source bench/proto/r12/numerical/pkg_comb | FAIL kernel scaled by 1e6 and 1e-6: same log-likelihoods (max |dl| 1.2e-05)  | Calls: source -> withVisible -> eval -> eval | Execution halted

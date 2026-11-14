@@ -1,0 +1,44 @@
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+S        N= 200 snps= 3975  C++ 0.11s (installed 0.11s)  identical=TRUE
+        setup_f0         prep_std           rotate     moments_data 
+             2.2              1.3             14.7              3.7 
+       grid_data refine_data_wald boot_sim_moments        grid_boot 
+            12.7             16.0             14.5             13.9 
+     refine_boot 
+            19.2 
+M        N= 400 snps= 5980  C++ 0.25s (installed 0.25s)  identical=TRUE
+        setup_f0         prep_std           rotate     moments_data 
+             1.2              1.5             28.1              5.8 
+       grid_data refine_data_wald boot_sim_moments        grid_boot 
+             8.2             11.3             20.4              8.8 
+     refine_boot 
+            13.5 
+M_grm    N= 400 snps= 5980  C++ 0.58s (installed 0.59s)  identical=TRUE
+        setup_f0         prep_std           rotate     moments_data 
+             0.9              0.6             12.0              3.4 
+       grid_data refine_data_wald boot_sim_moments        grid_boot 
+             9.0             23.1              9.7             10.8 
+     refine_boot 
+            30.2 
+M_cov30  N= 400 snps= 3970  C++ 2.00s (installed 2.01s)  identical=TRUE
+        setup_f0         prep_std           rotate     moments_data 
+             1.6              0.1              2.5              4.5 
+       grid_data refine_data_wald boot_sim_moments        grid_boot 
+            20.7             18.4              8.0             21.1 
+     refine_boot 
+            23.1 
+L_grm    N=1000 snps= 4712  C++ 1.40s (installed 1.40s)  identical=TRUE
+        setup_f0         prep_std           rotate     moments_data 
+             0.4              0.6             26.3              3.4 
+       grid_data refine_data_wald boot_sim_moments        grid_boot 
+             7.0             19.5              9.1              8.8 
+     refine_boot 
+            24.3 
+XL       N=2000 snps= 3108  C++ 1.33s (installed 1.44s)  identical=TRUE
+        setup_f0         prep_std           rotate     moments_data 
+             0.3              0.9             76.3              4.4 
+       grid_data refine_data_wald boot_sim_moments        grid_boot 
+             0.9              1.1             12.5              1.0 
+     refine_boot 
+             1.5 

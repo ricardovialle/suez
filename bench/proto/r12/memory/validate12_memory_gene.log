@@ -1,0 +1,2 @@
+memory_gene vs base12: 624 checks, INFO=80 PASS=544 (470 s) -> bench/proto/r12/review/results/v12_memory_gene_vs_base12.tsv
+VERDICT: PASS 

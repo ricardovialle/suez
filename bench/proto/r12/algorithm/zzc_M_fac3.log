@@ -1,0 +1,20 @@
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+M_fac3 N=600 genes=30 snps=5980
+setup  base 0.276 s  zz 0.0060 s  ratio 46.0
+fit    base 1.355 s  zz 0.707 s  speed-up 1.93x (median of 3, ratios 1.98 1.92 1.93)
+zz sparse vs base12:
+             l0          l_geno      l_interact              df            beta 
+       1.82e-12        1.93e-12        2.10e-12        0.00e+00        4.05e-15 
+             se     l_boot_geno l_boot_interact        rel_beta          rel_se 
+       2.53e-09        1.11e+01        1.18e+01        2.03e-10        1.81e-08 
+    na_mismatch 
+       0.00e+00 
+zz sparse vs zz-basis dense base engine:
+             l0          l_geno      l_interact              df            beta 
+       0.00e+00        1.14e-13        1.71e-13        0.00e+00        8.53e-16 
+             se     l_boot_geno l_boot_interact        rel_beta          rel_se 
+       1.24e-09        7.51e-08        5.81e-08        3.53e-12        1.77e-08 
+    na_mismatch 
+       0.00e+00 
+bootstrap LR_int KS p (base vs zz): 0.968  quantiles base: 1.4 4.56 8.96  zz: 1.43 4.59 9.18 

@@ -1,0 +1,102 @@
+diff --git a/bench/proto/r12/parallel/pkg_thr/src/Makevars b/bench/proto/r12/parallel/pkg_acc/src/Makevars
+index e1c3d7c..2141496 100644
+--- a/bench/proto/r12/parallel/pkg_thr/src/Makevars
++++ b/bench/proto/r12/parallel/pkg_acc/src/Makevars
+@@ -2,7 +2,7 @@ STANHEADERS_SRC = $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "message()" -e
+ 
+ PKG_CPPFLAGS = -I"../inst/include" -I"$(STANHEADERS_SRC)" -DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG -DBOOST_MATH_OVERFLOW_ERROR_POLICY=errno_on_error
+ PKG_CXXFLAGS = $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "RcppParallel::CxxFlags()") $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "StanHeaders:::CxxFlags()")
+-PKG_LIBS = $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "RcppParallel::RcppParallelLibs()") $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "StanHeaders:::LdFlags()")
++PKG_LIBS = $(if $(filter Darwin,$(shell uname -s)),-framework Accelerate) $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "RcppParallel::RcppParallelLibs()") $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "StanHeaders:::LdFlags()")
+ 
+ SOURCES = $(wildcard stan_files/*.stan)
+ OBJECTS = $(SOURCES:.stan=.o) init.o lmm.o
+diff --git a/bench/proto/r12/parallel/pkg_thr/src/init.cpp b/bench/proto/r12/parallel/pkg_acc/src/init.cpp
+index 07fe38f..2f9bbbe 100644
+--- a/bench/proto/r12/parallel/pkg_thr/src/init.cpp
++++ b/bench/proto/r12/parallel/pkg_acc/src/init.cpp
+@@ -12,12 +12,14 @@ extern "C" SEXP suez_fit_gene(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_fit_gene_threads(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_fit_models(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_eigen_sym(SEXP);
++extern "C" SEXP suez_eigen_accelerate(SEXP);
+ 
+ static const R_CallMethodDef CallEntries[] = {
+   {"suez_fit_gene", (DL_FUNC) &suez_fit_gene, 7},
+   {"suez_fit_gene_threads", (DL_FUNC) &suez_fit_gene_threads, 8},
+   {"suez_fit_models", (DL_FUNC) &suez_fit_models, 8},
+   {"suez_eigen_sym", (DL_FUNC) &suez_eigen_sym, 1},
++  {"suez_eigen_accelerate", (DL_FUNC) &suez_eigen_accelerate, 1},
+   {NULL, NULL, 0}
+ };
+ 
+diff --git a/bench/proto/r12/parallel/pkg_thr/src/init.o b/bench/proto/r12/parallel/pkg_acc/src/init.o
+index a66a8d7..a4393a5 100644
+Binary files a/bench/proto/r12/parallel/pkg_thr/src/init.o and b/bench/proto/r12/parallel/pkg_acc/src/init.o differ
+diff --git a/bench/proto/r12/parallel/pkg_thr/src/lmm.cpp b/bench/proto/r12/parallel/pkg_acc/src/lmm.cpp
+index e13578d..4a02def 100644
+--- a/bench/proto/r12/parallel/pkg_thr/src/lmm.cpp
++++ b/bench/proto/r12/parallel/pkg_acc/src/lmm.cpp
+@@ -777,3 +777,22 @@ extern "C" SEXP suez_eigen_sym(SEXP A) {
+                             Rcpp::Named("vectors") = MatrixXd(es.eigenvectors().rowwise().reverse()));
+   END_RCPP
+ }
++
++// Symmetric eigen-decomposition by Apple Accelerate's LAPACK dsyevd (macOS; R's own LAPACK is the reference one
++// there): 6-7x faster than Eigen's solver at N = 2000, ~2-3x at N = 4000 (bench/proto/r12/parallel/eig_accel.R).
++#ifdef __APPLE__
++extern "C" void dsyevd_(const char*, const char*, const int*, double*, const int*, double*, double*, const int*, int*, const int*, int*);
++extern "C" SEXP suez_eigen_accelerate(SEXP A) {
++  BEGIN_RCPP
++  Rcpp::NumericMatrix M(A); const int n = M.nrow(); MatrixXd V = Eigen::Map<MatrixXd>(M.begin(), n, n); VectorXd w(n);
++  int info = 0, lwork = -1, liwork = -1, iw = 0; double wk = 0;
++  dsyevd_("V", "L", &n, V.data(), &n, w.data(), &wk, &lwork, &iw, &liwork, &info);
++  lwork = (int)wk; liwork = iw; std::vector<double> work(std::max(1, lwork)); std::vector<int> iwork(std::max(1, liwork));
++  dsyevd_("V", "L", &n, V.data(), &n, w.data(), work.data(), &lwork, iwork.data(), &liwork, &info);
++  if (info != 0) Rcpp::stop("symmetric eigen-decomposition failed (dsyevd info %d)", info);
++  return Rcpp::List::create(Rcpp::Named("values") = VectorXd(w.reverse()), Rcpp::Named("vectors") = MatrixXd(V.rowwise().reverse()));
++  END_RCPP
++}
++#else
++extern "C" SEXP suez_eigen_accelerate(SEXP A) { Rf_error("Accelerate is only available on macOS"); return R_NilValue; }
++#endif
+diff --git a/bench/proto/r12/parallel/pkg_thr/src/lmm.o b/bench/proto/r12/parallel/pkg_acc/src/lmm.o
+index 3a76d46..d0a7eb0 100644
+Binary files a/bench/proto/r12/parallel/pkg_thr/src/lmm.o and b/bench/proto/r12/parallel/pkg_acc/src/lmm.o differ
+diff --git a/bench/proto/r12/parallel/pkg_thr/src/stan_files/suez_step_1.o b/bench/proto/r12/parallel/pkg_acc/src/stan_files/suez_step_1.o
+index 7443e91..09b7c33 100644
+Binary files a/bench/proto/r12/parallel/pkg_thr/src/stan_files/suez_step_1.o and b/bench/proto/r12/parallel/pkg_acc/src/stan_files/suez_step_1.o differ
+diff --git a/bench/proto/r12/parallel/pkg_thr/src/suez.so b/bench/proto/r12/parallel/pkg_acc/src/suez.so
+index 1031f3f..c10a3ef 100755
+Binary files a/bench/proto/r12/parallel/pkg_thr/src/suez.so and b/bench/proto/r12/parallel/pkg_acc/src/suez.so differ
+diff --git a/bench/proto/r12/parallel/pkg_thr/R/lmm.R b/bench/proto/r12/parallel/pkg_acc/R/lmm.R
+index f5862b7..8fe4714 100644
+--- a/bench/proto/r12/parallel/pkg_thr/R/lmm.R
++++ b/bench/proto/r12/parallel/pkg_acc/R/lmm.R
+@@ -27,8 +27,9 @@ kernel_contrast_eigen = function(K) {
+   u = -qr.Q(qr(matrix(1, n, 1)))[, 1]; u[1] = u[1] + 1; u = u / sqrt(sum(u^2))
+   K = K - 2 * outer(drop(K %*% u), u)          # K H
+   K = K - 2 * outer(u, drop(crossprod(u, K)))  # H K H
+-  e = if (eigen_solver() == "lapack") eigen(K[-1, -1, drop = FALSE], symmetric = TRUE)
+-      else .Call(suez_eigen_sym, K[-1, -1, drop = FALSE])
++  e = switch(eigen_solver(), lapack = eigen(K[-1, -1, drop = FALSE], symmetric = TRUE),
++             accelerate = .Call(suez_eigen_accelerate, K[-1, -1, drop = FALSE]),
++             .Call(suez_eigen_sym, K[-1, -1, drop = FALSE]))
+   rm(K)
+   if (min(e$values) < -1e-6 * max(abs(e$values)))
+     stop("sample_kernel is not positive semi-definite (min eigenvalue ",
+@@ -40,11 +41,12 @@ kernel_contrast_eigen = function(K) {
+ # options(suez.eigen_solver = "auto" | "eigen" | "lapack"). auto: LAPACK when R's BLAS or LAPACK (symlinks
+ # resolved, e.g. Debian alternatives) is an optimised library, else Eigen's solver (R's reference LAPACK).
+ eigen_solver = function() {
+-  s = match.arg(getOption("suez.eigen_solver", "auto"), c("auto", "eigen", "lapack"))
++  s = match.arg(getOption("suez.eigen_solver", "auto"), c("auto", "eigen", "lapack", "accelerate"))
+   if (s != "auto") return(s)
+   libs = c(La_library(), tryCatch(extSoftVersion()[["BLAS"]], error = function(e) ""))
+   libs = suppressWarnings(normalizePath(libs[nzchar(libs)], mustWork = FALSE))
+-  if (any(grepl("openblas|mkl|accelerate|veclib|blis|flexiblas|atlas", libs, ignore.case = TRUE))) "lapack" else "eigen"
++  if (any(grepl("openblas|mkl|accelerate|veclib|blis|flexiblas|atlas", libs, ignore.case = TRUE))) "lapack"
++  else if (Sys.info()[["sysname"]] == "Darwin") "accelerate" else "eigen"
+ }
+ 
+ # isSymmetric(unname(K), tol) (all.equal: mean relative difference over the unequal entries), one column

@@ -1,0 +1,8 @@
+S genes=20 snps=1975 N=200 | base 0.11s | t1 0.11s (0.96x), t2 0.10s (1.04x), t4 0.11s (1.02x), t8 0.11s (1.01x) | identical: t1 TRUE t2 TRUE t4 TRUE t8 TRUE
+M genes=20 snps=3970 N=400 | base 0.36s | t1 0.36s (0.99x), t2 0.34s (1.06x), t4 0.34s (1.06x), t8 0.34s (1.05x) | identical: t1 TRUE t2 TRUE t4 TRUE t8 TRUE
+M_eqtl genes=20 snps=3970 N=200 | base 0.30s | t1 0.31s (0.96x), t2 0.29s (1.02x), t4 0.29s (1.01x), t8 0.32s (0.92x) | identical: t1 TRUE t2 TRUE t4 TRUE t8 TRUE
+M_fac3 genes=15 snps=2965 N=600 | base 0.61s | t1 0.61s (0.99x), t2 0.56s (1.08x), t4 0.55s (1.10x), t8 0.55s (1.10x) | identical: t1 TRUE t2 TRUE t4 TRUE t8 TRUE
+XL_grm genes=6 snps=2306 N=2000 | base 3.89s | t1 3.77s (1.03x), t2 2.20s (1.77x), t4 1.45s (2.67x), t8 1.19s (3.28x) | identical: t1 TRUE t2 TRUE t4 TRUE t8 TRUE
+XL genes=5 snps=1905 N=2000 | base 2.09s | t1 1.96s (1.06x), t2 1.38s (1.52x), t4 1.04s (2.00x), t8 0.96s (2.16x) | identical: t1 TRUE t2 TRUE t4 TRUE t8 TRUE
+XXL genes=3 snps=1103 N=4000 | base 4.26s | t1 4.07s (1.05x), t2 2.16s (1.97x), t4 1.56s (2.74x), t8 1.24s (3.44x) | identical: t1 TRUE t2 TRUE t4 TRUE t8 TRUE
+M_grm genes=10 snps=1960 N=400 | base 0.66s | t1 0.61s (1.10x), t2 0.58s (1.15x), t4 0.55s (1.22x), t8 0.56s (1.20x) | identical: t1 TRUE t2 TRUE t4 TRUE t8 TRUE

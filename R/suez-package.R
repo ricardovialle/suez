@@ -12,8 +12,6 @@
 #' @import doMC
 #' @importFrom foreach foreach %do% %dopar%
 #' @importFrom magrittr %>%
-#' @importFrom dplyr bind_rows
-#' @importFrom readr read_tsv write_tsv
 #' @importFrom utils globalVariables
 #' @importFrom stats lm.fit model.matrix optimize pchisq pt qnorm rnorm sd
 #' 

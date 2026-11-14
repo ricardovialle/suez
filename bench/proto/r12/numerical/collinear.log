@@ -1,0 +1,17 @@
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+eps    case                         base-exact cand-exact  cand-base
+1e-03  cov2 = cov1 + eps              -9.1e-13     -8e-13    1.1e-13   (l_geno: -1.2e-12 -6.8e-13)
+1e-03  covariate = SNP + eps          -8.8e-13   -8.5e-13    2.8e-14   (l_geno: 3.8e-11 6.3e-12)
+1e-04  cov2 = cov1 + eps               5.4e-13   -1.9e-12   -2.4e-12   (l_geno: -1.3e-12 -1.6e-12)
+1e-04  covariate = SNP + eps          -9.7e-13   -9.7e-13          0   (l_geno: 2.1e-12 2.6e-12)
+1e-05  cov2 = cov1 + eps              -2.2e-11   -5.7e-13    2.1e-11   (l_geno: -7.5e-12 -1e-11)
+1e-05  covariate = SNP + eps          -5.1e-13   -4.5e-13    5.7e-14   (l_geno: 5.3e-11 4.8e-11)
+1e-06  cov2 = cov1 + eps              -1.1e-08   -2.3e-13    1.1e-08   (l_geno: -4.2e-09 -5.6e-11)
+1e-06  covariate = SNP + eps          -5.1e-13   -5.1e-13          0   (l_geno: 1.2e-10 3.2e-10)
+1e-07  cov2 = cov1 + eps                  -1.7     -0.025        1.6   (l_geno: -0.029 -0.021)
+1e-07  covariate = SNP + eps          -2.8e-13   -3.4e-13   -5.7e-14   (l_geno: -6.4e-06 -7.2e-07)
+1e-08  cov2 = cov1 + eps                -0.007     -0.007    2.8e-14   (l_geno: -0.02 -0.016)
+1e-08  covariate = SNP + eps          -9.1e-13   -9.1e-13          0   (l_geno: -2.3 -2.3)
+1e-09  cov2 = cov1 + eps                -0.049     -0.049    2.8e-14   (l_geno: -0.11 -0.11)
+1e-09  covariate = SNP + eps          -6.5e-13   -6.5e-13          0   (l_geno: -0.34 -0.34)

@@ -1,0 +1,2 @@
+XL_grm  N=2000 genes=40 snps=15839 qn=0.01 kernel_eigen=2.29 (solver 2.06) fits=9.61 crossprodUG=49.28
+XXL     N=4000 genes=16 snps=6215 qn=0.00 kernel_eigen=24.79 (solver 5.33) fits=12.42 crossprodUG=92.55

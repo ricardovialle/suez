@@ -1,0 +1,1106 @@
+cand	ref	part	dataset	check	value	threshold	status	detail
+algorithm_zz	base12	equiv	S	wall_s cand/ref (indicative, not a benchmark)	1.213	-	INFO	2.14 / 1.77 s
+algorithm_zz	base12	equiv	S	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+algorithm_zz	base12	equiv	S	columns	0	0	PASS	
+algorithm_zz	base12	equiv	S	l0 max abs	5.684e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S	l_geno max abs	5.826e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S	l_interact max abs	5.826e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S	p_geno max|dlog10p|	1.724e-10	-	INFO	n=19942 na/inf mismatches=0 identical=6717
+algorithm_zz	base12	equiv	S	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+algorithm_zz	base12	equiv	S	p_interact max|dlog10p|	7.028e-11	-	INFO	n=19942 na/inf mismatches=0 identical=6360
+algorithm_zz	base12	equiv	S	beta_geno max rel	2.162e-14	1e-06	PASS	n=19942 na/inf mismatches=0 identical=299
+algorithm_zz	base12	equiv	S	se_geno max rel	1.326e-08	1e-06	PASS	n=19942 na/inf mismatches=0 identical=1921
+algorithm_zz	base12	equiv	S	l_boot_geno max abs	12.62	1e-05	INFO	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S	l_boot_interact max abs	10.98	1e-05	INFO	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S	p_geno sig p<0.001	0	0	PASS	ref 16 cand 16 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	S	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S	p_interact sig p<0.001	0	0	PASS	ref 22 cand 22 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	S	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S	p_interact_boot sig p<0.001	3	0	INFO	ref 17 cand 14 flips 3 (borderline 0)
+algorithm_zz	base12	equiv	S	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999985 median 1.000000
+algorithm_zz	base12	equiv	S	boot LR distribution KS p	0.5751	>= 0.01	PASS	q0.5 0.4671/0.4707 q0.9 2.758/2.815 q0.99 6.589/6.972 q0.999 11.11/11.24
+algorithm_zz	base12	equiv	S	l_boot_geno - l_geno distribution KS p	0.9855	>= 0.01	PASS	q0.5 1.723/1.711 q0.9 15/14.95 q0.99 26.05/25.84 q0.999 34.87/34.7
+algorithm_zz	base12	stat	S	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000
+algorithm_zz	base12	equiv	M	wall_s cand/ref (indicative, not a benchmark)	0.9704	-	INFO	7.04 / 7.25 s
+algorithm_zz	base12	equiv	M	rows	0	0	PASS	ref 60199 rows / 300 genes, cand 60199 / 300
+algorithm_zz	base12	equiv	M	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M	l0 max abs	1.791e-12	1e-09	PASS	n=60199 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M	l_geno max abs	1.876e-12	1e-09	PASS	n=60199 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M	l_interact max abs	1.876e-12	1e-09	PASS	n=60199 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M	p_geno max|dlog10p|	2.395e-09	-	INFO	n=60199 na/inf mismatches=0 identical=19129
+algorithm_zz	base12	equiv	M	df_interact max abs	0	0	PASS	n=60199 na/inf mismatches=0 identical=60199
+algorithm_zz	base12	equiv	M	p_interact max|dlog10p|	1.304e-09	-	INFO	n=60199 na/inf mismatches=0 identical=19087
+algorithm_zz	base12	equiv	M	beta_geno max rel	5.169e-14	1e-06	PASS	n=60199 na/inf mismatches=0 identical=394
+algorithm_zz	base12	equiv	M	se_geno max rel	1.344e-08	1e-06	PASS	n=60199 na/inf mismatches=0 identical=3173
+algorithm_zz	base12	equiv	M	l_boot_geno max abs	11.07	1e-05	INFO	n=60199 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M	l_boot_interact max abs	10.89	1e-05	INFO	n=60199 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M	p_geno lead SNP per gene	0	0	PASS	300 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M	p_geno sig p<0.001	0	0	PASS	ref 76 cand 76 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_geno sig p<1e-05	0	0	PASS	ref 6 cand 6 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_geno eGenes BH 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M	p_interact lead SNP per gene	0	0	PASS	300 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M	p_interact sig p<0.001	0	0	PASS	ref 66 cand 66 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_interact sig p<1e-05	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M	p_interact_boot lead SNP per gene	0	0	PASS	300 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M	p_interact_boot sig p<0.001	5	0	INFO	ref 57 cand 62 flips 5 (borderline 0)
+algorithm_zz	base12	equiv	M	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999999 median 1.000000
+algorithm_zz	base12	equiv	M	boot LR distribution KS p	0.7989	>= 0.01	PASS	q0.5 0.462/0.4641 q0.9 2.763/2.785 q0.99 6.748/6.806 q0.999 11.04/10.98
+algorithm_zz	base12	equiv	M	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.818/1.802 q0.9 20.33/20.37 q0.99 35.77/35.7 q0.999 46.95/46.82
+algorithm_zz	base12	stat	M	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.083/0.083 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.100/0.100 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.033/0.033 fdr 0.500/0.500
+algorithm_zz	base12	equiv	L	wall_s cand/ref (indicative, not a benchmark)	0.7537	-	INFO	12.79 / 16.97 s
+algorithm_zz	base12	equiv	L	rows	0	0	PASS	ref 59949 rows / 150 genes, cand 59949 / 150
+algorithm_zz	base12	equiv	L	columns	0	0	PASS	
+algorithm_zz	base12	equiv	L	l0 max abs	7.731e-12	1e-09	PASS	n=59949 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	L	l_geno max abs	7.958e-12	1e-09	PASS	n=59949 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	L	l_interact max abs	7.958e-12	1e-09	PASS	n=59949 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	L	p_geno max|dlog10p|	3.501e-09	-	INFO	n=59949 na/inf mismatches=0 identical=18195
+algorithm_zz	base12	equiv	L	df_interact max abs	0	0	PASS	n=59949 na/inf mismatches=0 identical=59949
+algorithm_zz	base12	equiv	L	p_interact max|dlog10p|	5.367e-09	-	INFO	n=59949 na/inf mismatches=0 identical=16521
+algorithm_zz	base12	equiv	L	beta_geno max rel	1.094e-13	1e-06	PASS	n=59949 na/inf mismatches=0 identical=164
+algorithm_zz	base12	equiv	L	se_geno max rel	1.606e-08	1e-06	PASS	n=59949 na/inf mismatches=0 identical=1777
+algorithm_zz	base12	equiv	L	l_boot_geno max abs	12.32	1e-05	INFO	n=59949 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	L	l_boot_interact max abs	13.07	1e-05	INFO	n=59949 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	L	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	L	p_geno sig p<0.001	0	0	PASS	ref 80 cand 80 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_geno sig p<1e-05	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_geno sig p<1e-08	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_geno eGenes BH 5%	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	L	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	L	p_interact sig p<0.001	0	0	PASS	ref 51 cand 51 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_interact sig p<1e-05	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_interact eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	L	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	L	p_interact_boot sig p<0.001	16	0	INFO	ref 33 cand 49 flips 16 (borderline 0)
+algorithm_zz	base12	equiv	L	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	L	boot LR distribution KS p	0.009555	>= 0.01	WARN	q0.5 0.4632/0.4504 q0.9 2.745/2.732 q0.99 6.643/6.704 q0.999 11.55/10.91
+algorithm_zz	base12	equiv	L	l_boot_geno - l_geno distribution KS p	0.9996	>= 0.01	PASS	q0.5 1.841/1.798 q0.9 30.65/30.66 q0.99 54.84/54.72 q0.999 72.71/72.64
+algorithm_zz	base12	stat	L	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.233/0.233 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.233/0.233 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.067/0.067 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.133/0.133 fdr 0.000/0.000
+algorithm_zz	base12	equiv	XL	wall_s cand/ref (indicative, not a benchmark)	0.407	-	INFO	9.52 / 23.39 s
+algorithm_zz	base12	equiv	XL	rows	0	0	PASS	ref 23859 rows / 60 genes, cand 23859 / 60
+algorithm_zz	base12	equiv	XL	columns	0	0	PASS	
+algorithm_zz	base12	equiv	XL	l0 max abs	2.888e-11	1e-09	PASS	n=23859 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	XL	l_geno max abs	2.91e-11	1e-09	PASS	n=23859 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	XL	l_interact max abs	2.922e-11	1e-09	PASS	n=23859 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	XL	p_geno max|dlog10p|	1.575e-08	-	INFO	n=23859 na/inf mismatches=0 identical=7125
+algorithm_zz	base12	equiv	XL	df_interact max abs	0	0	PASS	n=23859 na/inf mismatches=0 identical=23859
+algorithm_zz	base12	equiv	XL	p_interact max|dlog10p|	6.142e-10	-	INFO	n=23859 na/inf mismatches=0 identical=6878
+algorithm_zz	base12	equiv	XL	beta_geno max rel	2.298e-13	1e-06	PASS	n=23859 na/inf mismatches=0 identical=27
+algorithm_zz	base12	equiv	XL	se_geno max rel	1.123e-08	1e-06	PASS	n=23859 na/inf mismatches=0 identical=393
+algorithm_zz	base12	equiv	XL	l_boot_geno max abs	11.45	1e-05	INFO	n=23859 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	XL	l_boot_interact max abs	11.51	1e-05	INFO	n=23859 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	XL	p_geno lead SNP per gene	0	0	PASS	60 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	XL	p_geno sig p<0.001	0	0	PASS	ref 42 cand 42 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_geno sig p<1e-05	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_geno sig p<1e-08	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_geno eGenes BH 5%	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	XL	p_interact lead SNP per gene	0	0	PASS	60 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	XL	p_interact sig p<0.001	0	0	PASS	ref 25 cand 25 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_interact sig p<1e-05	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_interact sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_interact eGenes BH 5%	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	XL	p_interact_boot lead SNP per gene	0	0	PASS	60 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	XL	p_interact_boot sig p<0.001	3	0	INFO	ref 20 cand 23 flips 3 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999999 median 1.000000
+algorithm_zz	base12	equiv	XL	boot LR distribution KS p	0.4094	>= 0.01	PASS	q0.5 0.4594/0.4461 q0.9 2.753/2.75 q0.99 6.648/6.44 q0.999 11.11/10.88
+algorithm_zz	base12	equiv	XL	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.774/1.791 q0.9 42.83/42.8 q0.99 75.95/76.07 q0.999 98.58/96.98
+algorithm_zz	base12	stat	XL	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.583/0.583 fdr 0.222/0.222; p_geno lead p<1e-5: power 0.500/0.500 fdr 0.143/0.143; p_interact eGene BH 5%: power 0.667/0.667 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.667/0.667 fdr 0.000/0.000
+algorithm_zz	base12	equiv	XXL	wall_s cand/ref (indicative, not a benchmark)	0.06794	-	INFO	5.27 / 77.53 s
+algorithm_zz	base12	equiv	XXL	rows	0	0	PASS	ref 6215 rows / 16 genes, cand 6215 / 16
+algorithm_zz	base12	equiv	XXL	columns	0	0	PASS	
+algorithm_zz	base12	equiv	XXL	l0 max abs	1.226e-10	1e-09	PASS	n=6215 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	XXL	l_geno max abs	1.237e-10	1e-09	PASS	n=6215 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	XXL	l_interact max abs	1.262e-10	1e-09	PASS	n=6215 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	XXL	p_geno max|dlog10p|	6.842e-10	-	INFO	n=6215 na/inf mismatches=0 identical=1967
+algorithm_zz	base12	equiv	XXL	df_interact max abs	0	0	PASS	n=6215 na/inf mismatches=0 identical=6215
+algorithm_zz	base12	equiv	XXL	p_interact max|dlog10p|	8.274e-10	-	INFO	n=6215 na/inf mismatches=0 identical=1515
+algorithm_zz	base12	equiv	XXL	beta_geno max rel	3.94e-13	1e-06	PASS	n=6215 na/inf mismatches=0 identical=2
+algorithm_zz	base12	equiv	XXL	se_geno max rel	1.146e-08	1e-06	PASS	n=6215 na/inf mismatches=0 identical=61
+algorithm_zz	base12	equiv	XXL	l_boot_geno max abs	7.669	1e-05	INFO	n=6215 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	XXL	l_boot_interact max abs	8.996	1e-05	INFO	n=6215 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	XXL	p_geno lead SNP per gene	0	0	PASS	16 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	XXL	p_geno sig p<0.001	0	0	PASS	ref 14 cand 14 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_geno sig p<1e-05	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_geno sig p<1e-08	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_geno eGenes BH 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	XXL	p_interact lead SNP per gene	0	0	PASS	16 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	XXL	p_interact sig p<0.001	0	0	PASS	ref 10 cand 10 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_interact sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_interact sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_interact eGenes BH 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	XXL	p_interact_boot lead SNP per gene	0	0	PASS	16 genes, 1 different leads (1 ties within the band)
+algorithm_zz	base12	equiv	XXL	p_interact_boot sig p<0.001	0	0	PASS	ref 10 cand 10 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XXL	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999998 median 0.999999
+algorithm_zz	base12	equiv	XXL	boot LR distribution KS p	0.5616	>= 0.01	PASS	q0.5 0.463/0.4583 q0.9 2.718/2.679 q0.99 6.734/6.059 q0.999 10.49/10.39
+algorithm_zz	base12	equiv	XXL	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.542/1.646 q0.9 60.84/61.09 q0.99 108.7/108.6 q0.999 152.8/152.6
+algorithm_zz	base12	stat	XXL	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.667/0.667 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.667/0.667 fdr 0.000/0.000; p_interact eGene BH 5%: power 1.000/1.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 1.000/1.000 fdr 0.000/0.000
+algorithm_zz	base12	equiv	M_grm	wall_s cand/ref (indicative, not a benchmark)	1.066	-	INFO	10.94 / 10.27 s
+algorithm_zz	base12	equiv	M_grm	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+algorithm_zz	base12	equiv	M_grm	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_grm	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_grm	p_geno sig p<0.001	0	0	PASS	ref 43 cand 43 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_geno sig p<1e-05	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_grm	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_grm	p_interact sig p<0.001	0	0	PASS	ref 23 cand 23 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_grm	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_grm	p_interact_boot sig p<0.001	0	0	PASS	ref 18 cand 18 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_grm	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4677/0.4677 q0.9 2.742/2.742 q0.99 6.747/6.747 q0.999 11.06/11.06
+algorithm_zz	base12	equiv	M_grm	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.76/1.76 q0.9 20.26/20.26 q0.99 36.3/36.3 q0.999 47.16/47.16
+algorithm_zz	base12	stat	M_grm	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.067/0.067 fdr 0.333/0.333; p_geno lead p<1e-5: power 0.133/0.133 fdr 0.200/0.200; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000
+algorithm_zz	base12	equiv	L_grm	wall_s cand/ref (indicative, not a benchmark)	1.202	-	INFO	33.76 / 28.09 s
+algorithm_zz	base12	equiv	L_grm	rows	0	0	PASS	ref 39899 rows / 100 genes, cand 39899 / 100
+algorithm_zz	base12	equiv	L_grm	columns	0	0	PASS	
+algorithm_zz	base12	equiv	L_grm	l0 max abs	0	1e-09	PASS	n=39899 na/inf mismatches=0 identical=39899
+algorithm_zz	base12	equiv	L_grm	l_geno max abs	0	1e-09	PASS	n=39899 na/inf mismatches=0 identical=39899
+algorithm_zz	base12	equiv	L_grm	l_interact max abs	0	1e-09	PASS	n=39899 na/inf mismatches=0 identical=39899
+algorithm_zz	base12	equiv	L_grm	p_geno max|dlog10p|	0	-	INFO	n=39899 na/inf mismatches=0 identical=39899
+algorithm_zz	base12	equiv	L_grm	df_interact max abs	0	0	PASS	n=39899 na/inf mismatches=0 identical=39899
+algorithm_zz	base12	equiv	L_grm	p_interact max|dlog10p|	0	-	INFO	n=39899 na/inf mismatches=0 identical=39899
+algorithm_zz	base12	equiv	L_grm	beta_geno max rel	0	1e-06	PASS	n=39899 na/inf mismatches=0 identical=39899
+algorithm_zz	base12	equiv	L_grm	se_geno max rel	0	1e-06	PASS	n=39899 na/inf mismatches=0 identical=39899
+algorithm_zz	base12	equiv	L_grm	l_boot_geno max abs	0	1e-05	PASS	n=39899 na/inf mismatches=0 identical=39899
+algorithm_zz	base12	equiv	L_grm	l_boot_interact max abs	0	1e-05	PASS	n=39899 na/inf mismatches=0 identical=39899
+algorithm_zz	base12	equiv	L_grm	p_geno lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	L_grm	p_geno sig p<0.001	0	0	PASS	ref 68 cand 68 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_geno sig p<1e-05	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_geno sig p<1e-08	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_geno eGenes BH 5%	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	L_grm	p_interact lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	L_grm	p_interact sig p<0.001	0	0	PASS	ref 49 cand 49 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	L_grm	p_interact_boot lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	L_grm	p_interact_boot sig p<0.001	0	0	PASS	ref 41 cand 41 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	L_grm	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	L_grm	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4538/0.4538 q0.9 2.76/2.76 q0.99 6.832/6.832 q0.999 11.11/11.11
+algorithm_zz	base12	equiv	L_grm	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.829/1.829 q0.9 30.7/30.7 q0.99 54.29/54.29 q0.999 72.13/72.13
+algorithm_zz	base12	stat	L_grm	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.350/0.350 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.350/0.350 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000
+algorithm_zz	base12	equiv	XL_grm	wall_s cand/ref (indicative, not a benchmark)	1.214	-	INFO	41.01 / 33.79 s
+algorithm_zz	base12	equiv	XL_grm	rows	0	0	PASS	ref 15839 rows / 40 genes, cand 15839 / 40
+algorithm_zz	base12	equiv	XL_grm	columns	0	0	PASS	
+algorithm_zz	base12	equiv	XL_grm	l0 max abs	0	1e-09	PASS	n=15839 na/inf mismatches=0 identical=15839
+algorithm_zz	base12	equiv	XL_grm	l_geno max abs	0	1e-09	PASS	n=15839 na/inf mismatches=0 identical=15839
+algorithm_zz	base12	equiv	XL_grm	l_interact max abs	0	1e-09	PASS	n=15839 na/inf mismatches=0 identical=15839
+algorithm_zz	base12	equiv	XL_grm	p_geno max|dlog10p|	0	-	INFO	n=15839 na/inf mismatches=0 identical=15839
+algorithm_zz	base12	equiv	XL_grm	df_interact max abs	0	0	PASS	n=15839 na/inf mismatches=0 identical=15839
+algorithm_zz	base12	equiv	XL_grm	p_interact max|dlog10p|	0	-	INFO	n=15839 na/inf mismatches=0 identical=15839
+algorithm_zz	base12	equiv	XL_grm	beta_geno max rel	0	1e-06	PASS	n=15839 na/inf mismatches=0 identical=15839
+algorithm_zz	base12	equiv	XL_grm	se_geno max rel	0	1e-06	PASS	n=15839 na/inf mismatches=0 identical=15839
+algorithm_zz	base12	equiv	XL_grm	l_boot_geno max abs	0	1e-05	PASS	n=15839 na/inf mismatches=0 identical=15839
+algorithm_zz	base12	equiv	XL_grm	l_boot_interact max abs	0	1e-05	PASS	n=15839 na/inf mismatches=0 identical=15839
+algorithm_zz	base12	equiv	XL_grm	p_geno lead SNP per gene	0	0	PASS	40 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	XL_grm	p_geno sig p<0.001	0	0	PASS	ref 41 cand 41 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_geno sig p<1e-05	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_geno sig p<1e-08	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_geno eGenes BH 5%	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	XL_grm	p_interact lead SNP per gene	0	0	PASS	40 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	XL_grm	p_interact sig p<0.001	0	0	PASS	ref 14 cand 14 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_interact sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_interact eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	XL_grm	p_interact_boot lead SNP per gene	0	0	PASS	40 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	XL_grm	p_interact_boot sig p<0.001	0	0	PASS	ref 6 cand 6 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	XL_grm	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4531/0.4531 q0.9 2.744/2.744 q0.99 6.854/6.854 q0.999 11.62/11.62
+algorithm_zz	base12	equiv	XL_grm	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.742/1.742 q0.9 43.14/43.14 q0.99 76.67/76.67 q0.999 98.39/98.39
+algorithm_zz	base12	stat	XL_grm	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.875/0.875 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.875/0.875 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.750/0.750 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.750/0.750 fdr 0.000/0.000
+algorithm_zz	base12	equiv	M_learn	wall_s cand/ref (indicative, not a benchmark)	1.666	-	INFO	5.78 / 3.47 s
+algorithm_zz	base12	equiv	M_learn	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+algorithm_zz	base12	equiv	M_learn	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_learn	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_learn	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_learn	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_learn	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_learn	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_learn	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_learn	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_learn	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_learn	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_learn	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_learn	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_learn	p_geno sig p<0.001	0	0	PASS	ref 65 cand 65 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_geno sig p<1e-05	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_geno eGenes BH 5%	0	0	PASS	ref 6 cand 6 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_learn	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_learn	p_interact sig p<0.001	0	0	PASS	ref 11 cand 11 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_learn	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_learn	p_interact_boot sig p<0.001	0	0	PASS	ref 10 cand 10 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_learn	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_learn	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4661/0.4661 q0.9 2.746/2.746 q0.99 6.732/6.732 q0.999 11.06/11.06
+algorithm_zz	base12	equiv	M_learn	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.55/1.55 q0.9 20.05/20.05 q0.99 36.03/36.03 q0.999 46.92/46.92
+algorithm_zz	base12	stat	M_learn	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.133/0.133 fdr 0.333/0.333; p_geno lead p<1e-5: power 0.133/0.133 fdr 0.333/0.333; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+algorithm_zz	base12	equiv	M_lc	wall_s cand/ref (indicative, not a benchmark)	1.45	-	INFO	5.42 / 3.73 s
+algorithm_zz	base12	equiv	M_lc	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+algorithm_zz	base12	equiv	M_lc	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_lc	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_lc	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_lc	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_lc	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_lc	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_lc	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_lc	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_lc	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_lc	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_lc	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_lc	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_lc	p_geno sig p<0.001	0	0	PASS	ref 43 cand 43 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_geno sig p<1e-05	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_geno sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_lc	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_lc	p_interact sig p<0.001	0	0	PASS	ref 29 cand 29 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_lc	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_lc	p_interact_boot sig p<0.001	0	0	PASS	ref 27 cand 27 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_lc	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_lc	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4611/0.4611 q0.9 2.797/2.797 q0.99 6.832/6.832 q0.999 11.15/11.15
+algorithm_zz	base12	equiv	M_lc	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.823/1.823 q0.9 20.37/20.37 q0.99 36.56/36.56 q0.999 46.9/46.9
+algorithm_zz	base12	stat	M_lc	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.100/0.100 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.100/0.100 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+algorithm_zz	base12	equiv	M_num	wall_s cand/ref (indicative, not a benchmark)	1.465	-	INFO	10.04 / 6.86 s
+algorithm_zz	base12	equiv	M_num	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+algorithm_zz	base12	equiv	M_num	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_num	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_num	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_num	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_num	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_num	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_num	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_num	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_num	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_num	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_num	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_num	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_num	p_geno sig p<0.001	0	0	PASS	ref 54 cand 54 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_geno sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_num	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_num	p_interact sig p<0.001	0	0	PASS	ref 46 cand 46 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_interact sig p<1e-05	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_interact sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_interact eGenes BH 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_num	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_num	p_interact_boot sig p<0.001	0	0	PASS	ref 47 cand 47 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_num	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_num	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4741/0.4741 q0.9 2.725/2.725 q0.99 6.642/6.642 q0.999 10.69/10.69
+algorithm_zz	base12	equiv	M_num	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.79/1.79 q0.9 20.22/20.22 q0.99 36.22/36.22 q0.999 46.54/46.54
+algorithm_zz	base12	stat	M_num	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.067/0.067 fdr 0.333/0.333; p_interact eGene BH 5%: power 0.133/0.133 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.133/0.133 fdr 0.000/0.000
+algorithm_zz	base12	equiv	M_fac3	wall_s cand/ref (indicative, not a benchmark)	0.8701	-	INFO	5.96 / 6.85 s
+algorithm_zz	base12	equiv	M_fac3	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+algorithm_zz	base12	equiv	M_fac3	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_fac3	l0 max abs	1.99e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_fac3	l_geno max abs	2.046e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_fac3	l_interact max abs	2.132e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_fac3	p_geno max|dlog10p|	4.939e-10	-	INFO	n=30049 na/inf mismatches=0 identical=10382
+algorithm_zz	base12	equiv	M_fac3	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_fac3	p_interact max|dlog10p|	1.976e-13	-	INFO	n=30049 na/inf mismatches=0 identical=9976
+algorithm_zz	base12	equiv	M_fac3	beta_geno max rel	3.564e-14	1e-06	PASS	n=30049 na/inf mismatches=0 identical=224
+algorithm_zz	base12	equiv	M_fac3	se_geno max rel	2.171e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=1752
+algorithm_zz	base12	equiv	M_fac3	l_boot_geno max abs	12.66	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_fac3	l_boot_interact max abs	13.16	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_fac3	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_fac3	p_geno sig p<0.001	0	0	PASS	ref 65 cand 65 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_geno sig p<1e-05	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_geno sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_geno eGenes BH 5%	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_fac3	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_fac3	p_interact sig p<0.001	0	0	PASS	ref 30 cand 30 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_fac3	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_fac3	p_interact_boot sig p<0.001	6	0	INFO	ref 30 cand 24 flips 6 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_fac3	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999998 median 1.000000
+algorithm_zz	base12	equiv	M_fac3	boot LR distribution KS p	0.7356	>= 0.01	PASS	q0.5 1.404/1.417 q0.9 4.638/4.671 q0.99 9.201/9.236 q0.999 13.84/14.3
+algorithm_zz	base12	equiv	M_fac3	l_boot_geno - l_geno distribution KS p	0.9998	>= 0.01	PASS	q0.5 2.085/2.089 q0.9 24.86/24.83 q0.99 43.93/43.78 q0.999 57.16/56.87
+algorithm_zz	base12	stat	M_fac3	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.233/0.233 fdr 0.222/0.222; p_geno lead p<1e-5: power 0.200/0.200 fdr 0.250/0.250; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.067/0.067 fdr 0.000/0.000
+algorithm_zz	base12	equiv	M_eqtl	wall_s cand/ref (indicative, not a benchmark)	1.371	-	INFO	3.39 / 2.48 s
+algorithm_zz	base12	equiv	M_eqtl	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+algorithm_zz	base12	equiv	M_eqtl	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_eqtl	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_eqtl	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_eqtl	l_interact max abs	0	1e-09	PASS	n=0 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_eqtl	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_eqtl	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_eqtl	p_interact max|dlog10p|	0	-	INFO	n=0 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_eqtl	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_eqtl	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_eqtl	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_eqtl	l_boot_interact max abs	0	1e-05	PASS	n=0 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_eqtl	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_eqtl	p_geno sig p<0.001	0	0	PASS	ref 39 cand 39 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_eqtl	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_eqtl	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_eqtl	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_eqtl	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_eqtl	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_eqtl	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.123/1.123 q0.9 14.27/14.27 q0.99 25.52/25.52 q0.999 34.17/34.17
+algorithm_zz	base12	stat	M_eqtl	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+algorithm_zz	base12	equiv	M_cov	wall_s cand/ref (indicative, not a benchmark)	0.8869	-	INFO	8.79 / 9.91 s
+algorithm_zz	base12	equiv	M_cov	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+algorithm_zz	base12	equiv	M_cov	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_cov	l0 max abs	1.734e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_cov	l_geno max abs	1.762e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_cov	l_interact max abs	1.791e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_cov	p_geno max|dlog10p|	2.777e-10	-	INFO	n=30049 na/inf mismatches=0 identical=8749
+algorithm_zz	base12	equiv	M_cov	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_cov	p_interact max|dlog10p|	3.946e-09	-	INFO	n=30049 na/inf mismatches=0 identical=9755
+algorithm_zz	base12	equiv	M_cov	beta_geno max rel	1.15e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=118
+algorithm_zz	base12	equiv	M_cov	se_geno max rel	1.253e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=1530
+algorithm_zz	base12	equiv	M_cov	l_boot_geno max abs	17.78	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_cov	l_boot_interact max abs	19.01	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_cov	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_cov	p_geno sig p<0.001	0	0	PASS	ref 41 cand 41 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_cov	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_cov	p_interact sig p<0.001	0	0	PASS	ref 35 cand 35 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_cov	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_cov	p_interact_boot sig p<0.001	3	0	INFO	ref 23 cand 26 flips 3 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999998 median 1.000000
+algorithm_zz	base12	equiv	M_cov	boot LR distribution KS p	0.2217	>= 0.01	PASS	q0.5 0.4809/0.4653 q0.9 2.851/2.82 q0.99 6.84/6.987 q0.999 11.38/11.19
+algorithm_zz	base12	equiv	M_cov	l_boot_geno - l_geno distribution KS p	0.9991	>= 0.01	PASS	q0.5 6.936/6.977 q0.9 25.67/25.72 q0.99 42.27/41.71 q0.999 52.79/53.29
+algorithm_zz	base12	stat	M_cov	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.033/0.033 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+algorithm_zz	base12	equiv	M_cov30	wall_s cand/ref (indicative, not a benchmark)	1.011	-	INFO	24.43 / 24.18 s
+algorithm_zz	base12	equiv	M_cov30	rows	0	0	PASS	ref 19999 rows / 100 genes, cand 19999 / 100
+algorithm_zz	base12	equiv	M_cov30	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_cov30	l0 max abs	1.677e-12	1e-09	PASS	n=19999 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_cov30	l_geno max abs	1.791e-12	1e-09	PASS	n=19999 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_cov30	l_interact max abs	1.791e-12	1e-09	PASS	n=19999 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_cov30	p_geno max|dlog10p|	1.965e-10	-	INFO	n=19999 na/inf mismatches=0 identical=5569
+algorithm_zz	base12	equiv	M_cov30	df_interact max abs	0	0	PASS	n=19999 na/inf mismatches=0 identical=19999
+algorithm_zz	base12	equiv	M_cov30	p_interact max|dlog10p|	3.051e-10	-	INFO	n=19999 na/inf mismatches=0 identical=6079
+algorithm_zz	base12	equiv	M_cov30	beta_geno max rel	1.568e-08	1e-06	PASS	n=19999 na/inf mismatches=0 identical=77
+algorithm_zz	base12	equiv	M_cov30	se_geno max rel	1.314e-08	1e-06	PASS	n=19999 na/inf mismatches=0 identical=1048
+algorithm_zz	base12	equiv	M_cov30	l_boot_geno max abs	26.9	1e-05	INFO	n=19999 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_cov30	l_boot_interact max abs	28.5	1e-05	INFO	n=19999 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_cov30	p_geno lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_cov30	p_geno sig p<0.001	0	0	PASS	ref 39 cand 39 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_geno sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_cov30	p_interact lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_cov30	p_interact sig p<0.001	0	0	PASS	ref 50 cand 50 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_cov30	p_interact_boot lead SNP per gene	0	0	PASS	100 genes, 2 different leads (2 ties within the band)
+algorithm_zz	base12	equiv	M_cov30	p_interact_boot sig p<0.001	15	0	INFO	ref 31 cand 16 flips 15 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_cov30	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999998 median 0.999999
+algorithm_zz	base12	equiv	M_cov30	boot LR distribution KS p	0.7195	>= 0.01	PASS	q0.5 0.5109/0.5087 q0.9 3.032/3.051 q0.99 7.422/7.398 q0.999 11.57/12.47
+algorithm_zz	base12	equiv	M_cov30	l_boot_geno - l_geno distribution KS p	0.9777	>= 0.01	PASS	q0.5 17.47/17.42 q0.9 36.8/36.87 q0.99 53.29/53.31 q0.999 65.55/64.29
+algorithm_zz	base12	stat	M_cov30	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.100/0.100 fdr 0.333/0.333; p_geno lead p<1e-5: power 0.100/0.100 fdr 0.333/0.333; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+algorithm_zz	base12	equiv	M_miss	wall_s cand/ref (indicative, not a benchmark)	1.026	-	INFO	7.46 / 7.27 s
+algorithm_zz	base12	equiv	M_miss	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+algorithm_zz	base12	equiv	M_miss	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_miss	l0 max abs	1.762e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_miss	l_geno max abs	1.847e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_miss	l_interact max abs	1.819e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_miss	p_geno max|dlog10p|	1.235e-10	-	INFO	n=30049 na/inf mismatches=0 identical=10236
+algorithm_zz	base12	equiv	M_miss	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_miss	p_interact max|dlog10p|	1.131e-10	-	INFO	n=30049 na/inf mismatches=0 identical=9446
+algorithm_zz	base12	equiv	M_miss	beta_geno max rel	4.641e-14	1e-06	PASS	n=30049 na/inf mismatches=0 identical=175
+algorithm_zz	base12	equiv	M_miss	se_geno max rel	1.386e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=1380
+algorithm_zz	base12	equiv	M_miss	l_boot_geno max abs	10.14	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_miss	l_boot_interact max abs	10.62	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_miss	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_miss	p_geno sig p<0.001	0	0	PASS	ref 55 cand 55 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_geno sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_geno sig p<1e-08	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_miss	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_miss	p_interact sig p<0.001	0	0	PASS	ref 43 cand 43 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_miss	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_miss	p_interact_boot sig p<0.001	9	0	INFO	ref 33 cand 42 flips 9 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_miss	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999997 median 1.000000
+algorithm_zz	base12	equiv	M_miss	boot LR distribution KS p	0.7288	>= 0.01	PASS	q0.5 0.4642/0.4564 q0.9 2.756/2.734 q0.99 6.758/6.839 q0.999 11.19/10.87
+algorithm_zz	base12	equiv	M_miss	l_boot_geno - l_geno distribution KS p	0.9997	>= 0.01	PASS	q0.5 1.838/1.751 q0.9 20.25/20.29 q0.99 36.41/36.27 q0.999 47.09/46.85
+algorithm_zz	base12	stat	M_miss	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.100/0.100 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.100/0.100 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+algorithm_zz	base12	equiv	M_dense	wall_s cand/ref (indicative, not a benchmark)	0.9524	-	INFO	17.28 / 18.14 s
+algorithm_zz	base12	equiv	M_dense	rows	0	0	PASS	ref 148125 rows / 150 genes, cand 148125 / 150
+algorithm_zz	base12	equiv	M_dense	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_dense	l0 max abs	1.677e-12	1e-09	PASS	n=148125 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_dense	l_geno max abs	1.734e-12	1e-09	PASS	n=148125 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_dense	l_interact max abs	1.762e-12	1e-09	PASS	n=148125 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_dense	p_geno max|dlog10p|	3.25e-09	-	INFO	n=148125 na/inf mismatches=0 identical=51990
+algorithm_zz	base12	equiv	M_dense	df_interact max abs	0	0	PASS	n=148125 na/inf mismatches=0 identical=148125
+algorithm_zz	base12	equiv	M_dense	p_interact max|dlog10p|	8.635e-10	-	INFO	n=148125 na/inf mismatches=0 identical=46874
+algorithm_zz	base12	equiv	M_dense	beta_geno max rel	4.298e-14	1e-06	PASS	n=148125 na/inf mismatches=0 identical=964
+algorithm_zz	base12	equiv	M_dense	se_geno max rel	1.397e-08	1e-06	PASS	n=148125 na/inf mismatches=0 identical=8028
+algorithm_zz	base12	equiv	M_dense	l_boot_geno max abs	14.24	1e-05	INFO	n=148125 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_dense	l_boot_interact max abs	13.77	1e-05	INFO	n=148125 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_dense	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_dense	p_geno sig p<0.001	0	0	PASS	ref 161 cand 161 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_geno sig p<1e-05	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_geno eGenes BH 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_dense	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_dense	p_interact sig p<0.001	0	0	PASS	ref 150 cand 150 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_dense	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 1 different leads (1 ties within the band)
+algorithm_zz	base12	equiv	M_dense	p_interact_boot sig p<0.001	19	0	INFO	ref 148 cand 129 flips 19 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_interact_boot sig p<1e-05	1	0	INFO	ref 0 cand 1 flips 1 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_dense	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_dense	boot LR distribution KS p	0.9019	>= 0.01	PASS	q0.5 0.4636/0.4611 q0.9 2.762/2.751 q0.99 6.741/6.811 q0.999 10.92/11.16
+algorithm_zz	base12	equiv	M_dense	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.805/1.821 q0.9 20.18/20.14 q0.99 35.75/35.75 q0.999 47.21/47.25
+algorithm_zz	base12	stat	M_dense	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.067/0.067 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.067/0.067 fdr 0.500/0.500; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000
+algorithm_zz	base12	equiv	M_unbal	wall_s cand/ref (indicative, not a benchmark)	0.8349	-	INFO	4.22 / 5.06 s
+algorithm_zz	base12	equiv	M_unbal	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+algorithm_zz	base12	equiv	M_unbal	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_unbal	l0 max abs	1.791e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_unbal	l_geno max abs	1.876e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_unbal	l_interact max abs	1.933e-12	1e-09	PASS	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_unbal	p_geno max|dlog10p|	7.444e-10	-	INFO	n=30049 na/inf mismatches=0 identical=6847
+algorithm_zz	base12	equiv	M_unbal	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_unbal	p_interact max|dlog10p|	4.433e-09	-	INFO	n=30049 na/inf mismatches=0 identical=6724
+algorithm_zz	base12	equiv	M_unbal	beta_geno max rel	3.764e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=215
+algorithm_zz	base12	equiv	M_unbal	se_geno max rel	1.961e-08	1e-06	PASS	n=30049 na/inf mismatches=0 identical=2730
+algorithm_zz	base12	equiv	M_unbal	l_boot_geno max abs	10.02	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_unbal	l_boot_interact max abs	10.12	1e-05	INFO	n=30049 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	M_unbal	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_unbal	p_geno sig p<0.001	0	0	PASS	ref 50 cand 50 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_geno eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_unbal	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_unbal	p_interact sig p<0.001	0	0	PASS	ref 33 cand 33 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_interact eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_unbal	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_unbal	p_interact_boot sig p<0.001	10	0	INFO	ref 40 cand 30 flips 10 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_unbal	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999998 median 1.000000
+algorithm_zz	base12	equiv	M_unbal	boot LR distribution KS p	0.1767	>= 0.01	PASS	q0.5 0.4496/0.4624 q0.9 2.709/2.714 q0.99 6.541/6.836 q0.999 10.33/10.98
+algorithm_zz	base12	equiv	M_unbal	l_boot_geno - l_geno distribution KS p	0.9996	>= 0.01	PASS	q0.5 1.87/1.868 q0.9 22.05/22.08 q0.99 39.39/39.24 q0.999 51.96/52.01
+algorithm_zz	base12	stat	M_unbal	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.033/0.033 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.033/0.033 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.067/0.067 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.067/0.067 fdr 0.000/0.000
+algorithm_zz	base12	equiv	S_rare	wall_s cand/ref (indicative, not a benchmark)	1.361	-	INFO	2.35 / 1.73 s
+algorithm_zz	base12	equiv	S_rare	rows	0	0	PASS	ref 19104 rows / 200 genes, cand 19104 / 200
+algorithm_zz	base12	equiv	S_rare	columns	0	0	PASS	
+algorithm_zz	base12	equiv	S_rare	l0 max abs	5.684e-13	1e-09	PASS	n=19104 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S_rare	l_geno max abs	5.826e-13	1e-09	PASS	n=19104 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S_rare	l_interact max abs	5.826e-13	1e-09	PASS	n=19104 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S_rare	p_geno max|dlog10p|	2.877e-10	-	INFO	n=19104 na/inf mismatches=0 identical=6415
+algorithm_zz	base12	equiv	S_rare	df_interact max abs	0	0	PASS	n=19104 na/inf mismatches=0 identical=19104
+algorithm_zz	base12	equiv	S_rare	p_interact max|dlog10p|	1.797e-09	-	INFO	n=19104 na/inf mismatches=0 identical=6018
+algorithm_zz	base12	equiv	S_rare	beta_geno max rel	1.789e-14	1e-06	PASS	n=19104 na/inf mismatches=0 identical=282
+algorithm_zz	base12	equiv	S_rare	se_geno max rel	1.559e-08	1e-06	PASS	n=19104 na/inf mismatches=0 identical=1756
+algorithm_zz	base12	equiv	S_rare	l_boot_geno max abs	10.59	1e-05	INFO	n=19104 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S_rare	l_boot_interact max abs	11.91	1e-05	INFO	n=19104 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S_rare	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S_rare	p_geno sig p<0.001	0	0	PASS	ref 26 cand 26 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	S_rare	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S_rare	p_interact sig p<0.001	0	0	PASS	ref 26 cand 26 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	S_rare	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 1 different leads (1 ties within the band)
+algorithm_zz	base12	equiv	S_rare	p_interact_boot sig p<0.001	0	0	PASS	ref 18 cand 18 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S_rare	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999986 median 1.000000
+algorithm_zz	base12	equiv	S_rare	boot LR distribution KS p	0.2782	>= 0.01	PASS	q0.5 0.4682/0.4799 q0.9 2.799/2.803 q0.99 6.763/6.813 q0.999 11.12/11.05
+algorithm_zz	base12	equiv	S_rare	l_boot_geno - l_geno distribution KS p	0.9988	>= 0.01	PASS	q0.5 1.742/1.746 q0.9 15.03/14.91 q0.99 25.89/26.04 q0.999 34.64/34.56
+algorithm_zz	base12	stat	S_rare	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+algorithm_zz	base12	equiv	HS	wall_s cand/ref (indicative, not a benchmark)	1.247	-	INFO	7.04 / 5.64 s
+algorithm_zz	base12	equiv	HS	rows	0	0	PASS	ref 19950 rows / 200 genes, cand 19950 / 200
+algorithm_zz	base12	equiv	HS	columns	0	0	PASS	
+algorithm_zz	base12	equiv	HS	l0 max abs	0	1e-09	PASS	n=19950 na/inf mismatches=0 identical=19950
+algorithm_zz	base12	equiv	HS	l_geno max abs	0	1e-09	PASS	n=19950 na/inf mismatches=0 identical=19950
+algorithm_zz	base12	equiv	HS	l_interact max abs	0	1e-09	PASS	n=19950 na/inf mismatches=0 identical=19950
+algorithm_zz	base12	equiv	HS	p_geno max|dlog10p|	0	-	INFO	n=19950 na/inf mismatches=0 identical=19950
+algorithm_zz	base12	equiv	HS	df_interact max abs	0	0	PASS	n=19950 na/inf mismatches=0 identical=19950
+algorithm_zz	base12	equiv	HS	p_interact max|dlog10p|	0	-	INFO	n=19950 na/inf mismatches=0 identical=19950
+algorithm_zz	base12	equiv	HS	beta_geno max rel	0	1e-06	PASS	n=19950 na/inf mismatches=0 identical=19950
+algorithm_zz	base12	equiv	HS	se_geno max rel	0	1e-06	PASS	n=19950 na/inf mismatches=0 identical=19950
+algorithm_zz	base12	equiv	HS	l_boot_geno max abs	0	1e-05	PASS	n=19950 na/inf mismatches=0 identical=19950
+algorithm_zz	base12	equiv	HS	l_boot_interact max abs	0	1e-05	PASS	n=19950 na/inf mismatches=0 identical=19950
+algorithm_zz	base12	equiv	HS	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	HS	p_geno sig p<0.001	0	0	PASS	ref 78 cand 78 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_geno sig p<1e-05	0	0	PASS	ref 30 cand 30 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_geno sig p<1e-08	0	0	PASS	ref 17 cand 17 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 18 cand 18 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_geno eGenes BH 5%	0	0	PASS	ref 26 cand 26 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	HS	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	HS	p_interact sig p<0.001	0	0	PASS	ref 49 cand 49 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_interact sig p<1e-05	0	0	PASS	ref 11 cand 11 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_interact sig p<1e-08	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_interact eGenes BH 5%	0	0	PASS	ref 10 cand 10 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	HS	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	HS	p_interact_boot sig p<0.001	0	0	PASS	ref 37 cand 37 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	HS	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	HS	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4797/0.4797 q0.9 2.797/2.797 q0.99 6.974/6.974 q0.999 11.47/11.47
+algorithm_zz	base12	equiv	HS	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.802/1.802 q0.9 20.14/20.14 q0.99 35.99/35.99 q0.999 46.98/46.98
+algorithm_zz	base12	stat	HS	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.650/0.650 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.525/0.525 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.400/0.400 fdr 0.200/0.200; p_interact lead p<1e-5: power 0.400/0.400 fdr 0.200/0.200
+algorithm_zz	base12	equiv	LA	wall_s cand/ref (indicative, not a benchmark)	0.8364	-	INFO	5.66 / 6.77 s
+algorithm_zz	base12	equiv	LA	rows	0	0	PASS	ref 9950 rows / 100 genes, cand 9950 / 100
+algorithm_zz	base12	equiv	LA	columns	0	0	PASS	
+algorithm_zz	base12	equiv	LA	l0 max abs	1.108e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	LA	l_geno max abs	1.137e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	LA	l_geno_shared max abs	1.137e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	LA	l_interact_null max abs	1.137e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	LA	l_interact max abs	1.165e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	LA	l_interact_shared max abs	1.137e-12	1e-09	PASS	n=9950 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	LA	df_geno max abs	0	0	PASS	n=9950 na/inf mismatches=0 identical=9950
+algorithm_zz	base12	equiv	LA	p_geno max|dlog10p|	1.223e-13	-	INFO	n=9950 na/inf mismatches=0 identical=3495
+algorithm_zz	base12	equiv	LA	df_het max abs	0	0	PASS	n=9950 na/inf mismatches=0 identical=9950
+algorithm_zz	base12	equiv	LA	p_het max|dlog10p|	1.021e-10	-	INFO	n=9946 na/inf mismatches=0 identical=3442
+algorithm_zz	base12	equiv	LA	df_interact max abs	0	0	PASS	n=9950 na/inf mismatches=0 identical=9950
+algorithm_zz	base12	equiv	LA	p_interact max|dlog10p|	1.967e-13	-	INFO	n=9950 na/inf mismatches=0 identical=2775
+algorithm_zz	base12	equiv	LA	p_interact_het max|dlog10p|	1.774e-10	-	INFO	n=9946 na/inf mismatches=0 identical=2526
+algorithm_zz	base12	equiv	LA	af_anc0 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+algorithm_zz	base12	equiv	LA	laprop_anc0 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+algorithm_zz	base12	equiv	LA	beta_anc0 max rel	1.951e-14	1e-06	PASS	n=9950 na/inf mismatches=0 identical=102
+algorithm_zz	base12	equiv	LA	se_anc0 max rel	1.557e-08	1e-06	PASS	n=9950 na/inf mismatches=0 identical=812
+algorithm_zz	base12	equiv	LA	p_anc0 max|dlog10p|	7.937e-08	-	INFO	n=9950 na/inf mismatches=0 identical=117
+algorithm_zz	base12	equiv	LA	beta_interact_anc0 max rel	4.645e-14	1e-06	PASS	n=9950 na/inf mismatches=0 identical=67
+algorithm_zz	base12	equiv	LA	se_interact_anc0 max rel	1.481e-08	1e-06	PASS	n=9950 na/inf mismatches=0 identical=309
+algorithm_zz	base12	equiv	LA	p_interact_anc0 max|dlog10p|	3.172e-08	-	INFO	n=9950 na/inf mismatches=0 identical=102
+algorithm_zz	base12	equiv	LA	af_anc1 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+algorithm_zz	base12	equiv	LA	laprop_anc1 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+algorithm_zz	base12	equiv	LA	beta_anc1 max rel	2.171e-14	1e-06	PASS	n=9946 na/inf mismatches=0 identical=116
+algorithm_zz	base12	equiv	LA	se_anc1 max rel	1.557e-08	1e-06	PASS	n=9946 na/inf mismatches=0 identical=638
+algorithm_zz	base12	equiv	LA	p_anc1 max|dlog10p|	3.233e-08	-	INFO	n=9946 na/inf mismatches=0 identical=116
+algorithm_zz	base12	equiv	LA	beta_interact_anc1 max rel	1.332e-13	1e-06	PASS	n=9946 na/inf mismatches=0 identical=73
+algorithm_zz	base12	equiv	LA	se_interact_anc1 max rel	1.481e-08	1e-06	PASS	n=9946 na/inf mismatches=0 identical=122
+algorithm_zz	base12	equiv	LA	p_interact_anc1 max|dlog10p|	3.591e-08	-	INFO	n=9946 na/inf mismatches=0 identical=43
+algorithm_zz	base12	equiv	LA	l_boot_interact_null max abs	16.87	1e-05	INFO	n=9950 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	LA	l_boot_interact max abs	18.69	1e-05	INFO	n=9950 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	LA	p_geno lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	LA	p_geno sig p<0.001	0	0	PASS	ref 36 cand 36 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_geno sig p<1e-05	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_geno sig p<1e-08	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_geno eGenes BH 5%	0	0	PASS	ref 13 cand 13 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	LA	p_interact lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	LA	p_interact sig p<0.001	0	0	PASS	ref 15 cand 15 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	LA	p_het lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	LA	p_het sig p<0.001	0	0	PASS	ref 14 cand 14 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_het sig p<1e-05	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_het sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_het eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_het eGenes BH 5%	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_het rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	LA	p_interact_het lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	LA	p_interact_het sig p<0.001	0	0	PASS	ref 14 cand 14 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_interact_het sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_interact_het sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_interact_het eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_interact_het eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	LA	p_interact_het rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	LA	boot LR distribution KS p	0.05519	>= 0.01	PASS	q0.5 1.398/1.464 q0.9 4.714/4.809 q0.99 9.609/9.399 q0.999 14.16/14.07
+algorithm_zz	base12	equiv	P_many	wall_s cand/ref (indicative, not a benchmark)	1.428	-	INFO	28.02 / 19.61 s
+algorithm_zz	base12	equiv	P_many	rows	0	0	PASS	ref 206669 rows / 3000 genes, cand 206669 / 3000
+algorithm_zz	base12	equiv	P_many	columns	0	0	PASS	
+algorithm_zz	base12	equiv	P_many	l0 max abs	5.826e-13	1e-09	PASS	n=206669 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	P_many	l_geno max abs	6.111e-13	1e-09	PASS	n=206669 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	P_many	l_interact max abs	5.969e-13	1e-09	PASS	n=206669 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	P_many	p_geno max|dlog10p|	2.996e-10	-	INFO	n=206669 na/inf mismatches=0 identical=69820
+algorithm_zz	base12	equiv	P_many	df_interact max abs	0	0	PASS	n=206669 na/inf mismatches=0 identical=206669
+algorithm_zz	base12	equiv	P_many	p_interact max|dlog10p|	6.229e-10	-	INFO	n=206669 na/inf mismatches=0 identical=65135
+algorithm_zz	base12	equiv	P_many	beta_geno max rel	1.983e-14	1e-06	PASS	n=206669 na/inf mismatches=0 identical=3014
+algorithm_zz	base12	equiv	P_many	se_geno max rel	1.433e-08	1e-06	PASS	n=206669 na/inf mismatches=0 identical=18678
+algorithm_zz	base12	equiv	P_many	l_boot_geno max abs	12.78	1e-05	INFO	n=206669 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	P_many	l_boot_interact max abs	12.81	1e-05	INFO	n=206669 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	P_many	p_geno lead SNP per gene	0	0	PASS	3000 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	P_many	p_geno sig p<0.001	0	0	PASS	ref 274 cand 274 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_geno sig p<1e-05	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	P_many	p_interact lead SNP per gene	0	0	PASS	3000 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	P_many	p_interact sig p<0.001	0	0	PASS	ref 239 cand 239 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_interact sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_interact eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	P_many	p_interact_boot lead SNP per gene	0	0	PASS	3000 genes, 1 different leads (1 ties within the band)
+algorithm_zz	base12	equiv	P_many	p_interact_boot sig p<0.001	0	0	PASS	ref 209 cand 209 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_interact_boot sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999990 median 1.000000
+algorithm_zz	base12	equiv	P_many	boot LR distribution KS p	0.5886	>= 0.01	PASS	q0.5 0.4688/0.4718 q0.9 2.809/2.8 q0.99 6.856/6.855 q0.999 11.08/11.08
+algorithm_zz	base12	equiv	P_many	l_boot_geno - l_geno distribution KS p	0.9994	>= 0.01	PASS	q0.5 1.815/1.812 q0.9 15/14.98 q0.99 26.34/26.33 q0.999 34.67/34.55
+algorithm_zz	base12	stat	P_many	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.005/0.005 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.010/0.010 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.003/0.003 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.003/0.003 fdr 0.500/0.500
+algorithm_zz	base12	equiv	P_many10	wall_s cand/ref (indicative, not a benchmark)	1.433	-	INFO	9.12 / 6.36 s
+algorithm_zz	base12	equiv	P_many10	rows	0	0	PASS	ref 29986 rows / 3000 genes, cand 29986 / 3000
+algorithm_zz	base12	equiv	P_many10	columns	0	0	PASS	
+algorithm_zz	base12	equiv	P_many10	l0 max abs	5.826e-13	1e-09	PASS	n=29986 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	P_many10	l_geno max abs	5.826e-13	1e-09	PASS	n=29986 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	P_many10	l_interact max abs	5.969e-13	1e-09	PASS	n=29986 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	P_many10	p_geno max|dlog10p|	1.364e-10	-	INFO	n=29986 na/inf mismatches=0 identical=10219
+algorithm_zz	base12	equiv	P_many10	df_interact max abs	0	0	PASS	n=29986 na/inf mismatches=0 identical=29986
+algorithm_zz	base12	equiv	P_many10	p_interact max|dlog10p|	8.283e-11	-	INFO	n=29986 na/inf mismatches=0 identical=9426
+algorithm_zz	base12	equiv	P_many10	beta_geno max rel	1.749e-14	1e-06	PASS	n=29986 na/inf mismatches=0 identical=460
+algorithm_zz	base12	equiv	P_many10	se_geno max rel	1.443e-08	1e-06	PASS	n=29986 na/inf mismatches=0 identical=2729
+algorithm_zz	base12	equiv	P_many10	l_boot_geno max abs	11.08	1e-05	INFO	n=29986 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	P_many10	l_boot_interact max abs	11.53	1e-05	INFO	n=29986 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	P_many10	p_geno lead SNP per gene	0	0	PASS	3000 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	P_many10	p_geno sig p<0.001	0	0	PASS	ref 95 cand 95 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_geno sig p<1e-05	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_geno eGenes BH 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	P_many10	p_interact lead SNP per gene	0	0	PASS	3000 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	P_many10	p_interact sig p<0.001	0	0	PASS	ref 50 cand 50 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_interact sig p<1e-05	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_interact eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	P_many10	p_interact_boot lead SNP per gene	0	0	PASS	3000 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	P_many10	p_interact_boot sig p<0.001	12	0	INFO	ref 50 cand 38 flips 12 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	P_many10	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.996965 median 1.000000
+algorithm_zz	base12	equiv	P_many10	boot LR distribution KS p	0.8416	>= 0.01	PASS	q0.5 0.46/0.4663 q0.9 2.791/2.792 q0.99 6.72/6.921 q0.999 10.71/11.13
+algorithm_zz	base12	equiv	P_many10	l_boot_geno - l_geno distribution KS p	0.9993	>= 0.01	PASS	q0.5 1.863/1.886 q0.9 15.09/15.07 q0.99 26.14/26.26 q0.999 35.27/34.8
+algorithm_zz	base12	stat	P_many10	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.008/0.008 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.008/0.008 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.003/0.003 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.003/0.003 fdr 0.000/0.000
+algorithm_zz	base12	equiv	XL_grm_many	wall_s cand/ref (indicative, not a benchmark)	1.609	-	INFO	54.08 / 33.60 s
+algorithm_zz	base12	equiv	XL_grm_many	rows	0	0	PASS	ref 10000 rows / 400 genes, cand 10000 / 400
+algorithm_zz	base12	equiv	XL_grm_many	columns	0	0	PASS	
+algorithm_zz	base12	equiv	XL_grm_many	l0 max abs	0	1e-09	PASS	n=10000 na/inf mismatches=0 identical=10000
+algorithm_zz	base12	equiv	XL_grm_many	l_geno max abs	0	1e-09	PASS	n=10000 na/inf mismatches=0 identical=10000
+algorithm_zz	base12	equiv	XL_grm_many	l_interact max abs	0	1e-09	PASS	n=10000 na/inf mismatches=0 identical=10000
+algorithm_zz	base12	equiv	XL_grm_many	p_geno max|dlog10p|	0	-	INFO	n=10000 na/inf mismatches=0 identical=10000
+algorithm_zz	base12	equiv	XL_grm_many	df_interact max abs	0	0	PASS	n=10000 na/inf mismatches=0 identical=10000
+algorithm_zz	base12	equiv	XL_grm_many	p_interact max|dlog10p|	0	-	INFO	n=10000 na/inf mismatches=0 identical=10000
+algorithm_zz	base12	equiv	XL_grm_many	beta_geno max rel	0	1e-06	PASS	n=10000 na/inf mismatches=0 identical=10000
+algorithm_zz	base12	equiv	XL_grm_many	se_geno max rel	0	1e-06	PASS	n=10000 na/inf mismatches=0 identical=10000
+algorithm_zz	base12	equiv	XL_grm_many	l_boot_geno max abs	0	1e-05	PASS	n=10000 na/inf mismatches=0 identical=10000
+algorithm_zz	base12	equiv	XL_grm_many	l_boot_interact max abs	0	1e-05	PASS	n=10000 na/inf mismatches=0 identical=10000
+algorithm_zz	base12	equiv	XL_grm_many	p_geno lead SNP per gene	0	0	PASS	400 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	XL_grm_many	p_geno sig p<0.001	0	0	PASS	ref 147 cand 147 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_geno sig p<1e-05	0	0	PASS	ref 75 cand 75 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_geno sig p<1e-08	0	0	PASS	ref 40 cand 40 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 49 cand 49 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_geno eGenes BH 5%	0	0	PASS	ref 69 cand 69 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	XL_grm_many	p_interact lead SNP per gene	0	0	PASS	400 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact sig p<0.001	0	0	PASS	ref 47 cand 47 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact sig p<1e-05	0	0	PASS	ref 19 cand 19 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact sig p<1e-08	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 15 cand 15 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact eGenes BH 5%	0	0	PASS	ref 26 cand 26 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	XL_grm_many	p_interact_boot lead SNP per gene	0	0	PASS	400 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact_boot sig p<0.001	0	0	PASS	ref 44 cand 44 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact_boot eGenes BH 5%	0	0	PASS	ref 29 cand 29 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	XL_grm_many	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	XL_grm_many	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4577/0.4577 q0.9 2.778/2.778 q0.99 6.683/6.683 q0.999 10.93/10.93
+algorithm_zz	base12	equiv	XL_grm_many	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.498/1.498 q0.9 42.83/42.83 q0.99 75.72/75.72 q0.999 98.01/98.01
+algorithm_zz	base12	stat	XL_grm_many	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.775/0.775 fdr 0.101/0.101; p_geno lead p<1e-5: power 0.637/0.637 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.625/0.625 fdr 0.038/0.038; p_interact lead p<1e-5: power 0.450/0.450 fdr 0.053/0.053
+algorithm_zz	base12	equiv	R_real	wall_s cand/ref (indicative, not a benchmark)	1.403	-	INFO	177.93 / 126.84 s
+algorithm_zz	base12	equiv	R_real	rows	0	0	PASS	ref 59046 rows / 200 genes, cand 59046 / 200
+algorithm_zz	base12	equiv	R_real	columns	0	0	PASS	
+algorithm_zz	base12	equiv	R_real	l0 max abs	0	1e-09	PASS	n=59046 na/inf mismatches=0 identical=59046
+algorithm_zz	base12	equiv	R_real	l_geno max abs	0	1e-09	PASS	n=59046 na/inf mismatches=0 identical=59046
+algorithm_zz	base12	equiv	R_real	l_interact max abs	0	1e-09	PASS	n=59046 na/inf mismatches=0 identical=59046
+algorithm_zz	base12	equiv	R_real	p_geno max|dlog10p|	0	-	INFO	n=59046 na/inf mismatches=0 identical=59046
+algorithm_zz	base12	equiv	R_real	df_interact max abs	0	0	PASS	n=59046 na/inf mismatches=0 identical=59046
+algorithm_zz	base12	equiv	R_real	p_interact max|dlog10p|	0	-	INFO	n=59046 na/inf mismatches=0 identical=59046
+algorithm_zz	base12	equiv	R_real	beta_geno max rel	0	1e-06	PASS	n=59046 na/inf mismatches=0 identical=59046
+algorithm_zz	base12	equiv	R_real	se_geno max rel	0	1e-06	PASS	n=59046 na/inf mismatches=0 identical=59046
+algorithm_zz	base12	equiv	R_real	l_boot_geno max abs	0	1e-05	PASS	n=59046 na/inf mismatches=0 identical=59046
+algorithm_zz	base12	equiv	R_real	l_boot_interact max abs	0	1e-05	PASS	n=59046 na/inf mismatches=0 identical=59046
+algorithm_zz	base12	equiv	R_real	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	R_real	p_geno sig p<0.001	0	0	PASS	ref 106 cand 106 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_geno sig p<1e-05	0	0	PASS	ref 11 cand 11 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_geno sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_geno eGenes BH 5%	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	R_real	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	R_real	p_interact sig p<0.001	0	0	PASS	ref 78 cand 78 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	R_real	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	R_real	p_interact_boot sig p<0.001	0	0	PASS	ref 76 cand 76 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	R_real	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	R_real	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4641/0.4641 q0.9 2.77/2.77 q0.99 6.751/6.751 q0.999 10.9/10.9
+algorithm_zz	base12	equiv	R_real	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 6.712/6.712 q0.9 33.66/33.66 q0.99 56.44/56.44 q0.999 72.92/72.92
+algorithm_zz	base12	stat	R_real	power/FDR vs truth	4/4 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.200/0.200 fdr 0.111/0.111; p_geno lead p<1e-5: power 0.200/0.200 fdr 0.111/0.111; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+algorithm_zz	base12	equiv	S@none	wall_s cand/ref (indicative, not a benchmark)	0.9156	-	INFO	1.04 / 1.14 s
+algorithm_zz	base12	equiv	S@none	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+algorithm_zz	base12	equiv	S@none	columns	0	0	PASS	
+algorithm_zz	base12	equiv	S@none	l0 max abs	5.684e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S@none	l_geno max abs	5.826e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S@none	l_interact max abs	5.826e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S@none	p_geno max|dlog10p|	1.724e-10	-	INFO	n=19942 na/inf mismatches=0 identical=6717
+algorithm_zz	base12	equiv	S@none	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+algorithm_zz	base12	equiv	S@none	p_interact max|dlog10p|	7.028e-11	-	INFO	n=19942 na/inf mismatches=0 identical=6360
+algorithm_zz	base12	equiv	S@none	beta_geno max rel	2.162e-14	1e-06	PASS	n=19942 na/inf mismatches=0 identical=299
+algorithm_zz	base12	equiv	S@none	se_geno max rel	1.326e-08	1e-06	PASS	n=19942 na/inf mismatches=0 identical=1921
+algorithm_zz	base12	equiv	S@none	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S@none	p_geno sig p<0.001	0	0	PASS	ref 16 cand 16 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@none	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@none	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@none	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@none	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@none	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	S@none	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S@none	p_interact sig p<0.001	0	0	PASS	ref 22 cand 22 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@none	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@none	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@none	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@none	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@none	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	S@permute	wall_s cand/ref (indicative, not a benchmark)	0.9384	-	INFO	1.07 / 1.14 s
+algorithm_zz	base12	equiv	S@permute	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+algorithm_zz	base12	equiv	S@permute	columns	0	0	PASS	
+algorithm_zz	base12	equiv	S@permute	l0 max abs	5.684e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S@permute	l_geno max abs	5.826e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S@permute	l_interact max abs	5.826e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S@permute	p_geno max|dlog10p|	2.119e-10	-	INFO	n=19942 na/inf mismatches=0 identical=6870
+algorithm_zz	base12	equiv	S@permute	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+algorithm_zz	base12	equiv	S@permute	p_interact max|dlog10p|	1.487e-10	-	INFO	n=19942 na/inf mismatches=0 identical=6306
+algorithm_zz	base12	equiv	S@permute	beta_geno max rel	1.79e-14	1e-06	PASS	n=19942 na/inf mismatches=0 identical=268
+algorithm_zz	base12	equiv	S@permute	se_geno max rel	1.442e-08	1e-06	PASS	n=19942 na/inf mismatches=0 identical=1834
+algorithm_zz	base12	equiv	S@permute	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S@permute	p_geno sig p<0.001	0	0	PASS	ref 15 cand 15 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@permute	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@permute	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@permute	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@permute	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@permute	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	S@permute	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S@permute	p_interact sig p<0.001	0	0	PASS	ref 29 cand 29 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@permute	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@permute	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@permute	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@permute	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S@permute	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	S#null	wall_s cand/ref (indicative, not a benchmark)	1.083	-	INFO	2.07 / 1.91 s
+algorithm_zz	base12	equiv	S#null	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+algorithm_zz	base12	equiv	S#null	columns	0	0	PASS	
+algorithm_zz	base12	equiv	S#null	l0 max abs	5.684e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S#null	l_geno max abs	5.969e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S#null	l_interact max abs	5.969e-13	1e-09	PASS	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S#null	p_geno max|dlog10p|	2.836e-10	-	INFO	n=19942 na/inf mismatches=0 identical=6913
+algorithm_zz	base12	equiv	S#null	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+algorithm_zz	base12	equiv	S#null	p_interact max|dlog10p|	4.127e-10	-	INFO	n=19942 na/inf mismatches=0 identical=6348
+algorithm_zz	base12	equiv	S#null	beta_geno max rel	1.972e-14	1e-06	PASS	n=19942 na/inf mismatches=0 identical=328
+algorithm_zz	base12	equiv	S#null	se_geno max rel	1.419e-08	1e-06	PASS	n=19942 na/inf mismatches=0 identical=1868
+algorithm_zz	base12	equiv	S#null	l_boot_geno max abs	10.99	1e-05	INFO	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S#null	l_boot_interact max abs	11.45	1e-05	INFO	n=19942 na/inf mismatches=0 identical=0
+algorithm_zz	base12	equiv	S#null	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S#null	p_geno sig p<0.001	0	0	PASS	ref 19 cand 19 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	S#null	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S#null	p_interact sig p<0.001	0	0	PASS	ref 15 cand 15 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	S#null	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	S#null	p_interact_boot sig p<0.001	8	0	INFO	ref 7 cand 15 flips 8 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	S#null	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 0.999988 median 1.000000
+algorithm_zz	base12	equiv	S#null	boot LR distribution KS p	0.5341	>= 0.01	PASS	q0.5 0.4824/0.4817 q0.9 2.838/2.869 q0.99 6.865/7.061 q0.999 11.45/10.84
+algorithm_zz	base12	equiv	S#null	l_boot_geno - l_geno distribution KS p	0.9872	>= 0.01	PASS	q0.5 1.758/1.721 q0.9 14.95/14.89 q0.99 25.86/25.87 q0.999 34.42/34.31
+algorithm_zz	base12	stat	S#null	null lambda_GC p_geno all SNPs	1.033	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.033; cand KS p 0.232 (ref 0.232)
+algorithm_zz	base12	stat	S#null	null lambda_GC p_geno 1 SNP/gene	1.059	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.059; cand KS p 0.717 (ref 0.717)
+algorithm_zz	base12	stat	S#null	null lambda_GC p_interact all SNPs	1.006	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.006; cand KS p 0.0451 (ref 0.0451)
+algorithm_zz	base12	stat	S#null	null lambda_GC p_interact 1 SNP/gene	0.8621	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.862; cand KS p 0.564 (ref 0.564)
+algorithm_zz	base12	stat	S#null	null lambda_GC boot LR vs chi2(df)	1.059	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.060; cand KS p 1.98e-06 (ref 0.000958)
+algorithm_zz	base12	equiv	M_grm#null	wall_s cand/ref (indicative, not a benchmark)	1.433	-	INFO	10.98 / 7.66 s
+algorithm_zz	base12	equiv	M_grm#null	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+algorithm_zz	base12	equiv	M_grm#null	columns	0	0	PASS	
+algorithm_zz	base12	equiv	M_grm#null	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm#null	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm#null	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm#null	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm#null	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm#null	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm#null	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm#null	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm#null	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm#null	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+algorithm_zz	base12	equiv	M_grm#null	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_grm#null	p_geno sig p<0.001	0	0	PASS	ref 29 cand 29 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_grm#null	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_grm#null	p_interact sig p<0.001	0	0	PASS	ref 31 cand 31 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_grm#null	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+algorithm_zz	base12	equiv	M_grm#null	p_interact_boot sig p<0.001	0	0	PASS	ref 27 cand 27 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+algorithm_zz	base12	equiv	M_grm#null	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+algorithm_zz	base12	equiv	M_grm#null	boot LR distribution KS p	1	>= 0.01	PASS	q0.5 0.4718/0.4718 q0.9 2.749/2.749 q0.99 6.682/6.682 q0.999 10.98/10.98
+algorithm_zz	base12	equiv	M_grm#null	l_boot_geno - l_geno distribution KS p	1	>= 0.01	PASS	q0.5 1.791/1.791 q0.9 20.25/20.25 q0.99 36.37/36.37 q0.999 47.43/47.43
+algorithm_zz	base12	stat	M_grm#null	null lambda_GC p_geno all SNPs	0.9803	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.980; cand KS p 0.0722 (ref 0.0722)
+algorithm_zz	base12	stat	M_grm#null	null lambda_GC p_geno 1 SNP/gene	1.24	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.240; cand KS p 0.786 (ref 0.786)
+algorithm_zz	base12	stat	M_grm#null	null lambda_GC p_interact all SNPs	0.9837	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.984; cand KS p 0.0597 (ref 0.0597)
+algorithm_zz	base12	stat	M_grm#null	null lambda_GC p_interact 1 SNP/gene	0.7631	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.763; cand KS p 0.0301 (ref 0.0301)
+algorithm_zz	base12	stat	M_grm#null	null lambda_GC boot LR vs chi2(df)	1.037	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.037; cand KS p 0.0119 (ref 0.0119)
+algorithm_zz	base12	repro	S	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+algorithm_zz	base12	repro	S	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+algorithm_zz	base12	repro	S	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+algorithm_zz	base12	repro	M_dense	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+algorithm_zz	base12	repro	M_dense	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+algorithm_zz	base12	repro	M_dense	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+algorithm_zz	base12	repro	M_grm	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+algorithm_zz	base12	repro	M_grm	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+algorithm_zz	base12	repro	M_grm	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+algorithm_zz	base12	repro	LA	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+algorithm_zz	base12	repro	LA	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+algorithm_zz	base12	repro	LA	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+algorithm_zz	base12	edge	default_kernel_balanced	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	default_kernel_unbalanced	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	grm_numeric_cond_h0_to_1	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	wide_spectrum_kernel_x1	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	wide_spectrum_kernel_x1e+06	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	wide_spectrum_kernel_x1e-06	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	bimodal_likelihood	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	flat_likelihood_identity_kernel	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	rare_snps_factor3_mixed_df	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	rare_snps_factor2	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	collinear_interaction_and_snps	edge case report	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+algorithm_zz	base12	edge	eqtl_only_p0_0	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	duplicated_covariate	edge case report	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+algorithm_zz	base12	edge	raw_scale_covariate	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	near_perfect_fit	edge case report	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+algorithm_zz	base12	edge	n_snps_1	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	n_snps_2	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	n_snps_7	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	n_snps_64	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	n_snps_65	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	n_snps_257	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	small_odd_n31	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	edge	no_bootstrap	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+algorithm_zz	base12	stress	bimodal, tuned peak gap	fits below the exact ML by > 1e-6 (cand)	0	<= ref; |cand-ref| <= 1e-9	PASS	6 cases; ref misses 0; max shortfall ref 5.68e-14 cand 5.68e-14; max |cand-ref| 0; NA mismatches 0
+algorithm_zz	base12	stress	random 3-block spectrum	fits below the exact ML by > 1e-6 (cand)	0	<= ref; |cand-ref| <= 1e-9	PASS	150 cases; ref misses 0; max shortfall ref 1.71e-13 cand 1.71e-13; max |cand-ref| 0; NA mismatches 0

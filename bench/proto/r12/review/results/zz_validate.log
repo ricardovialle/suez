@@ -1,0 +1,4 @@
+algorithm_zz vs base12: 1105 checks, INFO=138 PASS=966 WARN=1 (490 s) -> bench/proto/r12/review/results/v12_algorithm_zz_vs_base12.tsv
+  part dataset                     check    value threshold status                                                                   detail
+ equiv       L boot LR distribution KS p 0.009555   >= 0.01   WARN q0.5 0.4632/0.4504 q0.9 2.745/2.732 q0.99 6.643/6.704 q0.999 11.55/10.91
+VERDICT: PASS with warnings 

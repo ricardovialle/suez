@@ -1,0 +1,9 @@
+review_mut_1peak vs base12: 591 checks, FAIL=5 INFO=80 PASS=506 (375 s) -> bench/proto/r12/review/results/v12_review_mut_1peak_vs_base12.tsv
+   part                 dataset                                      check    value                    threshold status                                                                                                    detail
+  equiv                 M_learn                         l_interact max abs 0.006685                        1e-09   FAIL                                                               n=30049 na/inf mismatches=0 identical=30048
+  equiv                 M_learn      p_interact rank: discordant SNP pairs 1.000000                            0   FAIL                                                            Spearman per gene min 0.999999 median 1.000000
+  equiv                 M_learn p_interact_boot rank: discordant SNP pairs 1.000000                            0   FAIL                                                            Spearman per gene min 0.999999 median 1.000000
+   edge      bimodal_likelihood                            edge case exact 0.067390 l 1e-9 (WARN 1e-6), rel 1e-6   FAIL                           max_dl 0.0674 boot 2.56 rel_beta 0.536 rel_se 0.554 df TRUE na/inf mismatches 0
+ stress bimodal, tuned peak gap   fits below the exact ML by > 1e-6 (cand) 1.000000   <= ref; |cand-ref| <= 1e-9   FAIL 6 cases; ref misses 0; max shortfall ref 5.68e-14 cand 1.05e-05; max |cand-ref| 1.05e-05; NA mismatches 0
+VERDICT: FAIL 
+Rscript bench/proto/r12/review/validate12.R review_mut_1peak --ds quick    2  367.30s user 6.91s system 99% cpu 6:15.89 total

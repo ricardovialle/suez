@@ -1,0 +1,107 @@
+diff --color -ru R/lmm.R bench/proto/r12/memory/pkg_eig/R/lmm.R
+--- R/lmm.R	2026-11-13 13:08:00
++++ bench/proto/r12/memory/pkg_eig/R/lmm.R	2026-11-13 15:52:56
+@@ -25,14 +25,21 @@
+   stopifnot(nrow(K) == ncol(K), is_symmetric(K, tol = 1e-8))
+   n = nrow(K)
+   u = -qr.Q(qr(matrix(1, n, 1)))[, 1]; u[1] = u[1] + 1; u = u / sqrt(sum(u^2))
++  psd = function(v) if (min(v) < -1e-6 * max(abs(v)))
++    stop("sample_kernel is not positive semi-definite (min eigenvalue ", signif(min(v), 3), ").", call. = FALSE)
++  if (eigen_solver() != "lapack") {
++    # one call, same arithmetic, decomposed in place in the returned U: holds K + U, not ~7 N x N copies
++    if (!is.double(K)) storage.mode(K) = "double"
++    e = .Call(suez_contrast_eigen, K, u, drop(K %*% u))
++    psd(e$values)
++    e$values = pmax(e$values, 0)
++    return(e)
++  }
+   K = K - 2 * outer(drop(K %*% u), u)          # K H
+   K = K - 2 * outer(u, drop(crossprod(u, K)))  # H K H
+-  e = if (eigen_solver() == "lapack") eigen(K[-1, -1, drop = FALSE], symmetric = TRUE)
+-      else .Call(suez_eigen_sym, K[-1, -1, drop = FALSE])
++  e = eigen(K[-1, -1, drop = FALSE], symmetric = TRUE)
+   rm(K)
+-  if (min(e$values) < -1e-6 * max(abs(e$values)))
+-    stop("sample_kernel is not positive semi-definite (min eigenvalue ",
+-         signif(min(e$values), 3), ").", call. = FALSE)
++  psd(e$values)
+   V = rbind(0, e$vectors)
+   list(vectors = V - 2 * outer(u, drop(crossprod(u, V))), values = pmax(e$values, 0))
+ }
+diff --color -ru -x * src/init.cpp bench/proto/r12/memory/pkg_eig/src/init.cpp
+--- src/init.cpp	2026-11-13 09:50:57
++++ bench/proto/r12/memory/pkg_eig/src/init.cpp	2026-11-13 15:52:38
+@@ -11,11 +11,13 @@
+ extern "C" SEXP suez_fit_gene(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_fit_models(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_eigen_sym(SEXP);
++extern "C" SEXP suez_contrast_eigen(SEXP, SEXP, SEXP);
+ 
+ static const R_CallMethodDef CallEntries[] = {
+   {"suez_fit_gene", (DL_FUNC) &suez_fit_gene, 7},
+   {"suez_fit_models", (DL_FUNC) &suez_fit_models, 8},
+   {"suez_eigen_sym", (DL_FUNC) &suez_eigen_sym, 1},
++  {"suez_contrast_eigen", (DL_FUNC) &suez_contrast_eigen, 3},
+   {NULL, NULL, 0}
+ };
+ 
+diff --color -ru -x * src/lmm.cpp bench/proto/r12/memory/pkg_eig/src/lmm.cpp
+--- src/lmm.cpp	2026-11-13 13:47:19
++++ bench/proto/r12/memory/pkg_eig/src/lmm.cpp	2026-11-13 15:53:21
+@@ -19,6 +19,8 @@
+ #include <cmath>
+ #include <limits>
+ #include <vector>
++#include <cstdint>
++#include <cstring>
+ using Eigen::ArrayXd; using Eigen::MatrixXd; using Eigen::VectorXd; using Eigen::VectorXi;
+ static const double NEG_INF = -std::numeric_limits<double>::infinity();
+ static const double POS_INF = std::numeric_limits<double>::infinity();
+@@ -714,5 +716,47 @@
+   if (es.info() != Eigen::Success) Rcpp::stop("symmetric eigen-decomposition failed (non-finite values?)");
+   return Rcpp::List::create(Rcpp::Named("values") = VectorXd(es.eigenvalues().reverse()),
+                             Rcpp::Named("vectors") = MatrixXd(es.eigenvectors().rowwise().reverse()));
++  END_RCPP
++}
++
++// ---------------------------------------------------------------- lean contrast eigen-decomposition (memory)
++// kernel_contrast_eigen's Eigen path in one call, with the same arithmetic as the R code it replaces
++// (K1 = K - 2 w u', K2 = K1 - 2 u (u'K1), eigen of K2[-1, -1], U = H [0; V]; sums in reference dgemv order with
++// FMA, as R's reference BLAS): the decomposition runs in place inside the returned N x (N-1) matrix, so the
++// set-up holds K + U instead of ~7 N x N matrices. Returns list(vectors = U, values) (values decreasing).
++#pragma clang fp contract(off)
++extern "C" SEXP suez_contrast_eigen(SEXP K_, SEXP u_, SEXP w_) {
++  BEGIN_RCPP
++  const int n = Rf_nrows(K_), m = n - 1;
++  const double *K = REAL(K_), *u = REAL(u_), *w = REAL(w_);
++  auto K1 = [&](int i, int j) { return K[i + (size_t)j * n] - 2 * (w[i] * u[j]); };
++  std::vector<double> z(n);   // u'K1 (R: crossprod(u, K1), dgemv 'T')
++  for (int j = 0; j < n; ++j) { double t = 0; for (int i = 0; i < n; ++i) t = std::fma(K1(i, j), u[i], t); z[j] = t; }
++  Rcpp::NumericMatrix U(n, m); double* buf = U.begin();
++  const int off = (reinterpret_cast<std::uintptr_t>(buf) % 16) ? 1 : 0;   // A 16-byte aligned, as Eigen's MatrixXd
++  Eigen::Map<MatrixXd, Eigen::Aligned16> A(buf + off, m, m);
++  for (int j = 0; j < m; ++j) {   // lower triangle of K2[-1, -1], upper zero (SelfAdjointEigenSolver::compute)
++    for (int i = 0; i < j; ++i) A(i, j) = 0;
++    for (int i = j; i < m; ++i) A(i, j) = K1(i + 1, j + 1) - 2 * (u[i + 1] * z[j + 1]);
++  }
++  // SelfAdjointEigenSolver::compute (Eigen 3.4) on A itself
++  double scale = A.cwiseAbs().maxCoeff(); if (scale == 0) scale = 1;
++  A.triangularView<Eigen::Lower>() /= scale;
++  VectorXd diag(m), sub(m - 1), hc(m - 1);
++  // tridiagonalization_inplace_selector::run (Tridiagonalization<> needs a plain matrix type)
++  Eigen::internal::tridiagonalization_inplace(A, hc);
++  diag = A.diagonal(); sub = A.diagonal<-1>();
++  A = Eigen::HouseholderSequence<decltype(A), VectorXd>(A, hc).setLength(m - 1).setShift(1);
++  if (Eigen::internal::computeFromTridiagonal_impl(diag, sub, 30, true, A) != Eigen::Success)
++    Rcpp::stop("symmetric eigen-decomposition failed (non-finite values?)");
++  diag *= scale;
++  for (int j = 0; j < m / 2; ++j) A.col(j).swap(A.col(m - 1 - j));   // decreasing order, as eigen()
++  for (int j = m - 1; j >= 0; --j) { std::memmove(buf + (size_t)j * n + 1, buf + off + (size_t)j * m, m * sizeof(double)); buf[(size_t)j * n] = 0; }
++  for (int j = 0; j < m; ++j) {   // V - 2 outer(u, crossprod(u, V)), V = rbind(0, vectors)
++    double* v = buf + (size_t)j * n; double t = 0;
++    for (int i = 0; i < n; ++i) t = std::fma(v[i], u[i], t);
++    for (int i = 0; i < n; ++i) v[i] = v[i] - 2 * (u[i] * t);
++  }
++  return Rcpp::List::create(Rcpp::Named("vectors") = U, Rcpp::Named("values") = VectorXd(diag.reverse()));
+   END_RCPP
+ }

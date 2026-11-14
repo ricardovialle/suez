@@ -176,5 +176,24 @@ check("non-finite genotypes refused (no sort on NaN)", grepl("non-finite", errms
       e1$vectors, e1$values, drop(crossprod(e1$vectors, rnorm(N))), crossprod(e1$vectors, matrix(1, N, 1)),
       G1, matrix(0, N, 0), FALSE))))
 
+# options(suez.threads): identical results at any thread count, on a dense GRM basis (several SNP blocks and
+# 240-row rotation chunks) and the default kernel's sparse basis, with the bootstrap
+set.seed(11)
+nt_ind = sprintf("J%03d", 1:300); nt_s = rep(nt_ind, each = 2); n2 = length(nt_s)
+Zt = scale(matrix(rbinom(300 * 500, 2, 0.3), 300)); Kt = (tcrossprod(Zt) / ncol(Zt))[rep(1:300, each = 2), rep(1:300, each = 2)]
+Gt = matrix(rbinom(300 * 300, 2, 0.3), 300, 300, dimnames = list(paste0("t", 1:300), nt_ind))
+slt = data.frame(snpid = rownames(Gt), chr = "1", pos = 1:300)
+glt = data.frame(geneid = "tg", chr = "1", left = 100, right = 101)
+at = data.frame(individual = nt_s, condition = rep(c(0, 1), 300))
+Yt = matrix(rnorm(n2) + 0.3 * Gt[1, nt_s], 1, dimnames = list("tg", paste0("u", 1:n2)))
+thr_run = function(nt, K) { op = options(suez.threads = nt); on.exit(options(op)); set.seed(3)
+  map_interaction_qtl(Yt, Gt, glt, slt, at, sample_kernel = K, permutation_approach = "boot", cisdist = 1000) }
+for (K in list(Kt, NULL)) {
+  r1 = thr_run(1, K)
+  same = sapply(c(2, 4, 8), function(nt) identical(thr_run(nt, K), r1))
+  check(sprintf("identical results at 1/2/4/8 threads (%s kernel, %d SNPs)", if (is.null(K)) "default" else "GRM",
+                nrow(r1)), all(same) && nrow(r1) == 300 && !anyNA(r1$l_boot_geno))
+}
+
 cat(fails, "failure(s)\n")
 if (fails > 0) stop(fails, " check(s) failed")

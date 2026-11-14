@@ -1,0 +1,6 @@
+S        genes=200 rows=19942 | threads 1 identical to integ_c3b: TRUE | 2/4/8 identical to 1: TRUE/TRUE/TRUE | secs 1/2/4/8: 0.7/0.7/0.7/0.7
+M_grm    genes=150 rows=30049 | threads 1 identical to integ_c3b: TRUE | 2/4/8 identical to 1: TRUE/TRUE/TRUE | secs 1/2/4/8: 3.1/3.0/3.2/3.3
+LA       genes=100 rows=9950 | threads 1 identical to integ_c3b: TRUE | 2/4/8 identical to 1: TRUE/TRUE/TRUE | secs 1/2/4/8: 2.6/2.3/2.3/2.3
+R_real   genes=40 rows=9306 | threads 1 identical to integ_c3b: TRUE | 2/4/8 identical to 1: TRUE/TRUE/TRUE | secs 1/2/4/8: 9.0/6.4/4.7/4.2
+XL_grm   genes=8 rows=3108 | threads 1 identical to integ_c3b: TRUE | 2/4/8 identical to 1: TRUE/TRUE/TRUE | secs 1/2/4/8: 5.5/5.4/4.7/4.0
+XXL      genes=4 rows=1504 | threads 1 identical to integ_c3b: TRUE | 2/4/8 identical to 1: TRUE/TRUE/TRUE | secs 1/2/4/8: 0.4/0.4/0.4/0.4

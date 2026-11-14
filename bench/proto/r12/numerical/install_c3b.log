@@ -1,0 +1,28 @@
+* installing *source* package ‘suez’ ...
+** this is package ‘suez’ version ‘0.5’
+** using staged installation
+** libs
+specified C++17
+using C++ compiler: ‘Apple clang version 21.0.0 (clang-2100.4.1.1)’
+using C++17
+using SDK: ‘MacOSX27.2.sdk’
+clang++ -arch arm64 -std=gnu++17 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -L/Library/Frameworks/R.framework/Resources/lib -L/opt/R/arm64/lib -o suez.so stan_files/suez_step_1.o init.o lmm.o -L/Library/Frameworks/R.framework/Resources/lib -lRlapack -L/Library/Frameworks/R.framework/Resources/lib -lRblas -L/Library/Frameworks/R.framework/Versions/4.6/Resources/library/RcppParallel/lib -Wl,-rpath,/Library/Frameworks/R.framework/Versions/4.6/Resources/library/RcppParallel/lib -ltbb -ltbbmalloc -L/Library/Frameworks/R.framework/Versions/4.6/Resources/library/RcppParallel/lib/ -Wl,-rpath,/Library/Frameworks/R.framework/Versions/4.6/Resources/library/RcppParallel/lib/ -ltbb -ltbbmalloc -F/Library/Frameworks/R.framework/.. -framework R
+ld: warning: ignoring duplicate libraries: '-ltbb', '-ltbbmalloc'
+installing to /Users/rvialle/suez/bench/lib/integ_c3b/00LOCK-pkg_c3b/00new/suez/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+Warning: package ‘Rcpp’ was built under R version 4.6.1
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+Warning: package ‘Rcpp’ was built under R version 4.6.1
+** testing if installed package keeps a record of temporary installation path
+* DONE (suez)

@@ -1,0 +1,10 @@
+numerical_comb vs base12: 612 checks, INFO=80 PASS=529 WARN=3 (167 s) -> bench/proto/r12/review/results/v12_numerical_comb_vs_base12.tsv
+   part                        dataset                                    check     value                    threshold status
+   edge collinear_interaction_and_snps                         edge case report 6.153e-12 l 1e-9 (WARN 1e-6), rel 1e-6   WARN
+   edge               near_perfect_fit                         edge case report 7.954e-07 l 1e-9 (WARN 1e-6), rel 1e-6   WARN
+ stress        random 3-block spectrum fits below the exact ML by > 1e-6 (cand)         0   <= ref; |cand-ref| <= 1e-9   WARN
+                                                                                                                                                             detail
+ max_dl 6.15e-12 boot 1.23e-08 rel_beta 5.13e-11 rel_se 6.89e-12 df TRUE na/inf mismatches 2 (report-only case: rank-deficient / near-perfect, list any difference)
+  max_dl 7.95e-07 boot 2.18e-06 rel_beta 1.98e-15 rel_se 3.5e-08 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+                                                        150 cases; ref misses 0; max shortfall ref 1.71e-13 cand 1.42e-13; max |cand-ref| 1.06e-07; NA mismatches 0
+VERDICT: PASS with warnings 

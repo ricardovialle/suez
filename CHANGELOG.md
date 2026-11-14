@@ -1,6 +1,27 @@
 # Changelog
 
-## Unreleased (round 11: BLAS/LAPACK and large-N review)
+## Unreleased (round 12: structured default kernel, faster engine, lower memory)
+
+Step 2 vs round 11, 1 core, median of 3 serial interleaved runs (every run faster): 1.12-2.5x on N <= 1000 and GRM
+kernels (R_real-like GRM + covariates + missing data 1.6x, 30 covariates 2.3x), 5x at N = 2000 and 25x at N = 4000
+with the default kernel; peak RAM -3..-78% (bench/results/r12_final_summary.tsv, bench/EXPERIMENT_LOG.md round 12).
+- Default kernel (`sample_kernel = NULL`, same-individual Z Z'): its contrast eigenbasis is built analytically
+  (sparse Haar-like basis, exact eigenvalues) instead of an O(N^3) eigen-decomposition, and U'G uses it sparsely.
+  Data fits equal to 1.2e-10; **bootstrap draws for a given seed change** (different basis inside tied eigenvalues;
+  same distribution, checked by KS tests over several seeds).
+- Fitting engine: Newton steps on fewer, vectorised products, the covariate block solved once per SNP block and
+  grid point and shared by all models and the bootstrap grid, bootstrap reuse of y-free moments. Log-likelihoods
+  within 1.7e-10 of round 11; boundary optima (h = 0 / 1) still evaluated exactly.
+- Memory: genotypes standardised and rotated per 256-column chunk (one 4000-SNP gene at N = 2000: 809 -> 371 MB);
+  explicit kernels decomposed in place in one `.Call` (K + KH + U instead of ~7 N x N copies, arithmetic as R's under
+  any BLAS); dplyr / readr no longer loaded by step 2.
+- `options(suez.threads = n)` (or `SUEZ_THREADS`): opt-in threads over each gene's SNP blocks, identical results at
+  any thread count; ~1/4 of the RAM of the same number of forked workers at 50-75% of their speed. Default 1.
+- An exactly collinear SNP can get a finite estimate where round 11 gave NA (both are within rounding of the
+  degenerate case: round 11 flips the same way under a 2e-15 perturbation of y).
+- `src/Makevars`: links `$(LAPACK_LIBS) $(BLAS_LIBS)` (no `$(FLIBS)`, so source installs work without gfortran).
+
+## Round 11: BLAS/LAPACK and large-N review
 
 - `kernel_contrast_eigen` picks its eigen solver from the BLAS/LAPACK R links to (`options(suez.eigen_solver =
   "auto" | "eigen" | "lapack")`): 0.5 always used Eigen's solver, measured only against R's reference LAPACK

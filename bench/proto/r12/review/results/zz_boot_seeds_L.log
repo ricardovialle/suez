@@ -1,0 +1,4 @@
+L seed 101: KS p LR 0.0605, l_boot_geno-l_geno 1 | LR q 0.46 2.737 6.589 10.862 / 0.451 2.712 6.669 10.782
+L seed 202: KS p LR 0.353, l_boot_geno-l_geno 1 | LR q 0.464 2.752 6.708 10.786 / 0.462 2.704 6.741 10.884
+L seed 303: KS p LR 0.674, l_boot_geno-l_geno 1 | LR q 0.46 2.714 6.619 10.973 / 0.463 2.737 6.596 10.511
+L pooled (Fisher) p: LR 0.205, l_boot_geno-l_geno 1

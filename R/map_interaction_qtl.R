@@ -112,6 +112,12 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
 #' default kernel with condition fitting every within-individual contrast).
 #'
+#' Parallelism: genes run on the registered doMC workers (forked processes). `options(suez.threads = n)`
+#' (or the environment variable SUEZ_THREADS) also fits each gene's SNP blocks on n threads (default 1;
+#' local-ancestry mode is not threaded). Results are identical at any thread count. Threads help when there are
+#' few genes or N is large (e.g. a GRM kernel with N >= 1000), and use much less memory than the same number of
+#' forked workers; total CPUs used = workers x threads.
+#'
 #' @section Local-ancestry models:
 #' With `local_ancestry` (k ancestries), each SNP is fitted with the models of Tractor (Atkinson et al.
 #' 2021) inside the suez mixed model: LA = haplotype counts of the first k - 1 ancestries, G_a = ALT
@@ -177,17 +183,17 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     }
   } else if (la_mode) stop("local_ancestry matrices must be matrices (see read_tractor()).", call. = FALSE)
   rownames(geneloc)=geneloc$geneid
+  # per-gene inputs by position (geneloc[gene, "chr"] costs ~45 us per lookup, input[gene, ] a name match)
+  gi = match(genes, geneloc$geneid)
+  g_chr = geneloc$chr[gi]; g_left = geneloc$left[gi] - cisdist; g_right = geneloc$right[gi] + cisdist
+  g_row = match(genes, rownames(input))
 
-  if (is.null(sample_kernel)) {
-    # same individual: Z Z' for the samples x individuals indicator Z (outer() builds two N^2 vectors of ids)
-    Z = matrix(0, nrow(anno), length(unique(anno$individual)))
-    Z[cbind(seq_len(nrow(anno)), match(anno$individual, unique(anno$individual)))] = 1
-    sample_kernel = tcrossprod(Z)
-    rm(Z)
-  }
+
 
   cat("Performing initial eigendecomposition...\n")
-  eig=kernel_contrast_eigen(sample_kernel) # N-1 contrasts orthogonal to the intercept
+  # N-1 contrasts orthogonal to the intercept; default kernel Z Z' (same individual): analytic sparse basis
+  eig = if (is.null(sample_kernel)) zz_contrast_basis(anno$individual) else kernel_contrast_eigen(sample_kernel)
+  if (is.null(sample_kernel)) eig$vectors = eig$U
   U=eig$vectors
   lambda=eig$values
   sample_kernel=NULL   # not used below: frees the default kernel (N x N) during the gene loop
@@ -210,13 +216,14 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   }
   no_geno = no_geno[, apply(no_geno, 2, sd) > 0, drop=F] # intercept: removed by the contrasts
   X0 = standardize_cols(no_geno)
-  UX0 = crossprod(U, X0)
+  UX0 = crossprod_U(U, X0)
 
   # condition varying within individual => GxE columns can fit the kernel's null directions
   within = any(tapply(as.character(anno$condition), anno$individual, function(x) length(unique(x)) > 1))
   k_anc = if (la_mode) length(local_ancestry$dosage) else 1
   check_identifiable(eig, X0, need = 1 + if (within) (2 * k_anc - 1) * df_interact else 0)
 
+  threads = suez_threads()
   errorhandling=if (debug) 'stop' else 'remove'
 
   if (!debug) {
@@ -234,18 +241,18 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   seeds = sample.int(.Machine$integer.max, length(genes))
 
   # results are combined once at the end (combining pairwise copies the growing table at every gene)
-  res = foreach(gene=genes, seed=seeds, .errorhandling=errorhandling) %dopar% {
+  res = foreach(gene=genes, seed=seeds, j=seq_along(genes), .errorhandling=errorhandling) %dopar% {
 
     set.seed(seed)
     if (!is.null(checkpoint_dir)){
       check_fn = file.path(checkpoint_dir, paste0(gene, ".txt.gz"))
       if (file.exists(check_fn)) {
-        return(read_tsv(check_fn))
+        return(readr::read_tsv(check_fn))
       }
     }
     
     if (la_mode) {
-      rows = cis_rows(geneloc[gene,"chr"], geneloc[gene,"left"]-cisdist, geneloc[gene,"right"]+cisdist)
+      rows = cis_rows(g_chr[j], g_left[j], g_right[j])
       if (!length(rows)) return(NULL)
       D = lapply(local_ancestry$dosage, function(m) m[rows,,drop=F])
       H = lapply(local_ancestry$hapcount, function(m) m[rows,,drop=F])
@@ -253,14 +260,14 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
         perm = sample(ncol(D[[1]]))
         D = lapply(D, function(m) { colnames(m) = colnames(m)[perm]; m }); H = lapply(H, function(m) { colnames(m) = colnames(m)[perm]; m })
       }
-      Uy = drop(crossprod(U, as.numeric(input[gene,])))
+      Uy = drop(crossprod_U(U, as.numeric(input[g_row[j],])))
       gene_results = la_gene(gene, D, H, anno, C, U, lambda, Uy, UX0, permutation_approach=="boot", maf_threshold)
-      if (!is.null(checkpoint_dir) && !is.null(gene_results)) gene_results %>% write_tsv(check_fn)
+      if (!is.null(checkpoint_dir) && !is.null(gene_results)) readr::write_tsv(gene_results, check_fn)
       return(gene_results)
     }
 
     geno_here = if (is.matrix(genotype)) {
-      rows = cis_rows(geneloc[gene,"chr"], geneloc[gene,"left"]-cisdist, geneloc[gene,"right"]+cisdist)
+      rows = cis_rows(g_chr[j], g_left[j], g_right[j])
       if (length(rows)) genotype[rows,,drop=F] else NULL
     } else get_cis_geno(genotype, 
                               chrom = geneloc[gene,"chr"], 
@@ -271,7 +278,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     if (is.null(geno_here)) return(NULL)
     
     imp_geno = if (anyNA(geno_here)) easy_impute(geno_here) else {   # nothing to impute: rounded, as easy_impute does
-      g = round(geno_here); storage.mode(g) = "integer"; g }
+      round(geno_here) }   # integer-valued doubles: G below is double anyway
     if (maf_threshold > 0) {
       af = rowMeans(geno_here, na.rm=T)/2 # ALT frequency, on unimputed genotypes
       mafs = pmin(af, 1 - af)
@@ -285,33 +292,48 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
 
     G = t(imp_geno[, anno$individual, drop=F])                     # samples x SNPs
     storage.mode(G) = "double"
-    keep = rowSums(imp_geno) >= 5 & colSums(G != rep(G[1, ], each = nrow(G))) > 0   # >= 5 ALT alleles, varies across samples
+    # >= 5 ALT alleles; varies across samples: for integer-valued columns (rounded genotypes, exact sums)
+    # N sum(x^2) == (sum x)^2 iff x is constant (Cauchy-Schwarz)
+    cs = colSums(G)
+    keep = rowSums(imp_geno) >= 5 & nrow(G) * colSums(G * G) != cs * cs
     if (!any(keep)) return(NULL)
     G = G[, keep, drop=F]
-    Uy = drop(crossprod(U, as.numeric(input[gene,])))
+    Uy = drop(crossprod_U(U, as.numeric(input[g_row[j],])))
 
     if (debug) cat("Fitting", ncol(G), "SNPs...\n")
-    fit = .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot")   # src/lmm.cpp
+    fit = if (threads > 1) .Call(suez_fit_gene_threads, U, lambda, Uy, UX0, G, C, permutation_approach=="boot", threads)
+      else .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot")   # src/lmm.cpp
     m = fit$res
-    gene_results = data.frame(gene=gene, cis_snp=colnames(G), l0=fit$l0, l_geno=m[,1], l_interact=m[,2],
-                              stringsAsFactors=F)
-    gene_results$p_geno = pchisq(pmax(0, 2*(gene_results$l_geno-gene_results$l0)), 1, lower.tail=F)
-    gene_results$df_interact = as.integer(m[,3])
-    gene_results$p_interact = pchisq(pmax(0, 2*(gene_results$l_interact-gene_results$l_geno)), m[,3], lower.tail=F)
-    gene_results$beta_geno = m[,4]
-    gene_results$se_geno = m[,5]
+    # columns as a list (data.frame() + 8 `$<-` cost ~0.5 ms per gene)
+    S = nrow(m)
+    gene_results = list(gene=rep(gene, S), cis_snp=colnames(G), l0=rep(fit$l0, S), l_geno=m[,1], l_interact=m[,2],
+                        p_geno=pchisq(pmax(0, 2*(m[,1]-fit$l0)), 1, lower.tail=F), df_interact=as.integer(m[,3]),
+                        p_interact=pchisq(pmax(0, 2*(m[,2]-m[,1])), m[,3], lower.tail=F), beta_geno=m[,4], se_geno=m[,5])
     if (permutation_approach=="boot") {
       # parametric bootstrap under the genotype (no-interaction) model, one draw per SNP
       gene_results$l_boot_geno = m[,6]
       gene_results$l_boot_interact = m[,7]
     }
+    gene_results = structure(gene_results, class="data.frame", row.names=c(NA, -S))
 
     if (!is.null(checkpoint_dir)){
       cat("Saving results to ", checkpoint_dir, "\n")
-      gene_results %>% write_tsv(check_fn)
+      readr::write_tsv(gene_results, check_fn)
     }
 
     gene_results
   }
-  bind_rows(res)
+  bind_tables(res)
+}
+
+# dplyr::bind_rows() for per-gene data.frames with the same columns (identical() result), without loading
+# dplyr (~33 MB, ~0.15 s); anything else (checkpoint tibbles from read_tsv) goes to bind_rows
+bind_tables = function(res) {
+  res = res[!vapply(res, is.null, NA)]
+  nm = if (length(res)) names(res[[1]])
+  same = length(res) && all(vapply(res, function(x) identical(class(x), "data.frame") && identical(names(x), nm) &&
+    identical(vapply(x, typeof, ""), vapply(res[[1]], typeof, "")), NA))
+  if (!same) return(dplyr::bind_rows(res))
+  out = lapply(seq_along(nm), function(k) unlist(lapply(res, `[[`, k), use.names = FALSE)); names(out) = nm
+  structure(out, class = "data.frame", row.names = c(NA, -length(out[[1]])))
 }

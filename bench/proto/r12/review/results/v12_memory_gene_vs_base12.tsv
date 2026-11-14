@@ -1,0 +1,625 @@
+cand	ref	part	dataset	check	value	threshold	status	detail
+memory_gene	base12	equiv	S	wall_s cand/ref (indicative, not a benchmark)	0.8632	-	INFO	1.23 / 1.43 s
+memory_gene	base12	equiv	S	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+memory_gene	base12	equiv	S	columns	0	0	PASS	
+memory_gene	base12	equiv	S	l0 max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S	l_geno max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S	l_interact max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S	p_geno max|dlog10p|	0	-	INFO	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S	p_interact max|dlog10p|	0	-	INFO	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S	beta_geno max rel	0	1e-06	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S	se_geno max rel	0	1e-06	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S	l_boot_geno max abs	0	1e-05	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S	l_boot_interact max abs	0	1e-05	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S	p_geno sig p<0.001	0	0	PASS	ref 16 cand 16 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S	p_interact sig p<0.001	0	0	PASS	ref 22 cand 22 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S	p_interact_boot sig p<0.001	0	0	PASS	ref 17 cand 17 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S	boot LR distribution KS p	1	-	INFO	q0.5 0.4671/0.4671 q0.9 2.758/2.758 q0.99 6.589/6.589 q0.999 11.11/11.11
+memory_gene	base12	equiv	S	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 1.723/1.723 q0.9 15/15 q0.99 26.05/26.05 q0.999 34.87/34.87
+memory_gene	base12	stat	S	power/FDR vs truth	6/6 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000; p_interact_boot eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+memory_gene	base12	equiv	M_grm	wall_s cand/ref (indicative, not a benchmark)	1.081	-	INFO	6.14 / 5.68 s
+memory_gene	base12	equiv	M_grm	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+memory_gene	base12	equiv	M_grm	columns	0	0	PASS	
+memory_gene	base12	equiv	M_grm	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_grm	p_geno sig p<0.001	0	0	PASS	ref 43 cand 43 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_geno sig p<1e-05	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_grm	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_grm	p_interact sig p<0.001	0	0	PASS	ref 23 cand 23 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_grm	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_grm	p_interact_boot sig p<0.001	0	0	PASS	ref 18 cand 18 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_grm	boot LR distribution KS p	1	-	INFO	q0.5 0.4677/0.4677 q0.9 2.742/2.742 q0.99 6.747/6.747 q0.999 11.06/11.06
+memory_gene	base12	equiv	M_grm	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 1.76/1.76 q0.9 20.26/20.26 q0.99 36.3/36.3 q0.999 47.16/47.16
+memory_gene	base12	stat	M_grm	power/FDR vs truth	6/6 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.067/0.067 fdr 0.333/0.333; p_geno lead p<1e-5: power 0.133/0.133 fdr 0.200/0.200; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000; p_interact_boot eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+memory_gene	base12	equiv	M_learn	wall_s cand/ref (indicative, not a benchmark)	1.075	-	INFO	3.31 / 3.08 s
+memory_gene	base12	equiv	M_learn	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+memory_gene	base12	equiv	M_learn	columns	0	0	PASS	
+memory_gene	base12	equiv	M_learn	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_learn	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_learn	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_learn	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_learn	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_learn	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_learn	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_learn	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_learn	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_learn	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_learn	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_learn	p_geno sig p<0.001	0	0	PASS	ref 65 cand 65 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_geno sig p<1e-05	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_geno eGenes BH 5%	0	0	PASS	ref 6 cand 6 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_learn	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_learn	p_interact sig p<0.001	0	0	PASS	ref 11 cand 11 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_learn	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_learn	p_interact_boot sig p<0.001	0	0	PASS	ref 10 cand 10 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_learn	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_learn	boot LR distribution KS p	1	-	INFO	q0.5 0.4661/0.4661 q0.9 2.746/2.746 q0.99 6.732/6.732 q0.999 11.06/11.06
+memory_gene	base12	equiv	M_learn	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 1.55/1.55 q0.9 20.05/20.05 q0.99 36.03/36.03 q0.999 46.92/46.92
+memory_gene	base12	stat	M_learn	power/FDR vs truth	6/6 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.133/0.133 fdr 0.333/0.333; p_geno lead p<1e-5: power 0.133/0.133 fdr 0.333/0.333; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+memory_gene	base12	equiv	M_fac3	wall_s cand/ref (indicative, not a benchmark)	1.365	-	INFO	6.93 / 5.07 s
+memory_gene	base12	equiv	M_fac3	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+memory_gene	base12	equiv	M_fac3	columns	0	0	PASS	
+memory_gene	base12	equiv	M_fac3	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_fac3	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_fac3	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_fac3	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_fac3	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_fac3	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_fac3	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_fac3	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_fac3	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_fac3	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_fac3	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_fac3	p_geno sig p<0.001	0	0	PASS	ref 65 cand 65 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_geno sig p<1e-05	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_geno sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_geno eGenes BH 5%	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_fac3	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_fac3	p_interact sig p<0.001	0	0	PASS	ref 30 cand 30 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_fac3	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_fac3	p_interact_boot sig p<0.001	0	0	PASS	ref 30 cand 30 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_fac3	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_fac3	boot LR distribution KS p	1	-	INFO	q0.5 1.404/1.404 q0.9 4.638/4.638 q0.99 9.201/9.201 q0.999 13.84/13.84
+memory_gene	base12	equiv	M_fac3	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 2.085/2.085 q0.9 24.86/24.86 q0.99 43.93/43.93 q0.999 57.16/57.16
+memory_gene	base12	stat	M_fac3	power/FDR vs truth	6/6 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.233/0.233 fdr 0.222/0.222; p_geno lead p<1e-5: power 0.200/0.200 fdr 0.250/0.250; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.067/0.067 fdr 0.000/0.000; p_interact_boot eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+memory_gene	base12	equiv	M_eqtl	wall_s cand/ref (indicative, not a benchmark)	1.155	-	INFO	1.98 / 1.71 s
+memory_gene	base12	equiv	M_eqtl	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+memory_gene	base12	equiv	M_eqtl	columns	0	0	PASS	
+memory_gene	base12	equiv	M_eqtl	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_eqtl	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_eqtl	l_interact max abs	0	1e-09	PASS	n=0 na/inf mismatches=0 identical=0
+memory_gene	base12	equiv	M_eqtl	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_eqtl	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_eqtl	p_interact max|dlog10p|	0	-	INFO	n=0 na/inf mismatches=0 identical=0
+memory_gene	base12	equiv	M_eqtl	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_eqtl	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_eqtl	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_eqtl	l_boot_interact max abs	0	1e-05	PASS	n=0 na/inf mismatches=0 identical=0
+memory_gene	base12	equiv	M_eqtl	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_eqtl	p_geno sig p<0.001	0	0	PASS	ref 39 cand 39 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_eqtl	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_eqtl	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_eqtl	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_eqtl	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_eqtl	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_eqtl	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 1.123/1.123 q0.9 14.27/14.27 q0.99 25.52/25.52 q0.999 34.17/34.17
+memory_gene	base12	stat	M_eqtl	power/FDR vs truth	6/6 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+memory_gene	base12	equiv	M_cov	wall_s cand/ref (indicative, not a benchmark)	1.467	-	INFO	9.74 / 6.64 s
+memory_gene	base12	equiv	M_cov	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+memory_gene	base12	equiv	M_cov	columns	0	0	PASS	
+memory_gene	base12	equiv	M_cov	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_cov	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_cov	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_cov	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_cov	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_cov	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_cov	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_cov	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_cov	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_cov	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_cov	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_cov	p_geno sig p<0.001	0	0	PASS	ref 41 cand 41 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_cov	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_cov	p_interact sig p<0.001	0	0	PASS	ref 35 cand 35 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_cov	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_cov	p_interact_boot sig p<0.001	0	0	PASS	ref 23 cand 23 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_cov	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_cov	boot LR distribution KS p	1	-	INFO	q0.5 0.4809/0.4809 q0.9 2.851/2.851 q0.99 6.84/6.84 q0.999 11.38/11.38
+memory_gene	base12	equiv	M_cov	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 6.936/6.936 q0.9 25.67/25.67 q0.99 42.27/42.27 q0.999 52.79/52.79
+memory_gene	base12	stat	M_cov	power/FDR vs truth	6/6 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.033/0.033 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+memory_gene	base12	equiv	M_miss	wall_s cand/ref (indicative, not a benchmark)	1.648	-	INFO	8.05 / 4.88 s
+memory_gene	base12	equiv	M_miss	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+memory_gene	base12	equiv	M_miss	columns	0	0	PASS	
+memory_gene	base12	equiv	M_miss	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_miss	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_miss	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_miss	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_miss	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_miss	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_miss	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_miss	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_miss	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_miss	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_miss	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_miss	p_geno sig p<0.001	0	0	PASS	ref 55 cand 55 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_geno sig p<1e-05	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_geno sig p<1e-08	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 2 cand 2 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_geno eGenes BH 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_miss	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_miss	p_interact sig p<0.001	0	0	PASS	ref 43 cand 43 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_miss	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_miss	p_interact_boot sig p<0.001	0	0	PASS	ref 33 cand 33 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_miss	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_miss	boot LR distribution KS p	1	-	INFO	q0.5 0.4642/0.4642 q0.9 2.756/2.756 q0.99 6.758/6.758 q0.999 11.19/11.19
+memory_gene	base12	equiv	M_miss	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 1.838/1.838 q0.9 20.25/20.25 q0.99 36.41/36.41 q0.999 47.09/47.09
+memory_gene	base12	stat	M_miss	power/FDR vs truth	6/6 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.100/0.100 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.100/0.100 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+memory_gene	base12	equiv	M_unbal	wall_s cand/ref (indicative, not a benchmark)	1.409	-	INFO	3.92 / 2.78 s
+memory_gene	base12	equiv	M_unbal	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+memory_gene	base12	equiv	M_unbal	columns	0	0	PASS	
+memory_gene	base12	equiv	M_unbal	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_unbal	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_unbal	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_unbal	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_unbal	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_unbal	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_unbal	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_unbal	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_unbal	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_unbal	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_unbal	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_unbal	p_geno sig p<0.001	0	0	PASS	ref 50 cand 50 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_geno eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_unbal	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_unbal	p_interact sig p<0.001	0	0	PASS	ref 33 cand 33 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_interact eGenes BH 5%	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_unbal	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_unbal	p_interact_boot sig p<0.001	0	0	PASS	ref 40 cand 40 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_unbal	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_unbal	boot LR distribution KS p	1	-	INFO	q0.5 0.4496/0.4496 q0.9 2.709/2.709 q0.99 6.541/6.541 q0.999 10.33/10.33
+memory_gene	base12	equiv	M_unbal	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 1.87/1.87 q0.9 22.05/22.05 q0.99 39.39/39.39 q0.999 51.96/51.96
+memory_gene	base12	stat	M_unbal	power/FDR vs truth	6/6 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.033/0.033 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.033/0.033 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.067/0.067 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.067/0.067 fdr 0.000/0.000; p_interact_boot eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+memory_gene	base12	equiv	S_rare	wall_s cand/ref (indicative, not a benchmark)	1.225	-	INFO	1.35 / 1.10 s
+memory_gene	base12	equiv	S_rare	rows	0	0	PASS	ref 19104 rows / 200 genes, cand 19104 / 200
+memory_gene	base12	equiv	S_rare	columns	0	0	PASS	
+memory_gene	base12	equiv	S_rare	l0 max abs	0	1e-09	PASS	n=19104 na/inf mismatches=0 identical=19104
+memory_gene	base12	equiv	S_rare	l_geno max abs	0	1e-09	PASS	n=19104 na/inf mismatches=0 identical=19104
+memory_gene	base12	equiv	S_rare	l_interact max abs	0	1e-09	PASS	n=19104 na/inf mismatches=0 identical=19104
+memory_gene	base12	equiv	S_rare	p_geno max|dlog10p|	0	-	INFO	n=19104 na/inf mismatches=0 identical=19104
+memory_gene	base12	equiv	S_rare	df_interact max abs	0	0	PASS	n=19104 na/inf mismatches=0 identical=19104
+memory_gene	base12	equiv	S_rare	p_interact max|dlog10p|	0	-	INFO	n=19104 na/inf mismatches=0 identical=19104
+memory_gene	base12	equiv	S_rare	beta_geno max rel	0	1e-06	PASS	n=19104 na/inf mismatches=0 identical=19104
+memory_gene	base12	equiv	S_rare	se_geno max rel	0	1e-06	PASS	n=19104 na/inf mismatches=0 identical=19104
+memory_gene	base12	equiv	S_rare	l_boot_geno max abs	0	1e-05	PASS	n=19104 na/inf mismatches=0 identical=19104
+memory_gene	base12	equiv	S_rare	l_boot_interact max abs	0	1e-05	PASS	n=19104 na/inf mismatches=0 identical=19104
+memory_gene	base12	equiv	S_rare	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S_rare	p_geno sig p<0.001	0	0	PASS	ref 26 cand 26 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S_rare	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S_rare	p_interact sig p<0.001	0	0	PASS	ref 26 cand 26 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S_rare	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S_rare	p_interact_boot sig p<0.001	0	0	PASS	ref 18 cand 18 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S_rare	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S_rare	boot LR distribution KS p	1	-	INFO	q0.5 0.4682/0.4682 q0.9 2.799/2.799 q0.99 6.763/6.763 q0.999 11.12/11.12
+memory_gene	base12	equiv	S_rare	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 1.742/1.742 q0.9 15.03/15.03 q0.99 25.89/25.89 q0.999 34.64/34.64
+memory_gene	base12	stat	S_rare	power/FDR vs truth	6/6 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.000/0.000 fdr 1.000/1.000; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+memory_gene	base12	equiv	HS	wall_s cand/ref (indicative, not a benchmark)	1.223	-	INFO	4.79 / 3.92 s
+memory_gene	base12	equiv	HS	rows	0	0	PASS	ref 19950 rows / 200 genes, cand 19950 / 200
+memory_gene	base12	equiv	HS	columns	0	0	PASS	
+memory_gene	base12	equiv	HS	l0 max abs	0	1e-09	PASS	n=19950 na/inf mismatches=0 identical=19950
+memory_gene	base12	equiv	HS	l_geno max abs	0	1e-09	PASS	n=19950 na/inf mismatches=0 identical=19950
+memory_gene	base12	equiv	HS	l_interact max abs	0	1e-09	PASS	n=19950 na/inf mismatches=0 identical=19950
+memory_gene	base12	equiv	HS	p_geno max|dlog10p|	0	-	INFO	n=19950 na/inf mismatches=0 identical=19950
+memory_gene	base12	equiv	HS	df_interact max abs	0	0	PASS	n=19950 na/inf mismatches=0 identical=19950
+memory_gene	base12	equiv	HS	p_interact max|dlog10p|	0	-	INFO	n=19950 na/inf mismatches=0 identical=19950
+memory_gene	base12	equiv	HS	beta_geno max rel	0	1e-06	PASS	n=19950 na/inf mismatches=0 identical=19950
+memory_gene	base12	equiv	HS	se_geno max rel	0	1e-06	PASS	n=19950 na/inf mismatches=0 identical=19950
+memory_gene	base12	equiv	HS	l_boot_geno max abs	0	1e-05	PASS	n=19950 na/inf mismatches=0 identical=19950
+memory_gene	base12	equiv	HS	l_boot_interact max abs	0	1e-05	PASS	n=19950 na/inf mismatches=0 identical=19950
+memory_gene	base12	equiv	HS	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	HS	p_geno sig p<0.001	0	0	PASS	ref 78 cand 78 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_geno sig p<1e-05	0	0	PASS	ref 30 cand 30 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_geno sig p<1e-08	0	0	PASS	ref 17 cand 17 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 18 cand 18 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_geno eGenes BH 5%	0	0	PASS	ref 26 cand 26 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	HS	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	HS	p_interact sig p<0.001	0	0	PASS	ref 49 cand 49 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_interact sig p<1e-05	0	0	PASS	ref 11 cand 11 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_interact sig p<1e-08	0	0	PASS	ref 5 cand 5 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 8 cand 8 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_interact eGenes BH 5%	0	0	PASS	ref 10 cand 10 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	HS	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	HS	p_interact_boot sig p<0.001	0	0	PASS	ref 37 cand 37 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	HS	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	HS	boot LR distribution KS p	1	-	INFO	q0.5 0.4797/0.4797 q0.9 2.797/2.797 q0.99 6.974/6.974 q0.999 11.47/11.47
+memory_gene	base12	equiv	HS	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 1.802/1.802 q0.9 20.14/20.14 q0.99 35.99/35.99 q0.999 46.98/46.98
+memory_gene	base12	stat	HS	power/FDR vs truth	6/6 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.650/0.650 fdr 0.000/0.000; p_geno lead p<1e-5: power 0.525/0.525 fdr 0.000/0.000; p_interact eGene BH 5%: power 0.400/0.400 fdr 0.200/0.200; p_interact lead p<1e-5: power 0.400/0.400 fdr 0.200/0.200; p_interact_boot eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+memory_gene	base12	equiv	LA	wall_s cand/ref (indicative, not a benchmark)	1.343	-	INFO	4.78 / 3.56 s
+memory_gene	base12	equiv	LA	rows	0	0	PASS	ref 9950 rows / 100 genes, cand 9950 / 100
+memory_gene	base12	equiv	LA	columns	0	0	PASS	
+memory_gene	base12	equiv	LA	l0 max abs	0	1e-09	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	l_geno max abs	0	1e-09	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	l_geno_shared max abs	0	1e-09	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	l_interact_null max abs	0	1e-09	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	l_interact max abs	0	1e-09	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	l_interact_shared max abs	0	1e-09	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	df_geno max abs	0	0	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	p_geno max|dlog10p|	0	-	INFO	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	df_het max abs	0	0	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	p_het max|dlog10p|	0	-	INFO	n=9946 na/inf mismatches=0 identical=9946
+memory_gene	base12	equiv	LA	df_interact max abs	0	0	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	p_interact max|dlog10p|	0	-	INFO	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	p_interact_het max|dlog10p|	0	-	INFO	n=9946 na/inf mismatches=0 identical=9946
+memory_gene	base12	equiv	LA	af_anc0 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	laprop_anc0 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	beta_anc0 max rel	0	1e-06	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	se_anc0 max rel	0	1e-06	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	p_anc0 max|dlog10p|	0	-	INFO	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	beta_interact_anc0 max rel	0	1e-06	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	se_interact_anc0 max rel	0	1e-06	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	p_interact_anc0 max|dlog10p|	0	-	INFO	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	af_anc1 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	laprop_anc1 max abs	0	1e-12	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	beta_anc1 max rel	0	1e-06	PASS	n=9946 na/inf mismatches=0 identical=9946
+memory_gene	base12	equiv	LA	se_anc1 max rel	0	1e-06	PASS	n=9946 na/inf mismatches=0 identical=9946
+memory_gene	base12	equiv	LA	p_anc1 max|dlog10p|	0	-	INFO	n=9946 na/inf mismatches=0 identical=9946
+memory_gene	base12	equiv	LA	beta_interact_anc1 max rel	0	1e-06	PASS	n=9946 na/inf mismatches=0 identical=9946
+memory_gene	base12	equiv	LA	se_interact_anc1 max rel	0	1e-06	PASS	n=9946 na/inf mismatches=0 identical=9946
+memory_gene	base12	equiv	LA	p_interact_anc1 max|dlog10p|	0	-	INFO	n=9946 na/inf mismatches=0 identical=9946
+memory_gene	base12	equiv	LA	l_boot_interact_null max abs	0	1e-05	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	l_boot_interact max abs	0	1e-05	PASS	n=9950 na/inf mismatches=0 identical=9950
+memory_gene	base12	equiv	LA	p_geno lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	LA	p_geno sig p<0.001	0	0	PASS	ref 36 cand 36 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_geno sig p<1e-05	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_geno sig p<1e-08	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_geno eGenes BH 5%	0	0	PASS	ref 13 cand 13 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	LA	p_interact lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	LA	p_interact sig p<0.001	0	0	PASS	ref 15 cand 15 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	LA	p_het lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	LA	p_het sig p<0.001	0	0	PASS	ref 14 cand 14 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_het sig p<1e-05	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_het sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_het eGenes Bonferroni 5%	0	0	PASS	ref 3 cand 3 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_het eGenes BH 5%	0	0	PASS	ref 4 cand 4 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_het rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	LA	p_interact_het lead SNP per gene	0	0	PASS	100 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	LA	p_interact_het sig p<0.001	0	0	PASS	ref 14 cand 14 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_interact_het sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_interact_het sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_interact_het eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_interact_het eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	LA	p_interact_het rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	LA	boot LR distribution KS p	1	-	INFO	q0.5 1.398/1.398 q0.9 4.714/4.714 q0.99 9.609/9.609 q0.999 14.16/14.16
+memory_gene	base12	equiv	R_real	wall_s cand/ref (indicative, not a benchmark)	0.8302	-	INFO	96.66 / 116.44 s
+memory_gene	base12	equiv	R_real	rows	0	0	PASS	ref 59046 rows / 200 genes, cand 59046 / 200
+memory_gene	base12	equiv	R_real	columns	0	0	PASS	
+memory_gene	base12	equiv	R_real	l0 max abs	0	1e-09	PASS	n=59046 na/inf mismatches=0 identical=59046
+memory_gene	base12	equiv	R_real	l_geno max abs	0	1e-09	PASS	n=59046 na/inf mismatches=0 identical=59046
+memory_gene	base12	equiv	R_real	l_interact max abs	0	1e-09	PASS	n=59046 na/inf mismatches=0 identical=59046
+memory_gene	base12	equiv	R_real	p_geno max|dlog10p|	0	-	INFO	n=59046 na/inf mismatches=0 identical=59046
+memory_gene	base12	equiv	R_real	df_interact max abs	0	0	PASS	n=59046 na/inf mismatches=0 identical=59046
+memory_gene	base12	equiv	R_real	p_interact max|dlog10p|	0	-	INFO	n=59046 na/inf mismatches=0 identical=59046
+memory_gene	base12	equiv	R_real	beta_geno max rel	0	1e-06	PASS	n=59046 na/inf mismatches=0 identical=59046
+memory_gene	base12	equiv	R_real	se_geno max rel	0	1e-06	PASS	n=59046 na/inf mismatches=0 identical=59046
+memory_gene	base12	equiv	R_real	l_boot_geno max abs	0	1e-05	PASS	n=59046 na/inf mismatches=0 identical=59046
+memory_gene	base12	equiv	R_real	l_boot_interact max abs	0	1e-05	PASS	n=59046 na/inf mismatches=0 identical=59046
+memory_gene	base12	equiv	R_real	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	R_real	p_geno sig p<0.001	0	0	PASS	ref 106 cand 106 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_geno sig p<1e-05	0	0	PASS	ref 11 cand 11 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_geno sig p<1e-08	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_geno eGenes BH 5%	0	0	PASS	ref 9 cand 9 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	R_real	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	R_real	p_interact sig p<0.001	0	0	PASS	ref 78 cand 78 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	R_real	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	R_real	p_interact_boot sig p<0.001	0	0	PASS	ref 76 cand 76 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	R_real	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	R_real	boot LR distribution KS p	1	-	INFO	q0.5 0.4641/0.4641 q0.9 2.77/2.77 q0.99 6.751/6.751 q0.999 10.9/10.9
+memory_gene	base12	equiv	R_real	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 6.712/6.712 q0.9 33.66/33.66 q0.99 56.44/56.44 q0.999 72.92/72.92
+memory_gene	base12	stat	R_real	power/FDR vs truth	6/6 rules identical	identical	PASS	p_geno eGene BH 5%: power 0.200/0.200 fdr 0.111/0.111; p_geno lead p<1e-5: power 0.200/0.200 fdr 0.111/0.111; p_interact eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot eGene BH 5%: power 0.000/0.000 fdr 0.000/0.000; p_interact_boot lead p<1e-5: power 0.000/0.000 fdr 0.000/0.000
+memory_gene	base12	equiv	S@none	wall_s cand/ref (indicative, not a benchmark)	0.6613	-	INFO	0.57 / 0.86 s
+memory_gene	base12	equiv	S@none	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+memory_gene	base12	equiv	S@none	columns	0	0	PASS	
+memory_gene	base12	equiv	S@none	l0 max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@none	l_geno max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@none	l_interact max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@none	p_geno max|dlog10p|	0	-	INFO	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@none	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@none	p_interact max|dlog10p|	0	-	INFO	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@none	beta_geno max rel	0	1e-06	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@none	se_geno max rel	0	1e-06	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@none	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S@none	p_geno sig p<0.001	0	0	PASS	ref 16 cand 16 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@none	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@none	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@none	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@none	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@none	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S@none	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S@none	p_interact sig p<0.001	0	0	PASS	ref 22 cand 22 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@none	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@none	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@none	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@none	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@none	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S@permute	wall_s cand/ref (indicative, not a benchmark)	0.7547	-	INFO	0.56 / 0.74 s
+memory_gene	base12	equiv	S@permute	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+memory_gene	base12	equiv	S@permute	columns	0	0	PASS	
+memory_gene	base12	equiv	S@permute	l0 max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@permute	l_geno max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@permute	l_interact max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@permute	p_geno max|dlog10p|	0	-	INFO	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@permute	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@permute	p_interact max|dlog10p|	0	-	INFO	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@permute	beta_geno max rel	0	1e-06	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@permute	se_geno max rel	0	1e-06	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S@permute	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S@permute	p_geno sig p<0.001	0	0	PASS	ref 15 cand 15 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@permute	p_geno sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@permute	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@permute	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@permute	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@permute	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S@permute	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S@permute	p_interact sig p<0.001	0	0	PASS	ref 29 cand 29 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@permute	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@permute	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@permute	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@permute	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S@permute	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S#null	wall_s cand/ref (indicative, not a benchmark)	1.086	-	INFO	1.38 / 1.27 s
+memory_gene	base12	equiv	S#null	rows	0	0	PASS	ref 19942 rows / 200 genes, cand 19942 / 200
+memory_gene	base12	equiv	S#null	columns	0	0	PASS	
+memory_gene	base12	equiv	S#null	l0 max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S#null	l_geno max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S#null	l_interact max abs	0	1e-09	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S#null	p_geno max|dlog10p|	0	-	INFO	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S#null	df_interact max abs	0	0	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S#null	p_interact max|dlog10p|	0	-	INFO	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S#null	beta_geno max rel	0	1e-06	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S#null	se_geno max rel	0	1e-06	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S#null	l_boot_geno max abs	0	1e-05	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S#null	l_boot_interact max abs	0	1e-05	PASS	n=19942 na/inf mismatches=0 identical=19942
+memory_gene	base12	equiv	S#null	p_geno lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S#null	p_geno sig p<0.001	0	0	PASS	ref 19 cand 19 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S#null	p_interact lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S#null	p_interact sig p<0.001	0	0	PASS	ref 15 cand 15 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_interact sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S#null	p_interact_boot lead SNP per gene	0	0	PASS	200 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	S#null	p_interact_boot sig p<0.001	0	0	PASS	ref 7 cand 7 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	S#null	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	S#null	boot LR distribution KS p	1	-	INFO	q0.5 0.4824/0.4824 q0.9 2.838/2.838 q0.99 6.865/6.865 q0.999 11.45/11.45
+memory_gene	base12	equiv	S#null	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 1.758/1.758 q0.9 14.95/14.95 q0.99 25.86/25.86 q0.999 34.42/34.42
+memory_gene	base12	stat	S#null	null lambda_GC p_geno all SNPs	1.033	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.033; cand KS p 0.232 (ref 0.232)
+memory_gene	base12	stat	S#null	null lambda_GC p_geno 1 SNP/gene	1.059	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.059; cand KS p 0.717 (ref 0.717)
+memory_gene	base12	stat	S#null	null lambda_GC p_interact all SNPs	1.006	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.006; cand KS p 0.0451 (ref 0.0451)
+memory_gene	base12	stat	S#null	null lambda_GC p_interact 1 SNP/gene	0.8621	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.862; cand KS p 0.564 (ref 0.564)
+memory_gene	base12	stat	S#null	null lambda_GC boot LR vs chi2(df)	1.06	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.060; cand KS p 0.000958 (ref 0.000958)
+memory_gene	base12	equiv	M_grm#null	wall_s cand/ref (indicative, not a benchmark)	0.9512	-	INFO	5.30 / 5.57 s
+memory_gene	base12	equiv	M_grm#null	rows	0	0	PASS	ref 30049 rows / 150 genes, cand 30049 / 150
+memory_gene	base12	equiv	M_grm#null	columns	0	0	PASS	
+memory_gene	base12	equiv	M_grm#null	l0 max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm#null	l_geno max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm#null	l_interact max abs	0	1e-09	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm#null	p_geno max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm#null	df_interact max abs	0	0	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm#null	p_interact max|dlog10p|	0	-	INFO	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm#null	beta_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm#null	se_geno max rel	0	1e-06	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm#null	l_boot_geno max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm#null	l_boot_interact max abs	0	1e-05	PASS	n=30049 na/inf mismatches=0 identical=30049
+memory_gene	base12	equiv	M_grm#null	p_geno lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_grm#null	p_geno sig p<0.001	0	0	PASS	ref 29 cand 29 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_geno sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_geno sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_geno eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_geno eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_geno rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_grm#null	p_interact lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_grm#null	p_interact sig p<0.001	0	0	PASS	ref 31 cand 31 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_interact sig p<1e-05	0	0	PASS	ref 1 cand 1 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_interact sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_interact eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_interact eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_interact rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_grm#null	p_interact_boot lead SNP per gene	0	0	PASS	150 genes, 0 different leads (0 ties within the band)
+memory_gene	base12	equiv	M_grm#null	p_interact_boot sig p<0.001	0	0	PASS	ref 27 cand 27 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_interact_boot sig p<1e-05	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_interact_boot sig p<1e-08	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_interact_boot eGenes Bonferroni 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_interact_boot eGenes BH 5%	0	0	PASS	ref 0 cand 0 flips 0 (borderline 0)
+memory_gene	base12	equiv	M_grm#null	p_interact_boot rank: discordant SNP pairs	0	0	PASS	Spearman per gene min 1.000000 median 1.000000
+memory_gene	base12	equiv	M_grm#null	boot LR distribution KS p	1	-	INFO	q0.5 0.4718/0.4718 q0.9 2.749/2.749 q0.99 6.682/6.682 q0.999 10.98/10.98
+memory_gene	base12	equiv	M_grm#null	l_boot_geno - l_geno distribution KS p	1	-	INFO	q0.5 1.791/1.791 q0.9 20.25/20.25 q0.99 36.37/36.37 q0.999 47.43/47.43
+memory_gene	base12	stat	M_grm#null	null lambda_GC p_geno all SNPs	0.9803	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.980; cand KS p 0.0722 (ref 0.0722)
+memory_gene	base12	stat	M_grm#null	null lambda_GC p_geno 1 SNP/gene	1.24	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.240; cand KS p 0.786 (ref 0.786)
+memory_gene	base12	stat	M_grm#null	null lambda_GC p_interact all SNPs	0.9837	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.984; cand KS p 0.0597 (ref 0.0597)
+memory_gene	base12	stat	M_grm#null	null lambda_GC p_interact 1 SNP/gene	0.7631	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 0.763; cand KS p 0.0301 (ref 0.0301)
+memory_gene	base12	stat	M_grm#null	null lambda_GC boot LR vs chi2(df)	1.037	|cand-ref| <= 0.02 (FAIL > 0.05); all-SNP/boot rows 0.9-1.1	PASS	ref 1.037; cand KS p 0.0119 (ref 0.0119)
+memory_gene	base12	repro	S	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+memory_gene	base12	repro	S	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+memory_gene	base12	repro	S	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+memory_gene	base12	repro	M_dense	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+memory_gene	base12	repro	M_dense	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+memory_gene	base12	repro	M_dense	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+memory_gene	base12	repro	M_grm	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+memory_gene	base12	repro	M_grm	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+memory_gene	base12	repro	M_grm	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+memory_gene	base12	repro	LA	identical(1 core, 1 core rerun)	TRUE	TRUE	PASS	
+memory_gene	base12	repro	LA	identical(1 core, 2 cores)	TRUE	TRUE	PASS	
+memory_gene	base12	repro	LA	identical(1 core, 4 cores)	TRUE	TRUE	PASS	
+memory_gene	base12	edge	default_kernel_balanced	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	default_kernel_unbalanced	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	grm_numeric_cond_h0_to_1	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	wide_spectrum_kernel_x1	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	wide_spectrum_kernel_x1e+06	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	wide_spectrum_kernel_x1e-06	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	bimodal_likelihood	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	flat_likelihood_identity_kernel	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	rare_snps_factor3_mixed_df	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	rare_snps_factor2	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	collinear_interaction_and_snps	edge case report	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+memory_gene	base12	edge	eqtl_only_p0_0	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	duplicated_covariate	edge case report	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+memory_gene	base12	edge	raw_scale_covariate	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	near_perfect_fit	edge case report	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0 (report-only case: rank-deficient / near-perfect, list any difference)
+memory_gene	base12	edge	n_snps_1	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	n_snps_2	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	n_snps_7	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	n_snps_64	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	n_snps_65	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	n_snps_257	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	small_odd_n31	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	edge	no_bootstrap	edge case exact	0	l 1e-9 (WARN 1e-6), rel 1e-6	PASS	max_dl 0 boot 0 rel_beta 0 rel_se 0 df TRUE na/inf mismatches 0
+memory_gene	base12	stress	bimodal, tuned peak gap	fits below the exact ML by > 1e-6 (cand)	0	<= ref; |cand-ref| <= 1e-9	PASS	6 cases; ref misses 0; max shortfall ref 5.68e-14 cand 5.68e-14; max |cand-ref| 0; NA mismatches 0
+memory_gene	base12	stress	random 3-block spectrum	fits below the exact ML by > 1e-6 (cand)	0	<= ref; |cand-ref| <= 1e-9	PASS	150 cases; ref misses 0; max shortfall ref 1.71e-13 cand 1.71e-13; max |cand-ref| 0; NA mismatches 0

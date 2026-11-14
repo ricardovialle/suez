@@ -1,0 +1,387 @@
+diff --color -ru R/lmm.R bench/proto/r12/memory/pkg_gene/R/lmm.R
+--- R/lmm.R	2026-11-13 13:08:00
++++ bench/proto/r12/memory/pkg_gene/R/lmm.R	2026-11-13 16:22:07
+@@ -25,16 +25,14 @@
+   stopifnot(nrow(K) == ncol(K), is_symmetric(K, tol = 1e-8))
+   n = nrow(K)
+   u = -qr.Q(qr(matrix(1, n, 1)))[, 1]; u[1] = u[1] + 1; u = u / sqrt(sum(u^2))
+-  K = K - 2 * outer(drop(K %*% u), u)          # K H
+-  K = K - 2 * outer(u, drop(crossprod(u, K)))  # H K H
+-  e = if (eigen_solver() == "lapack") eigen(K[-1, -1, drop = FALSE], symmetric = TRUE)
+-      else .Call(suez_eigen_sym, K[-1, -1, drop = FALSE])
+-  rm(K)
++  # one call, same arithmetic as the R steps it replaces (K H, H K H, eigen of the contrast block, H [0; V]),
++  # decomposed in place in the returned U: holds K + U (Eigen) or K + K2 + U (LAPACK) instead of ~7 N x N copies
++  if (!is.double(K)) storage.mode(K) = "double"
++  e = .Call(suez_contrast_eigen, K, u, drop(K %*% u), eigen_solver() == "lapack")
+   if (min(e$values) < -1e-6 * max(abs(e$values)))
+-    stop("sample_kernel is not positive semi-definite (min eigenvalue ",
+-         signif(min(e$values), 3), ").", call. = FALSE)
+-  V = rbind(0, e$vectors)
+-  list(vectors = V - 2 * outer(u, drop(crossprod(u, V))), values = pmax(e$values, 0))
++    stop("sample_kernel is not positive semi-definite (min eigenvalue ", signif(min(e$values), 3), ").", call. = FALSE)
++  e$values = pmax(e$values, 0)
++  e
+ }
+ 
+ # options(suez.eigen_solver = "auto" | "eigen" | "lapack"). auto: LAPACK when R's BLAS or LAPACK (symlinks
+diff --color -ru R/local_ancestry.R bench/proto/r12/memory/pkg_gene/R/local_ancestry.R
+--- R/local_ancestry.R	2026-11-13 09:50:56
++++ bench/proto/r12/memory/pkg_gene/R/local_ancestry.R	2026-11-13 16:18:59
+@@ -14,7 +14,6 @@
+ #'   (`.`) or duplicated.
+ #' @details Each file holds every individual and SNP of one chromosome (or chunk) as a dense matrix:
+ #'   read one chromosome at a time for large cohorts.
+-#' @importFrom readr read_tsv
+ #' @export
+ read_tractor = function(prefix, ancestry_names = NULL) {
+   find = function(type) {
+@@ -27,7 +26,7 @@
+     stop("expected one dosage and one hapcount file per ancestry (at least 2) for prefix ", prefix, call. = FALSE)
+   rd = function(f) {   # CHROM POS ID REF ALT, then one column per individual
+     n = length(strsplit(readLines(f, n = 1), "\t")[[1]])
+-    read_tsv(f, col_types = paste0("cdccc", strrep("d", n - 5)), progress = FALSE)
++    readr::read_tsv(f, col_types = paste0("cdccc", strrep("d", n - 5)), progress = FALSE)
+   }
+   first = rd(fd[1])
+   meta = first[, 1:5]; names(meta) = c("chr", "pos", "id", "ref", "alt")
+diff --color -ru R/map_interaction_qtl.R bench/proto/r12/memory/pkg_gene/R/map_interaction_qtl.R
+--- R/map_interaction_qtl.R	2026-11-13 09:50:56
++++ bench/proto/r12/memory/pkg_gene/R/map_interaction_qtl.R	2026-11-13 16:27:19
+@@ -177,6 +177,10 @@
+     }
+   } else if (la_mode) stop("local_ancestry matrices must be matrices (see read_tractor()).", call. = FALSE)
+   rownames(geneloc)=geneloc$geneid
++  # per-gene inputs by position (geneloc[gene, "chr"] costs ~45 us per lookup, input[gene, ] a name match)
++  gi = match(genes, geneloc$geneid)
++  g_chr = geneloc$chr[gi]; g_left = geneloc$left[gi] - cisdist; g_right = geneloc$right[gi] + cisdist
++  g_row = match(genes, rownames(input))
+ 
+   if (is.null(sample_kernel)) {
+     # same individual: Z Z' for the samples x individuals indicator Z (outer() builds two N^2 vectors of ids)
+@@ -234,18 +238,18 @@
+   seeds = sample.int(.Machine$integer.max, length(genes))
+ 
+   # results are combined once at the end (combining pairwise copies the growing table at every gene)
+-  res = foreach(gene=genes, seed=seeds, .errorhandling=errorhandling) %dopar% {
++  res = foreach(gene=genes, seed=seeds, j=seq_along(genes), .errorhandling=errorhandling) %dopar% {
+ 
+     set.seed(seed)
+     if (!is.null(checkpoint_dir)){
+       check_fn = file.path(checkpoint_dir, paste0(gene, ".txt.gz"))
+       if (file.exists(check_fn)) {
+-        return(read_tsv(check_fn))
++        return(readr::read_tsv(check_fn))
+       }
+     }
+     
+     if (la_mode) {
+-      rows = cis_rows(geneloc[gene,"chr"], geneloc[gene,"left"]-cisdist, geneloc[gene,"right"]+cisdist)
++      rows = cis_rows(g_chr[j], g_left[j], g_right[j])
+       if (!length(rows)) return(NULL)
+       D = lapply(local_ancestry$dosage, function(m) m[rows,,drop=F])
+       H = lapply(local_ancestry$hapcount, function(m) m[rows,,drop=F])
+@@ -253,14 +257,14 @@
+         perm = sample(ncol(D[[1]]))
+         D = lapply(D, function(m) { colnames(m) = colnames(m)[perm]; m }); H = lapply(H, function(m) { colnames(m) = colnames(m)[perm]; m })
+       }
+-      Uy = drop(crossprod(U, as.numeric(input[gene,])))
++      Uy = drop(crossprod(U, as.numeric(input[g_row[j],])))
+       gene_results = la_gene(gene, D, H, anno, C, U, lambda, Uy, UX0, permutation_approach=="boot", maf_threshold)
+-      if (!is.null(checkpoint_dir) && !is.null(gene_results)) gene_results %>% write_tsv(check_fn)
++      if (!is.null(checkpoint_dir) && !is.null(gene_results)) readr::write_tsv(gene_results, check_fn)
+       return(gene_results)
+     }
+ 
+     geno_here = if (is.matrix(genotype)) {
+-      rows = cis_rows(geneloc[gene,"chr"], geneloc[gene,"left"]-cisdist, geneloc[gene,"right"]+cisdist)
++      rows = cis_rows(g_chr[j], g_left[j], g_right[j])
+       if (length(rows)) genotype[rows,,drop=F] else NULL
+     } else get_cis_geno(genotype, 
+                               chrom = geneloc[gene,"chr"], 
+@@ -271,7 +275,7 @@
+     if (is.null(geno_here)) return(NULL)
+     
+     imp_geno = if (anyNA(geno_here)) easy_impute(geno_here) else {   # nothing to impute: rounded, as easy_impute does
+-      g = round(geno_here); storage.mode(g) = "integer"; g }
++      round(geno_here) }   # integer-valued doubles: G below is double anyway
+     if (maf_threshold > 0) {
+       af = rowMeans(geno_here, na.rm=T)/2 # ALT frequency, on unimputed genotypes
+       mafs = pmin(af, 1 - af)
+@@ -285,33 +289,47 @@
+ 
+     G = t(imp_geno[, anno$individual, drop=F])                     # samples x SNPs
+     storage.mode(G) = "double"
+-    keep = rowSums(imp_geno) >= 5 & colSums(G != rep(G[1, ], each = nrow(G))) > 0   # >= 5 ALT alleles, varies across samples
++    # >= 5 ALT alleles; varies across samples: for integer-valued columns (rounded genotypes, exact sums)
++    # N sum(x^2) == (sum x)^2 iff x is constant (Cauchy-Schwarz)
++    cs = colSums(G)
++    keep = rowSums(imp_geno) >= 5 & nrow(G) * colSums(G * G) != cs * cs
+     if (!any(keep)) return(NULL)
+     G = G[, keep, drop=F]
+-    Uy = drop(crossprod(U, as.numeric(input[gene,])))
++    Uy = drop(crossprod(U, as.numeric(input[g_row[j],])))
+ 
+     if (debug) cat("Fitting", ncol(G), "SNPs...\n")
+     fit = .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot")   # src/lmm.cpp
+     m = fit$res
+-    gene_results = data.frame(gene=gene, cis_snp=colnames(G), l0=fit$l0, l_geno=m[,1], l_interact=m[,2],
+-                              stringsAsFactors=F)
+-    gene_results$p_geno = pchisq(pmax(0, 2*(gene_results$l_geno-gene_results$l0)), 1, lower.tail=F)
+-    gene_results$df_interact = as.integer(m[,3])
+-    gene_results$p_interact = pchisq(pmax(0, 2*(gene_results$l_interact-gene_results$l_geno)), m[,3], lower.tail=F)
+-    gene_results$beta_geno = m[,4]
+-    gene_results$se_geno = m[,5]
++    # columns as a list (data.frame() + 8 `$<-` cost ~0.5 ms per gene)
++    S = nrow(m)
++    gene_results = list(gene=rep(gene, S), cis_snp=colnames(G), l0=rep(fit$l0, S), l_geno=m[,1], l_interact=m[,2],
++                        p_geno=pchisq(pmax(0, 2*(m[,1]-fit$l0)), 1, lower.tail=F), df_interact=as.integer(m[,3]),
++                        p_interact=pchisq(pmax(0, 2*(m[,2]-m[,1])), m[,3], lower.tail=F), beta_geno=m[,4], se_geno=m[,5])
+     if (permutation_approach=="boot") {
+       # parametric bootstrap under the genotype (no-interaction) model, one draw per SNP
+       gene_results$l_boot_geno = m[,6]
+       gene_results$l_boot_interact = m[,7]
+     }
++    gene_results = structure(gene_results, class="data.frame", row.names=c(NA, -S))
+ 
+     if (!is.null(checkpoint_dir)){
+       cat("Saving results to ", checkpoint_dir, "\n")
+-      gene_results %>% write_tsv(check_fn)
++      readr::write_tsv(gene_results, check_fn)
+     }
+ 
+     gene_results
+   }
+-  bind_rows(res)
++  bind_tables(res)
++}
++
++# dplyr::bind_rows() for per-gene data.frames with the same columns (identical() result), without loading
++# dplyr (~33 MB, ~0.15 s); anything else (checkpoint tibbles from read_tsv) goes to bind_rows
++bind_tables = function(res) {
++  res = res[!vapply(res, is.null, NA)]
++  nm = if (length(res)) names(res[[1]])
++  same = length(res) && all(vapply(res, function(x) identical(class(x), "data.frame") && identical(names(x), nm) &&
++    identical(vapply(x, typeof, ""), vapply(res[[1]], typeof, "")), NA))
++  if (!same) return(dplyr::bind_rows(res))
++  out = lapply(seq_along(nm), function(k) unlist(lapply(res, `[[`, k), use.names = FALSE)); names(out) = nm
++  structure(out, class = "data.frame", row.names = c(NA, -length(out[[1]])))
+ }
+diff --color -ru R/suez-package.R bench/proto/r12/memory/pkg_gene/R/suez-package.R
+--- R/suez-package.R	2026-11-13 09:50:56
++++ bench/proto/r12/memory/pkg_gene/R/suez-package.R	2026-11-13 16:18:59
+@@ -12,8 +12,6 @@
+ #' @import doMC
+ #' @importFrom foreach foreach %do% %dopar%
+ #' @importFrom magrittr %>%
+-#' @importFrom dplyr bind_rows
+-#' @importFrom readr read_tsv write_tsv
+ #' @importFrom utils globalVariables
+ #' @importFrom stats lm.fit model.matrix optimize pchisq pt qnorm rnorm sd
+ #' 
+diff --color -ru -x * src/Makevars bench/proto/r12/memory/pkg_gene/src/Makevars
+--- src/Makevars	2026-11-11 15:16:08
++++ bench/proto/r12/memory/pkg_gene/src/Makevars	2026-11-13 16:23:02
+@@ -2,7 +2,7 @@
+ 
+ PKG_CPPFLAGS = -I"../inst/include" -I"$(STANHEADERS_SRC)" -DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG -DBOOST_MATH_OVERFLOW_ERROR_POLICY=errno_on_error
+ PKG_CXXFLAGS = $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "RcppParallel::CxxFlags()") $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "StanHeaders:::CxxFlags()")
+-PKG_LIBS = $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "RcppParallel::RcppParallelLibs()") $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "StanHeaders:::LdFlags()")
++PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "RcppParallel::RcppParallelLibs()") $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "StanHeaders:::LdFlags()")
+ 
+ SOURCES = $(wildcard stan_files/*.stan)
+ OBJECTS = $(SOURCES:.stan=.o) init.o lmm.o
+diff --color -ru -x * src/init.cpp bench/proto/r12/memory/pkg_gene/src/init.cpp
+--- src/init.cpp	2026-11-13 09:50:57
++++ bench/proto/r12/memory/pkg_gene/src/init.cpp	2026-11-13 16:22:07
+@@ -11,11 +11,13 @@
+ extern "C" SEXP suez_fit_gene(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_fit_models(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+ extern "C" SEXP suez_eigen_sym(SEXP);
++extern "C" SEXP suez_contrast_eigen(SEXP, SEXP, SEXP, SEXP);
+ 
+ static const R_CallMethodDef CallEntries[] = {
+   {"suez_fit_gene", (DL_FUNC) &suez_fit_gene, 7},
+   {"suez_fit_models", (DL_FUNC) &suez_fit_models, 8},
+   {"suez_eigen_sym", (DL_FUNC) &suez_eigen_sym, 1},
++  {"suez_contrast_eigen", (DL_FUNC) &suez_contrast_eigen, 4},
+   {NULL, NULL, 0}
+ };
+ 
+diff --color -ru -x * src/lmm.cpp bench/proto/r12/memory/pkg_gene/src/lmm.cpp
+--- src/lmm.cpp	2026-11-13 13:47:19
++++ bench/proto/r12/memory/pkg_gene/src/lmm.cpp	2026-11-13 16:36:51
+@@ -14,11 +14,18 @@
+ // the Schur complement on the shared X0 block. Where the normal equations cancel, values are recomputed from
+ // direct residuals. SNPs are processed in blocks (rotation, moments, grid, fits, bootstrap), so memory does not
+ // grow with the moments of a whole gene. Bootstrap normals are drawn in SNP and contrast order, as in suez 0.4.
++#define USE_FC_LEN_T
+ #include <RcppEigen.h>
++#include <R_ext/Lapack.h>
++#ifndef FCONE
++#define FCONE
++#endif
+ #include <algorithm>
+ #include <cmath>
+ #include <limits>
+ #include <vector>
++#include <cstdint>
++#include <cstring>
+ using Eigen::ArrayXd; using Eigen::MatrixXd; using Eigen::VectorXd; using Eigen::VectorXi;
+ static const double NEG_INF = -std::numeric_limits<double>::infinity();
+ static const double POS_INF = std::numeric_limits<double>::infinity();
+@@ -531,7 +538,7 @@
+ 
+ // ---------------------------------------------------------------- fit_gene (suez_fit_gene)
+ static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
+-                           const MatrixXd& G, const MatrixXd& C, bool boot) {
++                           const Eigen::Map<MatrixXd>& G, const MatrixXd& C, bool boot) {
+   const int S = G.cols(), q = C.cols(), p0 = UX0_.cols(), n = Uy_.size();
+   const ArrayXd lam = lam_.array();
+   const Spectrum sp(lam); const GridW gw(sp, lam); Profile PR(sp);
+@@ -545,13 +552,32 @@
+     f0 = refine(PR, make_model(b0, 0, c0), V0.data()); }
+   if (!f0.ok) Rcpp::stop("no-genotype model did not converge");
+ 
+-  MatrixXd Gs = G; VectorXd gsd(S);
+-  for (int s = 0; s < S; ++s) standardize(Gs.col(s), gsd[s]);
+-  std::vector<MatrixXd> Is(q); std::vector<std::vector<bool>> iok(q, std::vector<bool>(S)); VectorXi df = VectorXi::Zero(S);
+-  for (int j = 0; j < q; ++j) {
+-    Is[j] = G.array().colwise() * C.col(j).array();
+-    for (int s = 0; s < S; ++s) { double sd; iok[j][s] = standardize(Is[j].col(s), sd); if (!iok[j][s]) Is[j].col(s).setZero(); else ++df[s]; }
+-  }
++  // standardized genotype and interaction columns, rotated lazily in rotate_all's fixed 256-column chunks (same
++  // values as rotate_all): at most two chunks of (1 + q) rotated terms are held, not S columns of G, Gs, Is, RG
++  VectorXd gsd(S); std::vector<std::vector<bool>> iok(q, std::vector<bool>(S)); VectorXi df = VectorXi::Zero(S);
++  struct Chunk { int c0, w; std::vector<MatrixXd> R; };
++  std::vector<Chunk> chunks;
++  auto load = [&](int c0) {
++    Chunk ch; ch.c0 = c0; ch.w = std::min(256, S - c0);
++    MatrixXd Gc = G.middleCols(c0, ch.w);
++    for (int s = 0; s < ch.w; ++s) standardize(Gc.col(s), gsd[c0 + s]);
++    ch.R.push_back(rotate(U, Gc)); Gc.resize(0, 0);
++    for (int j = 0; j < q; ++j) {
++      MatrixXd Ic = G.middleCols(c0, ch.w).array().colwise() * C.col(j).array();
++      for (int s = 0; s < ch.w; ++s) { double sd; iok[j][c0 + s] = standardize(Ic.col(s), sd); if (!iok[j][c0 + s]) Ic.col(s).setZero(); else ++df[c0 + s]; }
++      ch.R.push_back(rotate(U, Ic));
++    }
++    chunks.push_back(std::move(ch));
++  };
++  // rotated term j, SNPs s0 .. s0 + sb - 1 (loads the chunks they fall in, drops the chunks before s0)
++  auto rotated = [&](int j, int s0, int sb) {
++    while (!chunks.empty() && chunks.front().c0 + chunks.front().w <= s0) chunks.erase(chunks.begin());
++    while (chunks.empty() || chunks.back().c0 + chunks.back().w < s0 + sb) load(chunks.empty() ? s0 - s0 % 256 : chunks.back().c0 + chunks.back().w);
++    MatrixXd M(U.cols(), sb);
++    for (int sl = 0; sl < sb; ++sl) for (const Chunk& ch : chunks)
++      if (s0 + sl >= ch.c0 && s0 + sl < ch.c0 + ch.w) { M.col(sl) = ch.R[j].col(s0 + sl - ch.c0); break; }
++    return M;
++  };
+   std::vector<int> all(1 + q); for (int j = 0; j <= q; ++j) all[j] = j;
+   const std::vector<std::vector<int>> mdata = q ? std::vector<std::vector<int>>{{0}, all} : std::vector<std::vector<int>>{{0}};
+   const std::vector<std::vector<int>> mboot = q ? std::vector<std::vector<int>>{{}, {0}, all} : std::vector<std::vector<int>>{{}, {0}};
+@@ -565,12 +591,10 @@
+   std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
+   const int k1 = 1 + q, nper = p0 * k1 + k1 * (k1 + 1) / 2 + k1 + p0 + 1;   // per-SNP pairs of the bootstrap block
+   const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.R() * nper))));
+-  std::vector<MatrixXd> RG(1, rotate_all(U, Gs));
+-  for (int j = 0; j < q; ++j) RG.push_back(rotate_all(U, Is[j]));
+   for (int s0 = 0; s0 < S; s0 += SB) {
+     const int sb = std::min(SB, S - s0);
+     std::vector<MatrixXd> B;
+-    for (int j = 0; j <= q; ++j) B.push_back(sp.permute(RG[j].middleCols(s0, sb)));
++    for (int j = 0; j <= q; ++j) B.push_back(sp.permute(rotated(j, s0, sb)));
+     std::vector<Fit> f1(sb);
+     {
+       Block bd(sp, UX0, MX0, B, Y1, sb);
+@@ -617,7 +641,7 @@
+   BEGIN_RCPP
+   return fit_gene(Rcpp::as<Eigen::Map<MatrixXd>>(U),   // U (N x N-1) used in place, not copied per gene
+                   Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
+-                  Rcpp::as<MatrixXd>(G), Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot));
++                  Rcpp::as<Eigen::Map<MatrixXd>>(G), Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot));   // G not copied
+   END_RCPP
+ }
+ 
+@@ -714,5 +738,66 @@
+   if (es.info() != Eigen::Success) Rcpp::stop("symmetric eigen-decomposition failed (non-finite values?)");
+   return Rcpp::List::create(Rcpp::Named("values") = VectorXd(es.eigenvalues().reverse()),
+                             Rcpp::Named("vectors") = MatrixXd(es.eigenvectors().rowwise().reverse()));
++  END_RCPP
++}
++
++// ---------------------------------------------------------------- lean contrast eigen-decomposition (memory)
++// kernel_contrast_eigen in one call, with the same arithmetic as the R code it replaces (K1 = K - 2 w u',
++// K2 = K1 - 2 u (u'K1), eigen of K2[-1, -1], U = H [0; V]; sums in reference dgemv order with FMA, as R's
++// reference BLAS). Eigen's solver runs in place inside the returned N x (N-1) matrix (holds K + U instead of
++// ~7 N x N matrices); LAPACK's dsyevr (as eigen(symmetric = TRUE)) writes its vectors into U (K + K2 + U).
++// Returns list(vectors = U, values) (values decreasing).
++#pragma clang fp contract(off)
++extern "C" SEXP suez_contrast_eigen(SEXP K_, SEXP u_, SEXP w_, SEXP lapack_) {
++  BEGIN_RCPP
++  const int n = Rf_nrows(K_), m = n - 1; const bool lapack = Rf_asLogical(lapack_);
++  const double *K = REAL(K_), *u = REAL(u_), *w = REAL(w_);
++  auto K1 = [&](int i, int j) { return K[i + (size_t)j * n] - 2 * (w[i] * u[j]); };
++  std::vector<double> z(n);   // u'K1 (R: crossprod(u, K1), dgemv 'T')
++  for (int j = 0; j < n; ++j) { double t = 0; for (int i = 0; i < n; ++i) t = std::fma(K1(i, j), u[i], t); z[j] = t; }
++  Rcpp::NumericMatrix U(n, m); double* buf = U.begin();
++  VectorXd diag(m);
++  if (!lapack) {
++    const int off = (reinterpret_cast<std::uintptr_t>(buf) % 16) ? 1 : 0;   // A 16-byte aligned, as Eigen's MatrixXd
++    Eigen::Map<MatrixXd, Eigen::Aligned16> A(buf + off, m, m);
++    for (int j = 0; j < m; ++j) {   // lower triangle of K2[-1, -1], upper zero (SelfAdjointEigenSolver::compute)
++      for (int i = 0; i < j; ++i) A(i, j) = 0;
++      for (int i = j; i < m; ++i) A(i, j) = K1(i + 1, j + 1) - 2 * (u[i + 1] * z[j + 1]);
++    }
++    if (!A.allFinite()) Rcpp::stop("non-finite values in sample_kernel");
++    // SelfAdjointEigenSolver::compute (Eigen 3.4) on A itself
++    double scale = A.cwiseAbs().maxCoeff(); if (scale == 0) scale = 1;
++    A.triangularView<Eigen::Lower>() /= scale;
++    VectorXd sub(m - 1), hc(m - 1);
++    // tridiagonalization_inplace_selector::run (Tridiagonalization<> needs a plain matrix type)
++    Eigen::internal::tridiagonalization_inplace(A, hc);
++    diag = A.diagonal(); sub = A.diagonal<-1>();
++    A = Eigen::HouseholderSequence<decltype(A), VectorXd>(A, hc).setLength(m - 1).setShift(1);
++    if (Eigen::internal::computeFromTridiagonal_impl(diag, sub, 30, true, A) != Eigen::Success)
++      Rcpp::stop("symmetric eigen-decomposition failed (non-finite values?)");
++    diag *= scale;
++    for (int j = m - 1; j >= 0; --j) { std::memmove(buf + (size_t)j * n + 1, buf + off + (size_t)j * m, m * sizeof(double)); buf[(size_t)j * n] = 0; }
++  } else {   // La_rs: dsyevr("V", "A", "L") on a copy of K2[-1, -1], vectors straight into rows 2..N of U (ldz = N)
++    std::vector<double> A((size_t)m * m);
++    for (int j = 0; j < m; ++j) for (int i = 0; i < m; ++i) A[i + (size_t)j * m] = K1(i + 1, j + 1) - 2 * (u[i + 1] * z[j + 1]);
++    for (double a : A) if (!std::isfinite(a)) Rcpp::stop("non-finite values in sample_kernel");
++    char jobv = 'V', range = 'A', uplo = 'L'; double vl = 0, vu = 0, abstol = 0, tmp; int il = 0, iu = 0, mf, info = 0, lwork = -1, liwork = -1, itmp;
++    std::vector<int> isuppz(2 * (size_t)m);
++    F77_CALL(dsyevr)(&jobv, &range, &uplo, &m, A.data(), &m, &vl, &vu, &il, &iu, &abstol, &mf, diag.data(), buf + 1, &n, isuppz.data(),
++                     &tmp, &lwork, &itmp, &liwork, &info FCONE FCONE FCONE);
++    lwork = (int)tmp; liwork = itmp; std::vector<double> work(lwork); std::vector<int> iwork(liwork);
++    F77_CALL(dsyevr)(&jobv, &range, &uplo, &m, A.data(), &m, &vl, &vu, &il, &iu, &abstol, &mf, diag.data(), buf + 1, &n, isuppz.data(),
++                     work.data(), &lwork, iwork.data(), &liwork, &info FCONE FCONE FCONE);
++    if (info != 0) Rcpp::stop("error code %d from Lapack routine 'dsyevr'", info);
++    for (int j = 0; j < m; ++j) buf[(size_t)j * n] = 0;
++  }
++  // decreasing order, as eigen(); then V - 2 outer(u, crossprod(u, V)), V = rbind(0, vectors)
++  for (int j = 0; j < m / 2; ++j) std::swap_ranges(buf + (size_t)j * n, buf + (size_t)(j + 1) * n, buf + (size_t)(m - 1 - j) * n);
++  for (int j = 0; j < m; ++j) {
++    double* v = buf + (size_t)j * n; double t = 0;
++    for (int i = 0; i < n; ++i) t = std::fma(v[i], u[i], t);
++    for (int i = 0; i < n; ++i) v[i] = v[i] - 2 * (u[i] * t);
++  }
++  return Rcpp::List::create(Rcpp::Named("vectors") = U, Rcpp::Named("values") = VectorXd(diag.reverse()));
+   END_RCPP
+ }
+--- NAMESPACE	2026-11-13 09:50:56
++++ bench/proto/r12/memory/pkg_gene/NAMESPACE	2026-11-13 16:18:59
+@@ -8,13 +8,10 @@
+ import(Rcpp)
+ import(doMC)
+ import(methods)
+-importFrom(dplyr,bind_rows)
+ importFrom(foreach,"%do%")
+ importFrom(foreach,"%dopar%")
+ importFrom(foreach,foreach)
+ importFrom(magrittr,"%>%")
+-importFrom(readr,read_tsv)
+-importFrom(readr,write_tsv)
+ importFrom(rstantools,rstan_config)
+ importFrom(stats,lm.fit)
+ importFrom(stats,model.matrix)

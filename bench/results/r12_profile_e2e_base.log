@@ -1,0 +1,155 @@
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+Checkpoint dir: 
+Performing initial eigendecomposition...
+XXL wall 32.754 
+                        total.time total.pct
+"system.time"               22.525    100.00
+"<Anonymous>"               22.510     99.93
+"do.call"                   22.510     99.93
+"kernel_contrast_eigen"     16.745     74.34
+"%dopar%"                    5.675     25.19
+"e$fun"                      5.675     25.19
+"FUN"                        5.665     25.15
+"lapply"                     5.665     25.15
+"eval"                       5.660     25.13
+"doTryCatch"                 5.660     25.13
+"mclapply"                   5.660     25.13
+"tryCatch"                   5.660     25.13
+"tryCatchList"               5.660     25.13
+"tryCatchOne"                5.660     25.13
+"crossprod"                  0.200      0.89
+"tcrossprod"                 0.120      0.53
+"outer"                      0.110      0.49
+"colSums"                    0.100      0.44
+"is.data.frame"              0.085      0.38
+"is_symmetric"               0.075      0.33
+"...elt"                     0.075      0.33
+"stopifnot"                  0.075      0.33
+"rbind"                      0.060      0.27
+"t"                          0.025      0.11
+"cat"                        0.015      0.07
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+Checkpoint dir: 
+Performing initial eigendecomposition...
+XL_grm wall 12.243 
+                        total.time total.pct
+"system.time"                8.290    100.00
+"<Anonymous>"                8.280     99.88
+"do.call"                    8.280     99.88
+"%dopar%"                    6.695     80.76
+"e$fun"                      6.695     80.76
+"eval"                       6.680     80.58
+"doTryCatch"                 6.680     80.58
+"FUN"                        6.680     80.58
+"lapply"                     6.680     80.58
+"mclapply"                   6.680     80.58
+"tryCatch"                   6.680     80.58
+"tryCatchList"               6.680     80.58
+"tryCatchOne"                6.680     80.58
+"kernel_contrast_eigen"      1.565     18.88
+"crossprod"                  0.115      1.39
+"colSums"                    0.090      1.09
+"is.data.frame"              0.080      0.97
+"cat"                        0.060      0.72
+"outer"                      0.045      0.54
+"tcrossprod"                 0.035      0.42
+"is_symmetric"               0.030      0.36
+"...elt"                     0.030      0.36
+"stopifnot"                  0.030      0.36
+"data.frame"                 0.015      0.18
+"t"                          0.015      0.18
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+Checkpoint dir: 
+Performing initial eigendecomposition...
+P_many wall 6.994 
+                total.time total.pct
+"system.time"        5.945    100.00
+"<Anonymous>"        5.930     99.75
+"do.call"            5.930     99.75
+"%dopar%"            5.860     98.57
+"e$fun"              5.860     98.57
+"doTryCatch"         5.850     98.40
+"tryCatch"           5.850     98.40
+"tryCatchList"       5.850     98.40
+"tryCatchOne"        5.850     98.40
+"FUN"                5.805     97.65
+"lapply"             5.805     97.65
+"eval"               5.770     97.06
+"mclapply"           5.770     97.06
+"cat"                2.285     38.44
+"pchisq"             0.415      6.98
+"data.frame"         0.390      6.56
+"pmax"               0.210      3.53
+"cis_rows"           0.120      2.02
+"as.data.frame"      0.110      1.85
+"deparse1"           0.090      1.51
+"paste"              0.080      1.35
+"deparse"            0.075      1.26
+"[.data.frame"       0.065      1.09
+"["                  0.065      1.09
+"pmatch"             0.060      1.01
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+Checkpoint dir: 
+Performing initial eigendecomposition...
+M_cov30 wall 9.555 
+                        total.time total.pct
+"system.time"                6.045    100.00
+"<Anonymous>"                6.035     99.83
+"do.call"                    6.035     99.83
+"%dopar%"                    6.010     99.42
+"e$fun"                      6.010     99.42
+"FUN"                        5.990     99.09
+"lapply"                     5.990     99.09
+"doTryCatch"                 5.985     99.01
+"mclapply"                   5.985     99.01
+"tryCatch"                   5.985     99.01
+"tryCatchList"               5.985     99.01
+"tryCatchOne"                5.985     99.01
+"eval"                       5.980     98.92
+"cat"                        0.165      2.73
+"cis_rows"                   0.030      0.50
+"kernel_contrast_eigen"      0.015      0.25
+"comp"                       0.015      0.25
+"compiler::compile"          0.015      0.25
+"gc"                         0.010      0.17
+"pchisq"                     0.010      0.17
+"pmatch"                     0.010      0.17
+"[.data.frame"               0.010      0.17
+"["                          0.010      0.17
+"cmp"                        0.010      0.17
+"cmpCall"                    0.010      0.17
+Warning message:
+package ‘Rcpp’ was built under R version 4.6.1 
+Checkpoint dir: 
+Performing initial eigendecomposition...
+M wall 2.822 
+                        total.time total.pct
+"system.time"                2.110    100.00
+"<Anonymous>"                2.095     99.29
+"do.call"                    2.095     99.29
+"%dopar%"                    2.065     97.87
+"e$fun"                      2.065     97.87
+"doTryCatch"                 2.050     97.16
+"FUN"                        2.050     97.16
+"lapply"                     2.050     97.16
+"tryCatch"                   2.050     97.16
+"tryCatchList"               2.050     97.16
+"tryCatchOne"                2.050     97.16
+"eval"                       2.040     96.68
+"mclapply"                   2.040     96.68
+"cat"                        0.285     13.51
+"pchisq"                     0.125      5.92
+"pmax"                       0.085      4.03
+"data.frame"                 0.045      2.13
+"cis_rows"                   0.020      0.95
+"gc"                         0.015      0.71
+"kernel_contrast_eigen"      0.015      0.71
+"%in%"                       0.015      0.71
+"colSums"                    0.015      0.71
+"cmp"                        0.015      0.71
+"cmpCall"                    0.015      0.71
+"comp"                       0.015      0.71

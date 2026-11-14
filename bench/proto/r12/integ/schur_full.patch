@@ -1,0 +1,199 @@
+--- p12_base.cpp	2026-11-13 15:45:05
++++ algorithm/p12_schur.cpp	2026-11-13 16:06:54
+@@ -189,7 +189,8 @@
+   std::vector<int> kind, slot;   // per pair: 0 = MX0, 1 = MY, 2 = Mper
+   MatrixXd MY, Mper;
+   const double* col(int a, int s) const { return a < p0 ? X0.col(a).data() : a < iy ? B[a - p0].col(s).data() : Y.col(shared_y ? 0 : s).data(); }
+-  Block(const Spectrum& sp_, const MatrixXd& X0_, const MatrixXd& MX0_, const std::vector<MatrixXd>& B_, const MatrixXd& Y_, int S_)
++  // src: a block on the same X0 and B (the data block): pairs not involving y are copied from it (bootstrap)
++  Block(const Spectrum& sp_, const MatrixXd& X0_, const MatrixXd& MX0_, const std::vector<MatrixXd>& B_, const MatrixXd& Y_, int S_, const Block* src = nullptr)
+       : sp(sp_), X0(X0_), MX0(MX0_), B(B_), Y(Y_), p0(X0_.cols()), k(B_.size()), N(p0 + k + 1), iy(p0 + k), S(S_), shared_y(Y_.cols() == 1) {
+     const int np = N * (N + 1) / 2; kind.resize(np); slot.resize(np); int ny = 0;
+     auto shared = [&](int a) { return a < p0 || (a == iy && shared_y); };
+@@ -203,6 +204,8 @@
+     for (int a = 0; a < N; ++a) for (int b = a; b < N; ++b) {
+       const int t = pidx(a, b, N);
+       if (kind[t] == 1) sp.mom(col(a, 0), col(b, 0), MY.col(slot[t]).data());
++      else if (kind[t] == 2 && src && b < iy && src->kind[t] == 2)
++        for (int s = 0; s < S; ++s) Mper.col((size_t)s * nper + slot[t]) = src->Mper.col((size_t)s * src->nper + src->slot[t]);
+       else if (kind[t] == 2) for (int s = 0; s < S; ++s) sp.mom(col(a, s), col(b, s), Mper.col((size_t)s * nper + slot[t]).data());
+     }
+   }
+@@ -273,8 +276,12 @@
+ struct Profile {
+   const Spectrum& sp; const int n; Weights W; MatrixXd AB, MW, A; VectorXd b, rhs, coef, Xv, tmp; ArrayXd r;
+   PinvLDLT L; double s = NAN;
++  const Model* last_m = nullptr; double last_h = NAN, last_v = NAN; bool last_d = true;   // the last call
+   explicit Profile(const Spectrum& s_) : sp(s_), n(s_.n) {}
+   double operator()(const Model& m, double h, double* f1 = nullptr, double* f2 = nullptr) {
++    last_m = &m; last_h = h; last_d = f1 != nullptr; return last_v = eval(m, h, f1, f2);
++  }
++  double eval(const Model& m, double h, double* f1, double* f2) {
+     const MatrixXd& MM = m.MM; const int Nm = m.z.size(), p = Nm - 1, nc = f1 ? 3 : 1, P2 = MM.cols();
+     if (sp.is_bad(h)) { if (f1) *f1 = *f2 = NAN; return NEG_INF; }
+     sp.weights(h, f1 != nullptr, W);
+@@ -363,12 +370,14 @@
+     if (std::isfinite(v[i]) && (i == 0 || v[i] >= v[i - 1]) && (i == NG - 1 || v[i] >= v[i + 1])) peaks.push_back(i);
+   std::sort(peaks.begin(), peaks.end(), [&](int p, int q) { return v[p] > v[q]; });
+   if (peaks.empty()) peaks.push_back(argmax(v));
++  P.last_m = nullptr;   // a model at a reused address must not match a previous refine
+   double hb = HS[peaks[0]], vb = NEG_INF;
+   for (size_t j = 0; j < peaks.size() && j < (size_t)MAX_PEAKS; ++j) {
+     auto r = newton(P, m, v, peaks[j]);
+     if (r.second > vb) { vb = r.second; hb = r.first; }
+   }
+-  Fit f; f.value = P(m, hb); f.s2k = P.s * hb; f.s2 = P.s * (1 - hb); f.b = P.b;
++  Fit f; const bool same = P.last_m == &m && P.last_h == hb && !P.last_d;   // P already holds this value-only fit
++  f.value = same ? P.last_v : P(m, hb); f.s2k = P.s * hb; f.s2 = P.s * (1 - hb); f.b = P.b;
+   f.ok = std::isfinite(f.value);
+   return f;
+ }
+@@ -405,7 +414,12 @@
+   return bl.sp.wsum(W, 0, h, r.data(), r.data());
+ }
+ 
+-static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const X0Grid& xg, const std::vector<std::vector<int>>& models) {
++// y-free part of the per-SNP normal equations of the largest model (Schur complement on X0, its Cholesky factor
++// and the first failing pivot) per grid point and SNP: the same for every model that is a prefix of it and for the
++// data and bootstrap grids of a block (they differ only in y), so it is formed once and reused.
++struct SchurCache { int k = -1; std::vector<double> L; std::vector<int> fail; };
++static std::vector<MatrixXd> grid_values(const Block& bl, const GridW& gw, const X0Grid& xg, const std::vector<std::vector<int>>& models,
++                                         SchurCache* cache = nullptr, bool reuse = false) {
+   const Spectrum& sp = bl.sp; const int p0 = bl.p0, k = bl.k, iy = bl.iy, S = bl.S, n = sp.n, nper = bl.nper;
+   const MatrixXd At = gw.A.transpose();
+   MatrixXd RY = bl.MY.transpose() * At, RP = bl.Mper.transpose() * At;   // (pairs) x NG
+@@ -426,6 +440,13 @@
+   };
+   std::vector<MatrixXd> V(models.size(), MatrixXd(S, NG));
+   std::vector<double> r0(p0), z(p0), u(k), c(k), a(p0 * k), T(p0 * k), Sc(k * k);
++  // union model: the longest; every model must be a prefix of it to use the cache
++  size_t ui = 0; for (size_t mi = 1; mi < models.size(); ++mi) if (models[mi].size() > models[ui].size()) ui = mi;
++  const std::vector<int>& mu = models[ui]; const int ku = mu.size();
++  bool pre = cache != nullptr && ku > 0;
++  for (const auto& mb : models) for (size_t j = 0; j < mb.size(); ++j) if (mb[j] != mu[j]) pre = false;
++  if (pre && !reuse) { cache->k = ku; cache->L.assign((size_t)NG * S * ku * ku, 0); cache->fail.assign((size_t)NG * S, ku); }
++  if (pre && reuse && cache->k != ku) Rcpp::stop("Schur cache mismatch");
+   for (int i = 0; i < NG; ++i) {
+     if (gw.bad[i]) { for (auto& v : V) v.col(i).setConstant(NEG_INF); continue; }
+     const double* Ai = xg.A0i[i].data(); const double ldi = gw.logdet[i];
+@@ -433,9 +454,48 @@
+       const double yy = M(i, s, iy, iy); double q = 0;
+       for (int e = 0; e < p0; ++e) r0[e] = M(i, s, e, iy);
+       for (int e = 0; e < p0; ++e) { double x = 0; for (int f = 0; f < p0; ++f) x += Ai[e + f * p0] * r0[f]; z[e] = x; q += r0[e] * x; }
++      double* Lf = nullptr; int* fail = nullptr;
++      if (pre) {
++        Lf = cache->L.data() + ((size_t)i * S + s) * ku * ku; fail = cache->fail.data() + (size_t)i * S + s;
++        if (!reuse) {   // as the per-model code below, factor only (no y)
++          for (int j = 0; j < ku; ++j) {
++            const int cj = p0 + mu[j]; double* aj = a.data() + j * p0; double* Tj = T.data() + j * p0;
++            for (int e = 0; e < p0; ++e) aj[e] = M(i, s, e, cj);
++            for (int e = 0; e < p0; ++e) { double x = 0; for (int f = 0; f < p0; ++f) x += Ai[e + f * p0] * aj[f]; Tj[e] = x; }
++            for (int l = 0; l <= j; ++l) Sc[j * k + l] = M(i, s, cj, p0 + mu[l]);
++          }
++          for (int j = 0; j < ku; ++j) {
++            if (Sc[j * k + j] == 0) { for (int l = 0; l < j; ++l) Sc[j * k + l] = 0; Sc[j * k + j] = 1; continue; }
++            const double* aj = a.data() + j * p0;
++            for (int l = 0; l <= j; ++l) {
++              if (Sc[l * k + l] == 0) continue;
++              const double* Tl = T.data() + l * p0; double y = 0; for (int e = 0; e < p0; ++e) y += aj[e] * Tl[e]; Sc[j * k + l] -= y;
++            }
++          }
++          for (int j = 0; j < ku; ++j) {
++            double dj = Sc[j * k + j]; const double dj0 = M(i, s, p0 + mu[j], p0 + mu[j]);
++            for (int l = 0; l < j; ++l) dj -= Sc[j * k + l] * Sc[j * k + l];
++            if (!(dj > SCHUR_PIVOT * std::max(dj0, 1e-300))) { *fail = j; break; }
++            const double ljj = std::sqrt(dj); Sc[j * k + j] = ljj;
++            for (int r = j + 1; r < ku; ++r) { double x = Sc[r * k + j]; for (int l = 0; l < j; ++l) x -= Sc[r * k + l] * Sc[j * k + l]; Sc[r * k + j] = x / ljj; }
++          }
++          for (int j = 0; j < ku; ++j) for (int l = 0; l <= j; ++l) Lf[j * ku + l] = Sc[j * k + l];
++        }
++      }
+       for (size_t mi = 0; mi < models.size(); ++mi) {
+         const std::vector<int>& mb = models[mi]; const int kk = mb.size();
+         double rss = yy - q; bool full = false;
++        if (pre) {   // y part only: u = c - a'z, forward solve with the cached factor
++          for (int j = 0; j < kk; ++j) {
++            const int cj = p0 + mb[j];
++            if (M(i, s, cj, cj) == 0) { u[j] = 0; continue; }   // absent column
++            double x = M(i, s, cj, iy); for (int e = 0; e < p0; ++e) x -= M(i, s, e, cj) * z[e]; u[j] = x;
++          }
++          for (int j = 0; j < kk; ++j) {
++            if (j >= *fail) { full = true; break; }
++            const double ljj = Lf[j * ku + j]; double x = u[j]; for (int l = 0; l < j; ++l) x -= Lf[j * ku + l] * u[l]; u[j] = x / ljj; rss -= u[j] * u[j];
++          }
++        } else {
+         for (int j = 0; j < kk; ++j) {
+           const int cj = p0 + mb[j]; double* aj = a.data() + j * p0; double* Tj = T.data() + j * p0;   // not &a[..]: p0 can be 0 (empty vector)
+           for (int e = 0; e < p0; ++e) aj[e] = M(i, s, e, cj);
+@@ -461,6 +521,7 @@
+           for (int r = j + 1; r < kk; ++r) { double x = Sc[r * k + j]; for (int l = 0; l < j; ++l) x -= Sc[r * k + l] * Sc[j * k + l]; Sc[r * k + j] = x / ljj; }
+           double x = u[j]; for (int l = 0; l < j; ++l) x -= Sc[j * k + l] * u[l]; u[j] = x / ljj; rss -= u[j] * u[j];
+         }
++        }
+         if (full) {   // 0.4's LDLT on the full system (pseudo-solve for collinear columns)
+           const int p = p0 + kk; MatrixXd A(p, p); VectorXd rhs(p);
+           auto cix = [&](int e) { return e < p0 ? e : p0 + mb[e - p0]; };
+@@ -504,6 +565,16 @@
+ 
+ // U'M for all columns at once, in fixed 256-column chunks (independent of the moment block size). Rotating inside
+ // the moment blocks re-read U once per block: at N = 5000 the blocks are 16 SNPs wide and U is 200 MB.
++typedef Eigen::Map<const Eigen::SparseMatrix<double>> SpMap;
++// structured (sparse) contrast basis of the default kernel: U'M in O(nnz(U) S)
++static MatrixXd rotate_all(const SpMap& U, const MatrixXd& M) {
++  if (!M.allFinite()) Rcpp::stop("non-finite genotype or term values (impute missing genotypes first)");
++  return U.transpose() * M;
++}
++static SpMap sp_map(Rcpp::List L) {
++  Rcpp::IntegerVector i = L["i"], p = L["p"], d = L["dim"]; Rcpp::NumericVector x = L["x"];
++  return SpMap(d[0], d[1], x.size(), p.begin(), i.begin(), x.begin());
++}
+ static MatrixXd rotate_all(const Eigen::Map<MatrixXd>& U, const MatrixXd& M) {
+   MatrixXd R(U.cols(), M.cols());
+   for (int c0 = 0; c0 < M.cols(); c0 += 256) {
+@@ -532,7 +603,8 @@
+ }
+ 
+ // ---------------------------------------------------------------- fit_gene (suez_fit_gene)
+-static Rcpp::List fit_gene(const Eigen::Map<MatrixXd>& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
++template <class UT>
++static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
+                            const MatrixXd& G, const MatrixXd& C, bool boot) {
+   const int S = G.cols(), q = C.cols(), p0 = UX0_.cols(), n = Uy_.size();
+   const ArrayXd lam = lam_.array();
+@@ -573,10 +645,10 @@
+     const int sb = std::min(SB, S - s0);
+     std::vector<MatrixXd> B;
+     for (int j = 0; j <= q; ++j) B.push_back(sp.permute(RG[j].middleCols(s0, sb)));
+-    std::vector<Fit> f1(sb);
++    std::vector<Fit> f1(sb); SchurCache scache;
++    Block bd(sp, UX0, MX0, B, Y1, sb);
+     {
+-      Block bd(sp, UX0, MX0, B, Y1, sb);
+-      std::vector<MatrixXd> VV = grid_values(bd, gw, xg, mdata);
++      std::vector<MatrixXd> VV = grid_values(bd, gw, xg, mdata, &scache, false);
+       for (int sl = 0; sl < sb; ++sl) {
+         const int s = s0 + sl; out(s, 2) = df[s];
+         VectorXd v1 = VV[0].row(sl).transpose(); f1[sl] = refine(PR, make_model(bd, sl, cols1()), v1.data()); ok_nested(f1[sl], f0);
+@@ -597,8 +669,8 @@
+       for (int i = 0; i < n; ++i) Yb(pos[i], sl) = std::sqrt(f.s2k * lam[i] + f.s2) * R::norm_rand();
+       Yb.col(sl) += UX0 * f.b.head(p0) + B[0].col(sl) * f.b[p0];
+     }
+-    Block bb(sp, UX0, MX0, B, Yb, sb);
+-    std::vector<MatrixXd> WW = grid_values(bb, gw, xg, mboot);
++    Block bb(sp, UX0, MX0, B, Yb, sb, &bd);
++    std::vector<MatrixXd> WW = grid_values(bb, gw, xg, mboot, &scache, true);
+     for (int sl = 0; sl < sb; ++sl) {
+       const int s = s0 + sl; if (!f1[sl].ok) continue;
+       VectorXd v = WW[0].row(sl).transpose(); Fit g0 = refine(PR, make_model(bb, sl, c0), v.data());
+@@ -723,3 +795,11 @@
+ SEXP fit_gene_proto(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot) { return p_fit_gene(U, lambda, Uy, UX0, G, C, boot); }
+ // [[Rcpp::export]]
+ SEXP fit_models_proto(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP cols, SEXP models, SEXP bn, SEXP ba) { return p_fit_models(U, lambda, Uy, UX0, cols, models, bn, ba); }
++
++// [[Rcpp::export]]
++SEXP fit_gene_sparse(Rcpp::List U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot) {
++  return fit_gene(sp_map(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
++                  Rcpp::as<MatrixXd>(G), Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot));
++}
++// [[Rcpp::export]]
++Eigen::MatrixXd sp_crossprod(Rcpp::List U, Eigen::MatrixXd M) { return sp_map(U).transpose() * M; }
