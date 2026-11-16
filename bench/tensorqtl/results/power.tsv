@@ -43,7 +43,7 @@ M_cov	tensorQTL, all samples, no PCs	tq_sample0	p_geno	15	120	0.175	0.2	0.2
 M_cov	tensorQTL, all samples, no PCs	tq_sample0	p_interact	15	120	0.01667	0	0.1333
 M_cov	tensorQTL, per individual (mean / difference), 5 PCs	tq_indiv5	p_geno	15	120	0.06667	0.2667	0.2667
 M_cov	tensorQTL, per individual (mean / difference), 5 PCs	tq_indiv5	p_interact	15	120	0.03333	0.06667	0.1333
-M_eqtl	suez, step-1 kernel	suez_learned	p_geno	15	120	0.05	0.06667	0.06667
+M_eqtl	suez, step-1 kernel	suez_learned	p_geno	15	120	0.05833	0.06667	0.06667
 M_eqtl	suez, repeated-individual kernel	suez_dataset	p_geno	15	120	0.06667	0	0
 M_eqtl	tensorQTL, all samples, 5 PCs	tq_sample5	p_geno	15	120	0.05	0.06667	0.1333
 M_eqtl	tensorQTL, all samples, no PCs	tq_sample0	p_geno	15	120	0.06667	0	0
@@ -57,7 +57,7 @@ HS	tensorQTL, all samples, no PCs	tq_sample0	p_geno	20	160	0.09375	1	0.95
 HS	tensorQTL, all samples, no PCs	tq_sample0	p_interact	20	160	0.01875	0.45	0.45
 HS	tensorQTL, per individual (mean / difference), 5 PCs	tq_indiv5	p_geno	20	160	0.04375	1	1
 HS	tensorQTL, per individual (mean / difference), 5 PCs	tq_indiv5	p_interact	20	160	0.00625	0.8	0.8
-NULLR	suez, step-1 kernel	suez_learned	p_geno	0	1000	0.047		
+NULLR	suez, step-1 kernel	suez_learned	p_geno	0	1000	0.048		
 NULLR	suez, step-1 kernel	suez_learned	p_interact	0	1000	0.054		
 NULLR	suez, repeated-individual kernel	suez_dataset	p_geno	0	1000	0.043		
 NULLR	suez, repeated-individual kernel	suez_dataset	p_interact	0	1000	0.044		

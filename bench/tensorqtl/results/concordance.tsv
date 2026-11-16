@@ -1,11 +1,11 @@
 a	b	test	spearman	pearson_log10p	max_abs_diff_log10p
-suez_dataset	suez_learned	p_geno	0.53718	0.66051	
-suez_dataset	suez_learned	p_interact	0.46586	0.58767	
+suez_dataset	suez_learned	p_geno	0.53717	0.6605	
+suez_dataset	suez_learned	p_interact	0.46585	0.58766	
 suez_dataset	tq_sample5	p_geno	0.54649	0.66661	
 suez_dataset	tq_sample5	p_interact	0.48078	0.59703	
 suez_dataset	tq_sample0	p_geno	0.99921	0.99745	
 suez_dataset	tq_sample0	p_interact	0.99856	0.99566	
 suez_dataset	tq_indiv5	p_geno	0.53251	0.65284	
 suez_dataset	tq_indiv5	p_interact	0.46516	0.58478	
-tq_sample5_gpu	tq_sample5_cpu	p_geno	1		2.9538e-06
+tq_sample5_gpu	tq_sample5_cpu	p_geno	1		3.1412e-06
 tq_sample5_gpu	tq_sample5_cpu	p_interact	1		1.1138e-05
