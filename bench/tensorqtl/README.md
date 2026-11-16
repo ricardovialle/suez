@@ -4,12 +4,12 @@ Scripts behind [doc/suez_vs_tensorqtl.html](https://ricardovialle.github.io/suez
 tensorQTL (CPU and GPU) on the same simulated datasets. Run from the repository root with [pixi](https://pixi.sh):
 
 ```bash
-P="pixi run --manifest-path bench/tensorqtl/pixi.toml"
-$P -e r R CMD INSTALL --no-docs --library=bench/lib/cur .        # suez under test
-$P -e r Rscript bench/tensorqtl/sim_tq.R                          # datasets -> bench/data/
-$P -e r Rscript bench/tensorqtl/export.R S M L XL XXL G M_grm L_grm XL_grm M_fac3 M_num M_cov M_eqtl M_unbal HS NULLR
+P() { pixi run --manifest-path bench/tensorqtl/pixi.toml "$@"; }   # function, not a string: works in bash and zsh
+P -e r R CMD INSTALL --no-docs --library=bench/lib/cur .        # suez under test
+P -e r Rscript bench/tensorqtl/sim_tq.R                          # datasets -> bench/data/
+P -e r Rscript bench/tensorqtl/export.R S M L XL XXL G M_grm L_grm XL_grm M_fac3 M_num M_cov M_eqtl M_unbal HS NULLR
 bash bench/tensorqtl/run_all.sh                                   # ~1 h; resumes, skipping finished runs
-$P -e py python bench/tensorqtl/analyze.py                        # results/ and doc/suez_vs_tensorqtl.html
+P -e py python bench/tensorqtl/analyze.py                        # results/ and doc/suez_vs_tensorqtl.html
 ```
 
 | File | Role |

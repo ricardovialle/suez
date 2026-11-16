@@ -209,12 +209,12 @@ changes the ranking (they remove the latent factors). tensorQTL's GPU and CPU re
 <h2>Reproduce</h2>
 <p>From the repository root, with <a href="https://pixi.sh">pixi</a> installed (it builds R 4.4 and Python 3.11
 with CUDA PyTorch in <code>bench/tensorqtl/.pixi</code>):</p>
-<pre><code>P="pixi run --manifest-path bench/tensorqtl/pixi.toml"
-$P -e r R CMD INSTALL --no-docs --library=bench/lib/cur .
-$P -e r Rscript bench/tensorqtl/sim_tq.R
-$P -e r Rscript bench/tensorqtl/export.R S M L XL XXL G M_grm L_grm XL_grm M_fac3 M_num M_cov M_eqtl M_unbal HS NULLR
+<pre><code>P() { pixi run --manifest-path bench/tensorqtl/pixi.toml "$@"; }   # function, not a string: works in bash and zsh
+P -e r R CMD INSTALL --no-docs --library=bench/lib/cur .
+P -e r Rscript bench/tensorqtl/sim_tq.R
+P -e r Rscript bench/tensorqtl/export.R S M L XL XXL G M_grm L_grm XL_grm M_fac3 M_num M_cov M_eqtl M_unbal HS NULLR
 bash bench/tensorqtl/run_all.sh
-$P -e py python bench/tensorqtl/analyze.py</code></pre>
+P -e py python bench/tensorqtl/analyze.py</code></pre>
 <p>Summary tables: <code>bench/tensorqtl/results/</code>. The full run took about an hour on this machine.</p>
 <dl class="env">
   <dt>CPU</dt><dd>Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz, 8 cores, 15 GB</dd>
