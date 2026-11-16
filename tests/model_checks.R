@@ -67,6 +67,58 @@ for (i in seq_len(nrow(res))) {
 }
 check("LRT = exact profile-ML LRT", worst < 1e-3, sprintf("(%d LRTs, max |dLR| %.2g)", 2 * nrow(res), worst))
 
+# spline condition (varying-coefficient model): mu(cond) and beta(cond) smooth, joint df-3 interaction LRT
+rng = .Random.seed
+B = splines::ns(cond, df = 3)
+Ys = t(sapply(1:n_gene, function(g) {
+  gs = G[(g - 1) * n_snp + 1, ind]
+  sin(cond) + 0.4 * gs + 0.6 * gs * (cond^2 - 1) + sqrt(0.5) * std(u) + sqrt(0.5) * rnorm(N)   # beta(cond) quadratic
+}))
+dimnames(Ys) = dimnames(Y)
+annoB = data.frame(individual = ind); annoB$condition = B
+grid = c(-1.5, 0, 1.5); Bg = predict(B, grid); rownames(Bg) = grid
+rs = map_interaction_qtl(Ys, G, geneloc, snploc, annoB, sample_kernel = K, normalization_approach = "none",
+                         permutation_approach = "none", cisdist = 100, curve_at = Bg)
+UXB = crossprod(U, B); ws = 0
+for (i in seq_len(nrow(rs))) {
+  uy = drop(crossprod(U, Ys[rs$gene[i], ])); gs = G[rs$cis_snp[i], ind]
+  UX1 = cbind(UXB, crossprod(U, gs)); UX2 = cbind(UX1, crossprod(U, gs * B))
+  p0 = profile_ml(UXB, uy, lam); p1 = profile_ml(UX1, uy, lam); p2 = profile_ml(UX2, uy, lam)
+  ws = max(ws, abs(2 * (rs$l_geno[i] - rs$l0[i]) - 2 * (p1 - p0)), abs(2 * (rs$l_interact[i] - rs$l_geno[i]) - 2 * (p2 - p1)))
+}
+leadS = rs[rs$cis_snp %in% rownames(G)[(0:(n_gene - 1)) * n_snp + 1], ]
+check("spline condition: df 3, LRT = exact profile-ML LRT, nonlinear G x condition detected",
+      all(rs$df_interact == 3) && ws < 1e-3 && all(leadS$p_interact < 0.05),
+      sprintf("(max |dLR| %.2g)", ws))
+
+# curves: GLS estimates and covariance at the ML variance ratio (reference), evaluated at the grid
+gls_ref = function(UX, Uy, lam) {
+  fit = function(h) { W = 1 / (h * lam + 1 - h); A = crossprod(UX, UX * W); b = solve(A, crossprod(UX, Uy * W))
+    s = sum((Uy - UX %*% b)^2 * W) / length(Uy); list(l = -0.5 * length(Uy) * (1 + log(s)) - 0.5 * sum(log(1 / W)), b = drop(b), V = s * solve(A)) }
+  hs = seq(0, 1, length.out = 201); v = sapply(hs, function(h) fit(h)$l); i = which.max(v)
+  fit(optimize(function(h) fit(h)$l, hs[c(max(1, i - 1), min(201, i + 1))], maximum = TRUE, tol = 1e-12)$maximum)
+}
+dc = 0; zc = 0
+for (i in seq_len(nrow(rs))) {
+  uy = drop(crossprod(U, Ys[rs$gene[i], ])); gs = G[rs$cis_snp[i], ind]
+  f2 = gls_ref(cbind(UXB, crossprod(U, cbind(gs, gs * B))), uy, lam); f0 = gls_ref(UXB, uy, lam)
+  H = cbind(1, Bg); j = 4:7
+  ref = c(H %*% f2$b[j], sqrt(rowSums((H %*% f2$V[j, j]) * H)), Bg %*% f0$b[1:3], sqrt(rowSums((Bg %*% f0$V) * Bg)))
+  got = unlist(rs[i, c(paste0("beta_curve_", grid), paste0("se_beta_curve_", grid), paste0("mu_curve_", grid), paste0("se_mu_curve_", grid))])
+  dc = max(dc, abs(got - ref) / pmax(abs(ref), 0.1))
+  if (rs$cis_snp[i] %in% leadS$cis_snp)   # truth: beta(c) = 0.4 + 0.6 (c^2 - 1)
+    zc = max(zc, abs((got[1:3] - (0.4 + 0.6 * (grid^2 - 1))) / got[4:6]))
+}
+check("curves: beta(cond), mu(cond) and SEs = GLS reference at the ML variances; beta curve covers the truth",
+      dc < 1e-4 && zc < 4, sprintf("(max rel diff %.2g, max |z| %.2f)", dc, zc))
+annoM =data.frame(individual = ind); annoM$condition = cbind(cond)
+rM = map_interaction_qtl(Y[1:2, ], G, geneloc, snploc, annoM, sample_kernel = K, normalization_approach = "none",
+                         permutation_approach = "none", cisdist = 100)
+rV = map_interaction_qtl(Y[1:2, ], G, geneloc, snploc, anno, sample_kernel = K, normalization_approach = "none",
+                         permutation_approach = "none", cisdist = 100)
+check("one-column matrix condition = numeric condition", isTRUE(all.equal(as.data.frame(rM), as.data.frame(rV))))
+assign(".Random.seed", rng, envir = globalenv())
+
 # one condition (eQTL only), with repeated samples and with one sample per individual, GRM and default
 # kernels: the null model can have no fixed columns after the intercept contrast (p0 = 0), which used to
 # crash on x86 (integer division by zero in Eigen's GEMM blocking, SIGFPE). Gene g9 has 100 cis-SNPs, enough
@@ -204,7 +256,7 @@ check("unidentifiable residual variance refused", grepl("not identifiable",
 e1 = suez:::kernel_contrast_eigen(K); G1 = matrix(rbinom(N * 3, 2, 0.3), N) * 1.0; G1[2, 2] = NaN
 check("non-finite genotypes refused (no sort on NaN)", grepl("non-finite", errmsg(.Call(suez:::suez_fit_gene,
       e1$vectors, e1$values, drop(crossprod(e1$vectors, rnorm(N))), crossprod(e1$vectors, matrix(1, N, 1)),
-      G1, matrix(0, N, 0), FALSE))))
+      G1, matrix(0, N, 0), FALSE, FALSE))))
 
 # options(suez.threads): identical results at any thread count, on a dense GRM basis (several SNP blocks and
 # 240-row rotation chunks) and the default kernel's sparse basis, with the bootstrap

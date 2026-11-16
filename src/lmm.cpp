@@ -705,13 +705,15 @@ static bool standardize(Eigen::Ref<VectorXd> x, double& sd) {
 // GLS estimates and SEs at the fit: (X'WX)^-1 by LU on the columns the pivoted LDLT keeps; a column dropped as
 // collinear gets NA (0.4 inverted the singular matrix: NaN, or se = 0 for identified terms when e.g. an
 // ancestry is absent at the locus and the local-ancestry columns are collinear).
-static void wald(const Profile& P, VectorXd& beta, VectorXd& se) {
+// V (optional): the full covariance of beta, NA in the rows / columns of dropped columns.
+static void wald(const Profile& P, VectorXd& beta, VectorXd& se, MatrixXd* V = nullptr) {
   const int m = P.A.rows(); PinvLDLT L; L.compute(P.A); const std::vector<int> k = L.kept(); const int nk = k.size();
   beta = se = VectorXd::Constant(m, NA_REAL);
   MatrixXd Ak(nk, nk); VectorXd rk(nk);
   for (int i = 0; i < nk; ++i) { rk[i] = P.rhs[k[i]]; for (int j = 0; j < nk; ++j) Ak(i, j) = P.A(k[i], k[j]); }
   const MatrixXd Vb = (Ak / P.s).inverse(); const VectorXd b = Vb * (rk / P.s);
   for (int i = 0; i < nk; ++i) { beta[k[i]] = b[i]; se[k[i]] = std::sqrt(Vb(i, i)); }
+  if (V) { V->setConstant(m, m, NA_REAL); for (int i = 0; i < nk; ++i) for (int j = 0; j < nk; ++j) (*V)(k[i], k[j]) = Vb(i, j); }
 }
 
 // Rotated term columns made lazily in rotate_all's fixed 256-column chunks (bit-identical to rotate_all on all
@@ -737,7 +739,7 @@ struct LazyRotated {
 // ---------------------------------------------------------------- fit_gene (suez_fit_gene)
 template <class UT>
 static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
-                           const Eigen::Map<MatrixXd>& G, const MatrixXd& C, bool boot, int nt) {
+                           const Eigen::Map<MatrixXd>& G, const MatrixXd& C, bool boot, int nt, bool want_cov) {
   const int S = G.cols(), q = C.cols(), p0 = UX0_.cols(), n = Uy_.size();
   const ArrayXd lam = lam_.array();
   const Spectrum sp(lam); const GridW gw(sp, lam); Profile PR(sp);
@@ -750,9 +752,12 @@ static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy
   { Block b0(sp, UX0, MX0, none, Y1, 1); MatrixXd V0 = grid_values(b0, gw, xg, std::vector<std::vector<int>>(1))[0];
     f0 = refine(PR, make_model(b0, 0, c0), V0.data()); }
   if (!f0.ok) Rcpp::stop("no-genotype model did not converge");
+  VectorXd b0, se0; MatrixXd V0;   // want_cov: GLS fixed effects of the no-genotype model (condition curve)
+  if (want_cov) wald(PR, b0, se0, &V0);
 
   // standardized genotype and interaction columns, made and rotated per chunk (LazyRotated)
   VectorXd gsd(S); std::vector<std::vector<bool>> iok(q, std::vector<bool>(S)); VectorXi df = VectorXi::Zero(S);
+  std::vector<std::vector<double>> isd(q, std::vector<double>(S));
   auto load = [&](int c0, int w) {
     std::vector<MatrixXd> R;
     MatrixXd Gc = G.middleCols(c0, w);
@@ -760,7 +765,7 @@ static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy
     R.push_back(rotate_all(U, Gc, nt)); Gc.resize(0, 0);
     for (int j = 0; j < q; ++j) {
       MatrixXd Ic = G.middleCols(c0, w).array().colwise() * C.col(j).array();
-      for (int s = 0; s < w; ++s) { const int t = c0 + s; double sd; iok[j][t] = standardize(Ic.col(s), sd); if (!iok[j][t]) Ic.col(s).setZero(); else ++df[t]; }
+      for (int s = 0; s < w; ++s) { const int t = c0 + s; iok[j][t] = standardize(Ic.col(s), isd[j][t]); if (!iok[j][t]) Ic.col(s).setZero(); else ++df[t]; }
       R.push_back(rotate_all(U, Ic, nt));
     }
     return R;
@@ -775,6 +780,10 @@ static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy
 
   Rcpp::NumericMatrix out(S, 7);   // l_geno, l_interact, df, beta, se, l_boot_geno, l_boot_interact
   std::fill(out.begin(), out.end(), NA_REAL);
+  // want_cov: per SNP, the interaction model's per-allele effects of G, G x C_1..C_q and their covariance
+  // (column-major k1 x k1); NA for a term dropped at that SNP
+  const int k1g = 1 + q; Rcpp::NumericMatrix gx(want_cov ? S : 0, k1g + k1g * k1g);
+  std::fill(gx.begin(), gx.end(), NA_REAL); double* GX = gx.begin();
   Rcpp::RNGScope rng;
   std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
   const int k1 = 1 + q, nper = p0 * k1 + k1 * (k1 + 1) / 2 + k1 + p0 + 1;   // per-SNP pairs of the bootstrap block
@@ -807,6 +816,17 @@ static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy
         if (df[s] > 0) {
           VectorXd v2 = VV[1].row(sl).transpose(); Fit f2 = refine(P, make_model(bd, sl, cols2(s)), v2.data()); ok_nested(f2, k.f1[sl]);
           if (f2.ok) o(s, 1) = f2.value;
+          if (f2.ok && want_cov) {
+            VectorXd b2, s2; MatrixXd V2; wald(P, b2, s2, &V2);
+            std::vector<int> ix(k1g, -1); std::vector<double> sc(k1g); ix[0] = p0; sc[0] = gsd[s];
+            int nxt = p0 + 1; for (int j = 0; j < q; ++j) if (iok[j][s]) { ix[1 + j] = nxt++; sc[1 + j] = isd[j][s]; }
+            auto g = [&](int j) -> double& { return GX[s + (size_t)S * j]; };
+            for (int a = 0; a < k1g; ++a) {
+              if (ix[a] < 0) continue;
+              g(a) = b2[ix[a]] / sc[a];
+              for (int b = 0; b < k1g; ++b) if (ix[b] >= 0) g(k1g + a + k1g * b) = V2(ix[a], ix[b]) / (sc[a] * sc[b]);
+            }
+          }
         }
       }
     });
@@ -838,30 +858,33 @@ static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy
       }
     });
   }
-  return Rcpp::List::create(Rcpp::Named("l0") = f0.value, Rcpp::Named("res") = out);
+  Rcpp::List res = Rcpp::List::create(Rcpp::Named("l0") = f0.value, Rcpp::Named("res") = out);
+  if (want_cov) { res["b0"] = b0; res["V0"] = V0; res["gx"] = gx; }
+  return res;
 }
 
-static SEXP fit_gene_call(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, int nt) {
+static SEXP fit_gene_call(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, int nt, SEXP cov) {
   const Rcpp::NumericMatrix Gd(G);   // not copied when G is double (map_interaction_qtl); integer G is converted
   const Eigen::Map<MatrixXd> Gm(const_cast<double*>(Gd.begin()), Gd.nrow(), Gd.ncol());
+  const bool wc = Rcpp::as<bool>(cov);
   if (TYPEOF(U) == VECSXP)
     return fit_gene(sp_map(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
-                    Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt);
+                    Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt, wc);
   return fit_gene(Rcpp::as<Eigen::Map<MatrixXd>>(U),   // U (N x N-1) used in place, not copied per gene
                   Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
-                  Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt);
+                  Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt, wc);
 }
 
-extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot) {
+extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, SEXP cov) {
   BEGIN_RCPP
-  return fit_gene_call(U, lambda, Uy, UX0, G, C, boot, 1);
+  return fit_gene_call(U, lambda, Uy, UX0, G, C, boot, 1, cov);
   END_RCPP
 }
 
 // As suez_fit_gene on `threads` threads (options(suez.threads)): identical results at any thread count.
-extern "C" SEXP suez_fit_gene_threads(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, SEXP threads) {
+extern "C" SEXP suez_fit_gene_threads(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, SEXP threads, SEXP cov) {
   BEGIN_RCPP
-  return fit_gene_call(U, lambda, Uy, UX0, G, C, boot, std::max(1, Rcpp::as<int>(threads)));
+  return fit_gene_call(U, lambda, Uy, UX0, G, C, boot, std::max(1, Rcpp::as<int>(threads)), cov);
   END_RCPP
 }
 
@@ -872,7 +895,8 @@ extern "C" SEXP suez_fit_gene_threads(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SE
 // under model boot_null in SNP order, then models boot_null and boot_alt refitted.
 template <class UT>
 static Rcpp::List fit_models(const UT& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
-                             Rcpp::List cols, Rcpp::List models, int boot_null, int boot_alt) {
+                             Rcpp::List cols, Rcpp::List models, int boot_null, int boot_alt,
+                             const Rcpp::IntegerVector& cov_models, int cx) {
   const int n = Uy_.size(), p0 = UX0_.cols(), M = models.size(), nc = cols.size();
   const ArrayXd lam = lam_.array();
   const Spectrum sp(lam); const GridW gw(sp, lam); Profile PR(sp);
@@ -891,6 +915,14 @@ static Rcpp::List fit_models(const UT& U, const VectorXd& lam_, const VectorXd& 
     std::fill(beta[m].begin(), beta[m].end(), NA_REAL); std::fill(se[m].begin(), se[m].end(), NA_REAL);
   }
   Rcpp::NumericMatrix lb(S, 2); std::fill(lb.begin(), lb.end(), NA_REAL);
+  // cov_models: per SNP, beta of the first cx X0 columns and the covariance (column-major) of those and the model's
+  // terms, standardized scale; NA for a dropped term
+  std::vector<int> covi(M, -1); std::vector<Rcpp::NumericMatrix> cvm, bxm;
+  for (int i = 0; i < cov_models.size(); ++i) {
+    const int m = cov_models[i], d = cx + mods[m].size(); covi[m] = i;
+    cvm.emplace_back(S, d * d); bxm.emplace_back(S, cx);
+    std::fill(cvm[i].begin(), cvm[i].end(), NA_REAL); std::fill(bxm[i].begin(), bxm[i].end(), NA_REAL);
+  }
   const bool boot = boot_null >= 0;
   Rcpp::RNGScope rng;
   std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
@@ -920,8 +952,15 @@ static Rcpp::List fit_models(const UT& U, const VectorXd& lam_, const VectorXd& 
           VectorXd v = V[m].row(sl).transpose(); Fit f = refine(PR, make_model(bd, sl, c), v.data());
           if (!f.ok) continue;
           ll(s, m) = f.value;
-          VectorXd be, sev; wald(PR, be, sev);
+          VectorXd be, sev; MatrixXd Vb; wald(PR, be, sev, covi[m] >= 0 ? &Vb : nullptr);
           for (size_t k = 0; k < use.size(); ++k) { beta[m](s, use[k]) = be[p0 + k]; se[m](s, use[k]) = sev[p0 + k]; }
+          if (covi[m] >= 0) {
+            const int d = cx + mods[m].size(); std::vector<int> ix(d, -1);
+            for (int e = 0; e < cx; ++e) { ix[e] = e; bxm[covi[m]](s, e) = be[e]; }
+            for (size_t k = 0; k < use.size(); ++k) ix[cx + use[k]] = p0 + k;
+            for (int a = 0; a < d; ++a) for (int b = 0; b < d; ++b)
+              if (ix[a] >= 0 && ix[b] >= 0) cvm[covi[m]](s, a + d * b) = Vb(ix[a], ix[b]);
+          }
           if (m == boot_null) {   // SNP order within this block; blocks in order: 0.4's draw sequence
             for (int i = 0; i < n; ++i) Yb(pos[i], sl) = std::sqrt(f.s2k * lam[i] + f.s2) * R::norm_rand();
             for (size_t a = 0; a < c.size(); ++a) Yb.col(sl) += f.b[a] * Eigen::Map<const VectorXd>(bd.col(c[a], sl), n);
@@ -942,17 +981,24 @@ static Rcpp::List fit_models(const UT& U, const VectorXd& lam_, const VectorXd& 
   Rcpp::List betas(M), ses(M); for (int m = 0; m < M; ++m) { betas[m] = beta[m]; ses[m] = se[m]; }
   Rcpp::List res = Rcpp::List::create(Rcpp::Named("ll") = ll, Rcpp::Named("npar") = npar, Rcpp::Named("beta") = betas, Rcpp::Named("se") = ses);
   if (boot) res["ll_boot"] = lb;
+  if (cov_models.size()) {
+    Rcpp::List cv(cov_models.size()), bx(cov_models.size());
+    for (int i = 0; i < cov_models.size(); ++i) { cv[i] = cvm[i]; bx[i] = bxm[i]; }
+    res["cov"] = cv; res["bx"] = bx;
+  }
   return res;
 }
 
+// cov_models: 0-based model indices whose covariance is returned (with the first cov_x0 X0 columns)
 extern "C" SEXP suez_fit_models(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP cols, SEXP models,
-                                SEXP boot_null, SEXP boot_alt) {
+                                SEXP boot_null, SEXP boot_alt, SEXP cov_models, SEXP cov_x0) {
   BEGIN_RCPP
+  const Rcpp::IntegerVector cm(cov_models); const int cx = Rcpp::as<int>(cov_x0);
   if (TYPEOF(U) == VECSXP)
     return fit_models(sp_map(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
-                    Rcpp::List(cols), Rcpp::List(models), Rcpp::as<int>(boot_null), Rcpp::as<int>(boot_alt));
+                    Rcpp::List(cols), Rcpp::List(models), Rcpp::as<int>(boot_null), Rcpp::as<int>(boot_alt), cm, cx);
   return fit_models(Rcpp::as<Eigen::Map<MatrixXd>>(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
-                    Rcpp::List(cols), Rcpp::List(models), Rcpp::as<int>(boot_null), Rcpp::as<int>(boot_alt));
+                    Rcpp::List(cols), Rcpp::List(models), Rcpp::as<int>(boot_null), Rcpp::as<int>(boot_alt), cm, cx);
   END_RCPP
 }
 

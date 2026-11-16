@@ -70,6 +70,45 @@ check("local-ancestry log-likelihoods = exact profile ML", worst < 1e-6, sprintf
 check("bootstrap columns", all(c("l_boot_interact_null", "l_boot_interact") %in% names(r)) && !anyNA(r$l_boot_interact))
 check("G0 x condition detected", r$p_interact[1] < 1e-3 && r$p_interact_anc0[1] < r$p_interact_anc1[1])
 
+# curves, one condition column: beta_a(c) = beta_a + c beta_interact_a, Var from the M2 covariance
+rc = map_interaction_qtl(Y, NULL, geneloc, snploc, anno, normalization_approach = "none", cisdist = 100,
+                         local_ancestry = la, covariates = cov1, permutation_approach = "none", curve_at = c(-1, 0, 1))
+dd = 0
+for (a in c("anc0", "anc1")) {
+  b = function(c) rc[[paste0("beta_curve_", a, "_", c)]]; v = function(c) rc[[paste0("se_beta_curve_", a, "_", c)]]^2
+  dd = max(dd, abs(b(1) - b(0) - rc[[paste0("beta_interact_", a)]]),
+           abs((v(1) + v(-1)) / 2 - v(0) - rc[[paste0("se_interact_", a)]]^2))
+}
+check("local ancestry, curves: slope and SE match the per-ancestry interaction Wald terms; fits unchanged",
+      dd < 1e-8 && max(abs(rc$l_interact - r$l_interact)) < 1e-10, sprintf("(max diff %.2g)", dd))
+Gsum = la$dosage$anc0 + la$dosage$anc1
+rcs = map_interaction_qtl(Y, Gsum, geneloc, snploc, anno, sample_kernel = NULL, normalization_approach = "none",
+                          cisdist = 100, covariates = cov1, permutation_approach = "none", curve_at = c(-1, 0, 1))
+check("local ancestry, curves: mu(cond) = standard mode's", max(abs(rc$mu_curve_1[1] - rcs$mu_curve_1[1]),
+      abs(rc$se_mu_curve_1[1] - rcs$se_mu_curve_1[1])) < 1e-6)
+
+# several condition columns (spline of a continuous condition): exact likelihoods, joint per-ancestry tests, curves
+set.seed(24)
+cc = rnorm(N); Bq = splines::ns(cc, df = 2)
+yq = 0.5 * g0 + 0.8 * g0 * (cc^2 - 1) + sin(cc) + rnorm(ni, 0, 0.6)[match(ind, paste0("I", 1:ni))] + rnorm(N, 0, 0.7)
+Yq = rbind(gA = yq); colnames(Yq) = colnames(Y)
+annoq = data.frame(individual = ind); annoq$condition = Bq
+gq = c(-1, 0, 1); Bgq = predict(Bq, gq); rownames(Bgq) = gq
+rq = map_interaction_qtl(Yq, NULL, geneloc, snploc, annoq, normalization_approach = "none", cisdist = 100,
+                         local_ancestry = la, covariates = cov1, permutation_approach = "none", curve_at = Bgq)
+UX0q = crossprod(U, cbind(apply(Bq, 2, std), std(cov1[, 1]))); wq = 0
+for (i in seq_len(ns)) {
+  s = rq$cis_snp[i]; l_ = la$hapcount$anc0[s, ind]; a0 = la$dosage$anc0[s, ind]; a1 = la$dosage$anc1[s, ind]
+  cols = crossprod(U, apply(cbind(l_, a0, a1, l_ * Bq, a0 * Bq[, 1], a1 * Bq[, 1], a0 * Bq[, 2], a1 * Bq[, 2]), 2, std))
+  wq = max(wq, abs(rq$l_interact_null[i] - exact_ml(cbind(UX0q, cols[, 1:5]), drop(crossprod(U, yq)), lam)),
+           abs(rq$l_interact[i] - exact_ml(cbind(UX0q, cols), drop(crossprod(U, yq)), lam)))
+}
+truth = 0.5 + 0.8 * (gq^2 - 1)
+zq = abs((unlist(rq[1, paste0("beta_curve_anc0_", gq)]) - truth) / unlist(rq[1, paste0("se_beta_curve_anc0_", gq)]))
+check("local ancestry, spline condition: exact likelihoods, df 4, per-ancestry joint tests, curve covers the truth",
+      wq < 1e-6 && all(rq$df_interact == 4) && rq$p_interact_anc0[1] < 1e-3 && rq$p_interact_anc0[1] < rq$p_interact_anc1[1] &&
+        !anyNA(rq$p_interact_anc1) && max(zq) < 4, sprintf("(max diff %.2g, max |z| %.2f)", wq, max(zq)))
+
 # 2. one sample per individual, single condition: Tractor's linear model
 set.seed(22)
 ni = 120; la2 = sim_la(ni, 2, 5, cbind(rep(0.7, ni), rep(0.3, ni)))

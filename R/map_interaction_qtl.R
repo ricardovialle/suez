@@ -87,6 +87,9 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' @param geneloc [genes x 4] data.frame with columns (geneid, chr, left, right). The intersect of geneloc$geneid and rownames(input) will be tested.
 #' @param snploc [SNPs x 3] data.frame with columns (snpid, chr, pos) where snpid's map to rows of `genotype`
 #' @param anno [samples x 2] data.frame with columns (individual, condition) where individual must correspond to column names of `genotype`. A `condition` with a single value (e.g. all 1) maps eQTLs without interaction tests.
+#'   `condition` may also be a numeric matrix column, e.g. `anno$condition = splines::ns(age, df = 3)`: both the
+#'   condition trajectory and the genotype effect are then smooth functions of age (varying-coefficient model),
+#'   and `p_interact` tests all genotype x basis terms jointly (`df_interact` = number of columns).
 #' @param sample_kernel [samples x samples] covariance matrix learned in suez step 1. If you don't want to control for latent confounders leave this as NULL to use the matrix representing which samples are from the same individual.
 #' @param normalization_approach One of (qq,log,linear) determining how to normalize within each gene. We recommend qq (quantile normalization to normal) to ensure the assumptions of the test hold.
 #' @param permutation_approach One of ("none","permute","boot"). We recommend boot (parametric bootstrap) since the permutation test is not really valid for interaction effect testing.
@@ -101,6 +104,15 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #'   by [read_tractor]. SNP ids (row names) map to `snploc`. Switches to the local-ancestry models below.
 #' @param covariates Optional [samples x q] numeric matrix or data.frame of fixed covariates added to
 #'   every model (e.g. global ancestry proportions or genotype PCs, age, sex).
+#' @param curve_at Optional: condition values at which to return the fitted curves, one row per point and one
+#'   column per condition term (a vector for a numeric condition; for a basis, the basis at those values, e.g.
+#'   `predict(splines::ns(age, df = 3), c(30, 50, 70))`). Row names (or the values of a vector) label the
+#'   columns. Adds, per point `x`: `beta_curve_x` and `se_beta_curve_x` (per-allele genotype effect at that
+#'   condition, from the interaction model; in local-ancestry mode `beta_curve_<ancestry>_x`, per ancestry, SE on
+#'   the residual df as the other ancestry SEs) and `mu_curve_x`, `se_mu_curve_x` (expression trajectory of the
+#'   no-genotype model, the same on every row of a gene, relative to the condition whose row of `curve_at` is
+#'   0, e.g. the lower boundary knot of `ns()`, since the intercept is not estimated). SEs are GLS SEs at the
+#'   fitted variances.
 #'
 #' @details Model: y = X b + e, e ~ N(0, sigma2_k * K + sigma2 * I), K = `sample_kernel`, fitted by
 #' maximum likelihood on the N-1 contrasts orthogonal to the intercept (REML for the intercept only),
@@ -128,7 +140,9 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 #' ancestry-specific response; LA x C is in the null so a local-ancestry effect on the response is not
 #' attributed to the SNP), `p_interact_het` (M2 vs M2s). Per ancestry: `af_*`, `laprop_*`, and GLS
 #' `beta_*`, `se_*`, `p_*` (Wald, M1, per ALT allele; SE on the residual df and a t reference, as Tractor) and, for one interaction column,
-#' `beta_interact_*`, `se_interact_*`, `p_interact_*` (Wald, M2). An ancestry's terms are dropped for a
+#' `beta_interact_*`, `se_interact_*`, `p_interact_*` (Wald, M2); for several interaction columns (a factor
+#' with more than two levels, or a basis) `p_interact_*` is the joint Wald F test of that ancestry's q
+#' interaction terms (df q and the residual df). An ancestry's terms are dropped for a
 #' SNP with fewer than 5 copies of either allele on that ancestry's haplotypes (its columns are NA,
 #' and the df shrink).
 #' The bootstrap simulates under M1c: `l_boot_interact_null`, `l_boot_interact`.
@@ -147,7 +161,7 @@ get_cis_geno.matrix = function(genotype, chrom, left, right, snploc, genome_buil
 map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_kernel=NULL, 
                                normalization_approach="qq", permutation_approach="boot", cisdist=1e5, 
                                checkpoint_dir=NULL, debug=F, genome_build= "GRCh38", maf_threshold = 0,
-                               local_ancestry=NULL, covariates=NULL) {
+                               local_ancestry=NULL, covariates=NULL, curve_at=NULL) {
 
   if (normalization_approach=="qq") {
     input=quantile_normalize(input)
@@ -198,15 +212,25 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   lambda=eig$values
   sample_kernel=NULL   # not used below: frees the default kernel (N x N) during the gene loop
 
-  # GxE multipliers: the numeric condition (one column), or indicators of the non-reference levels;
-  # genotype x column j is the interaction term j (as in model.matrix(~ geno:condition))
-  # A single condition (e.g. a constant) gives a plain eQTL map: no interaction terms.
-  one_condition = length(unique(anno$condition)) == 1
+  # GxE multipliers: the numeric condition (one column per column of a basis matrix, e.g. splines::ns(age)),
+  # or indicators of the non-reference levels; genotype x column j is the interaction term j
+  # (as in model.matrix(~ geno:condition)). A single condition (e.g. a constant) gives a plain eQTL map.
+  cond_key = if (is.matrix(anno$condition)) do.call(paste, as.data.frame(anno$condition)) else as.character(anno$condition)
+  one_condition = length(unique(cond_key)) == 1
   C = if (one_condition) matrix(0, nrow(anno), 0) else
     if (is.numeric(anno$condition)) cbind(anno$condition) else model.matrix(~ condition, data=anno)[, -1, drop=F]
   df_interact = ncol(C)
+  sdC = apply(C, 2, sd)
+  if (!is.null(curve_at)) {
+    curve_at = as.matrix(curve_at)
+    if (one_condition || any(sdC == 0) || !is.numeric(curve_at) || anyNA(curve_at) || ncol(curve_at) != df_interact)
+      stop("curve_at must be a numeric matrix (or vector) without NA, with one column per condition term (",
+           df_interact, ") of a condition that varies.", call. = FALSE)
+    if (is.null(rownames(curve_at)))
+      rownames(curve_at) = if (df_interact == 1) format(curve_at[, 1], trim = TRUE) else seq_len(nrow(curve_at))
+  }
 
-  no_geno = if (one_condition) matrix(0, nrow(anno), 0) else model.matrix( ~ condition, data=anno)
+  no_geno =if (one_condition) matrix(0, nrow(anno), 0) else model.matrix( ~ condition, data=anno)
   if (!is.null(covariates)) {
     if (is.data.frame(covariates)) covariates = model.matrix(~ ., data = covariates)
     covariates = as.matrix(covariates)
@@ -219,7 +243,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   UX0 = crossprod_U(U, X0)
 
   # condition varying within individual => GxE columns can fit the kernel's null directions
-  within = any(tapply(as.character(anno$condition), anno$individual, function(x) length(unique(x)) > 1))
+  within = any(tapply(cond_key, anno$individual, function(x) length(unique(x)) > 1))
   k_anc = if (la_mode) length(local_ancestry$dosage) else 1
   check_identifiable(eig, X0, need = 1 + if (within) (2 * k_anc - 1) * df_interact else 0)
 
@@ -261,7 +285,8 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
         D = lapply(D, function(m) { colnames(m) = colnames(m)[perm]; m }); H = lapply(H, function(m) { colnames(m) = colnames(m)[perm]; m })
       }
       Uy = drop(crossprod_U(U, as.numeric(input[g_row[j],])))
-      gene_results = la_gene(gene, D, H, anno, C, U, lambda, Uy, UX0, permutation_approach=="boot", maf_threshold)
+      gene_results = la_gene(gene, D, H, anno, C, U, lambda, Uy, UX0, permutation_approach=="boot", maf_threshold,
+                             curve_at, sdC)
       if (!is.null(checkpoint_dir) && !is.null(gene_results)) readr::write_tsv(gene_results, check_fn)
       return(gene_results)
     }
@@ -301,8 +326,9 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     Uy = drop(crossprod_U(U, as.numeric(input[g_row[j],])))
 
     if (debug) cat("Fitting", ncol(G), "SNPs...\n")
-    fit = if (threads > 1) .Call(suez_fit_gene_threads, U, lambda, Uy, UX0, G, C, permutation_approach=="boot", threads)
-      else .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot")   # src/lmm.cpp
+    curves = !is.null(curve_at)
+    fit = if (threads > 1) .Call(suez_fit_gene_threads, U, lambda, Uy, UX0, G, C, permutation_approach=="boot", threads, curves)
+      else .Call(suez_fit_gene, U, lambda, Uy, UX0, G, C, permutation_approach=="boot", curves)   # src/lmm.cpp
     m = fit$res
     # columns as a list (data.frame() + 8 `$<-` cost ~0.5 ms per gene)
     S = nrow(m)
@@ -314,6 +340,12 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
       gene_results$l_boot_geno = m[,6]
       gene_results$l_boot_interact = m[,7]
     }
+    if (curves) {
+      q = ncol(C); k1 = 1 + q
+      gene_results = mu_curve(gene_results, fit$b0[1:q], fit$V0[1:q, 1:q, drop = FALSE], sdC, curve_at, S)
+      gene_results = add_curve(gene_results, "beta_curve_", fit$gx[, 1:k1, drop = FALSE], fit$gx[, -(1:k1), drop = FALSE],
+                               cbind(1, curve_at))
+    }
     gene_results = structure(gene_results, class="data.frame", row.names=c(NA, -S))
 
     if (!is.null(checkpoint_dir)){
@@ -324,6 +356,24 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     gene_results
   }
   bind_tables(res)
+}
+
+# Curve columns <prefix><label> and se_<prefix><label>: h'b and sqrt(h'Vh) per SNP at each row h of H,
+# b [S x d], V [S x d^2] column-major
+add_curve = function(out, prefix, b, V, H) {
+  for (p in seq_len(nrow(H))) {
+    h = H[p, ]; lab = rownames(H)[p]
+    out[[paste0(prefix, lab)]] = drop(b %*% h)
+    out[[paste0("se_", prefix, lab)]] = sqrt(drop(V %*% as.vector(h %o% h)))
+  }
+  out
+}
+
+# mu_curve_<label>: condition trajectory of the no-genotype model, relative to the condition whose row of
+# curve_at is 0 (the intercept is not estimated); b, V on the standardized X0 scale, repeated on S rows
+mu_curve = function(out, b, V, sdC, curve_at, S) {
+  add_curve(out, "mu_curve_", matrix(b / sdC, S, length(b), byrow = TRUE),
+            matrix(as.vector(V / outer(sdC, sdC)), S, length(V), byrow = TRUE), curve_at)
 }
 
 # dplyr::bind_rows() for per-gene data.frames with the same columns (identical() result), without loading

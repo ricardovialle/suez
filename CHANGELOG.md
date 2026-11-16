@@ -28,6 +28,25 @@ with the default kernel; peak RAM -3..-78% (bench/results/r12_final_summary.tsv,
   `tests/model_checks.R` (one condition, repeated and single samples, GRM and default kernels, 100-SNP gene).
 - Benchmark against tensorQTL 1.0.10 (CPU and GPU) on the same simulated data: `bench/tensorqtl/`, report
   `doc/suez_vs_tensorqtl.html`, linked from the README.
+- Varying-coefficient (smooth) condition effects: `anno$condition` may be a numeric basis matrix, e.g.
+  `splines::ns(age, df = 3)`. The condition trajectory mu(age) and the genotype effect beta(age) are then both
+  smooth in age, and `p_interact` is the joint LRT of all genotype x basis terms (`df_interact` = number of
+  columns). A one-column matrix gives the same results as the numeric vector. Test in `tests/model_checks.R`.
+- `curve_at` argument: returns the fitted curves at chosen condition values, `beta_curve_*` / `se_beta_curve_*`
+  (genotype effect beta(condition), interaction model) and `mu_curve_*` / `se_mu_curve_*` (expression trajectory
+  of the no-genotype model), with GLS SEs from the full covariance of the terms (the engine now returns it on
+  request). Checked against an independent GLS fit in `tests/model_checks.R`.
+- Local-ancestry mode with several condition columns: per-ancestry `p_interact_*` is now reported as a joint Wald F
+  test (it was only reported for one column), and `curve_at` gives per-ancestry `beta_curve_<ancestry>_*` and
+  `mu_curve_*`. Checks in `tests/local_ancestry_checks.R` (spline condition, exact likelihoods; curves equal the
+  one-column Wald terms; mu equal to standard mode's).
+- Documentation site in `doc/`: `index.html` (overview), `usage.html` (every study design, inference and scaling,
+  with code), `performance.html` (suez vs tensorQTL speed, calibration and power; speed-up since 0.4) and
+  `age_varying_eqtl.html` (spline vs linear age x genotype models, simulated by `bench/age_varying/sim_age.R`).
+  Built by `python3 doc/src/build.py` from page fragments, benchmark result files and `doc/src/examples.R`, whose
+  examples all run (`Rscript doc/src/examples.R`). Each usage scenario has figures of what is measured and what
+  suez reports (expression by genotype and condition, regional p-values, fitted curves, kernels, per-ancestry effects,
+  gene-level calls, QQ plots), drawn from the examples' own results (`Rscript doc/src/usage_data.R`).
 
 ## Round 11: BLAS/LAPACK and large-N review
 

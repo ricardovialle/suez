@@ -30,6 +30,13 @@ genotype QC, both suez steps, multiple testing) is in the
 [vignette](https://ricardovialle.github.io/suez/doc/suez.html) (source:
 [vignettes/suez.Rmd](vignettes/suez.Rmd)).
 
+The [documentation site](https://ricardovialle.github.io/suez/doc/index.html) has a
+[usage guide](https://ricardovialle.github.io/suez/doc/usage.html) with runnable code for every study design
+(one condition, two or more conditions, numeric and spline conditions with fitted curves, unbalanced and related
+samples, covariates, local ancestry, multiple testing, calibration, scaling), the
+[performance comparison](https://ricardovialle.github.io/suez/doc/performance.html) and the
+[age-varying eQTL report](https://ricardovialle.github.io/suez/doc/age_varying_eqtl.html). Sources: [doc/src](doc/src).
+
 ## How suez compares with standard eQTL mapping
 
 The usual eQTL pipeline (Matrix eQTL, FastQTL, QTLtools, tensorQTL) fits an ordinary linear regression of
@@ -162,7 +169,7 @@ The planted response eQTL, `gene1` / `snp1`, has the smallest interaction p-valu
 | Argument | Format |
 |---|---|
 | expression (`input`) | numeric matrix, genes x samples, log2 scale (e.g. log2 CPM). Row names are gene ids. Columns are samples, **in the same order as the rows of `anno`** (column names are not used for matching). |
-| `anno` | data.frame, one row per sample, with columns `individual` (id matching the genotype column names) and `condition` (factor / character for categories, numeric for a continuous condition). |
+| `anno` | data.frame, one row per sample, with columns `individual` (id matching the genotype column names) and `condition` (factor / character for categories, numeric for a continuous condition, or a numeric basis matrix such as `splines::ns(age, df = 3)` for effects that change smoothly with the condition).; with `curve_at`, suez returns the fitted curves beta(condition) and mu(condition) with SEs). |
 | `genotype` | numeric matrix, SNPs x individuals, with ALT allele counts 0/1/2 (`NA` allowed: imputed per gene with an SVD of the cis genotypes). Row names are SNP ids, column names individual ids. It can also be a `Rsamtools::TabixFile` of a bgzipped, indexed VCF (GT field). |
 | `snploc` | data.frame with columns `snpid`, `chr`, `pos`. |
 | `geneloc` | data.frame with columns `geneid`, `chr`, `left`, `right` (gene start and end). Genes in both `geneloc` and `rownames(input)` are tested. |

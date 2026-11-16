@@ -19,7 +19,8 @@ map_interaction_qtl(
   genome_build = "GRCh38",
   maf_threshold = 0,
   local_ancestry = NULL,
-  covariates = NULL
+  covariates = NULL,
+  curve_at = NULL
 )
 }
 \arguments{
@@ -31,7 +32,10 @@ map_interaction_qtl(
 
 \item{snploc}{[SNPs x 3] data.frame with columns (snpid, chr, pos) where snpid's map to rows of `genotype`}
 
-\item{anno}{[samples x 2] data.frame with columns (individual, condition) where individual must correspond to column names of `genotype`. A `condition` with a single value (e.g. all 1) maps eQTLs without interaction tests.}
+\item{anno}{[samples x 2] data.frame with columns (individual, condition) where individual must correspond to column names of `genotype`. A `condition` with a single value (e.g. all 1) maps eQTLs without interaction tests.
+`condition` may also be a numeric matrix column, e.g. `anno$condition = splines::ns(age, df = 3)`: both the
+condition trajectory and the genotype effect are then smooth functions of age (varying-coefficient model),
+and `p_interact` tests all genotype x basis terms jointly (`df_interact` = number of columns).}
 
 \item{sample_kernel}{[samples x samples] covariance matrix learned in suez step 1. If you don't want to control for latent confounders leave this as NULL to use the matrix representing which samples are from the same individual.}
 
@@ -56,6 +60,16 @@ by [read_tractor]. SNP ids (row names) map to `snploc`. Switches to the local-an
 
 \item{covariates}{Optional [samples x q] numeric matrix or data.frame of fixed covariates added to
 every model (e.g. global ancestry proportions or genotype PCs, age, sex).}
+
+\item{curve_at}{Optional: condition values at which to return the fitted curves, one row per point and one
+column per condition term (a vector for a numeric condition; for a basis, the basis at those values, e.g.
+`predict(splines::ns(age, df = 3), c(30, 50, 70))`). Row names (or the values of a vector) label the
+columns. Adds, per point `x`: `beta_curve_x` and `se_beta_curve_x` (per-allele genotype effect at that
+condition, from the interaction model; in local-ancestry mode `beta_curve_<ancestry>_x`, per ancestry, SE on
+the residual df as the other ancestry SEs) and `mu_curve_x`, `se_mu_curve_x` (expression trajectory of the
+no-genotype model, the same on every row of a gene, relative to the condition whose row of `curve_at` is
+0, e.g. the lower boundary knot of `ns()`, since the intercept is not estimated). SEs are GLS SEs at the
+fitted variances.}
 }
 \value{
 data.frame, one row per gene x SNP: `l0`, `l_geno`, `l_interact` (log-likelihoods of the
@@ -79,7 +93,7 @@ before fitting (the likelihood is invariant). The function stops if the kernel i
 semi-definite, or if the condition design leaves no kernel null direction for sigma2 (e.g. the
 default kernel with condition fitting every within-individual contrast).
 
-Parallelism: genes run on the registered doMC workers (forked processes). \code{options(suez.threads = n)}
+Parallelism: genes run on the registered doMC workers (forked processes). `options(suez.threads = n)`
 (or the environment variable SUEZ_THREADS) also fits each gene's SNP blocks on n threads (default 1;
 local-ancestry mode is not threaded). Results are identical at any thread count. Threads help when there are
 few genes or N is large (e.g. a GRM kernel with N >= 1000), and use much less memory than the same number of
@@ -96,7 +110,9 @@ M2s: M1c + (G_1 + ... + G_k) x C. Tests: `p_geno` (M1 vs M0, any ancestry-specif
 ancestry-specific response; LA x C is in the null so a local-ancestry effect on the response is not
 attributed to the SNP), `p_interact_het` (M2 vs M2s). Per ancestry: `af_*`, `laprop_*`, and GLS
 `beta_*`, `se_*`, `p_*` (Wald, M1, per ALT allele; SE on the residual df and a t reference, as Tractor) and, for one interaction column,
-`beta_interact_*`, `se_interact_*`, `p_interact_*` (Wald, M2). An ancestry's terms are dropped for a
+`beta_interact_*`, `se_interact_*`, `p_interact_*` (Wald, M2); for several interaction columns (a factor
+with more than two levels, or a basis) `p_interact_*` is the joint Wald F test of that ancestry's q
+interaction terms (df q and the residual df). An ancestry's terms are dropped for a
 SNP with fewer than 5 copies of either allele on that ancestry's haplotypes (its columns are NA,
 and the df shrink).
 The bootstrap simulates under M1c: `l_boot_interact_null`, `l_boot_interact`.

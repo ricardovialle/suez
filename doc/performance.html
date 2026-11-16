@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>suez Performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap">
+<style>
+/* suez docs. Layout: top nav, one reading column (~70ch) whose figures and code may widen to 1080px; a sticky
+   section index beside the text on wide screens. Lab-notebook restraint: cool slate neutrals, two data hues. */
+:root {
+  --bg: #f7f8f9; --surface: #ffffff; --fg: #15191e; --fg-2: #4a525c; --muted: #6c7480;
+  --rule: #dde1e6; --grid: #e9ecef; --code-bg: #eef1f4; --accent: #2a78d6;
+  --linear: #eb6834; --spline: #2a78d6; --suez: #2a78d6; --tq: #eb6834; --tq2: #1baf7a;
+  --truth: #15191e; --band: rgba(42,120,214,.14); --good: #1f7a3d; --warn: #9a5b00;
+  --g0: #9cc3f0; --g1: #4b8fe0; --g2: #1d4f91; --geno: #2a78d6; --inter: #eb6834; --other: #b9c0c8;
+  --f-display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --nav-h: 52px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121519; --surface: #1a1e23; --fg: #eceff2; --fg-2: #b5bcc5; --muted: #8f97a2;
+  --rule: #2c323a; --grid: #252a31; --code-bg: #20252b; --accent: #5b9df0;
+  --linear: #d95926; --spline: #3987e5; --suez: #3987e5; --tq: #d95926; --tq2: #199e70;
+  --truth: #eceff2; --band: rgba(57,135,229,.22); --good: #5cc27f; --warn: #e0a54a;
+  --g0: #2f5687; --g1: #3987e5; --g2: #a9cdf6; --geno: #3987e5; --inter: #d95926; --other: #4a525c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121519; --surface: #1a1e23; --fg: #eceff2; --fg-2: #b5bcc5; --muted: #8f97a2;
+  --rule: #2c323a; --grid: #252a31; --code-bg: #20252b; --accent: #5b9df0;
+  --linear: #d95926; --spline: #3987e5; --suez: #3987e5; --tq: #d95926; --tq2: #199e70;
+  --truth: #eceff2; --band: rgba(57,135,229,.22); --good: #5cc27f; --warn: #e0a54a;
+  --g0: #2f5687; --g1: #3987e5; --g2: #a9cdf6; --geno: #3987e5; --inter: #d95926; --other: #4a525c; color-scheme: dark }
+
+body { background: var(--bg); color: var(--fg); font: 16px/1.6 var(--f-body); margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+/* top navigation */
+.topnav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--rule);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.topnav .in { max-width: 1080px; margin: 0 auto; min-height: var(--nav-h); display: flex; align-items: center; gap: 4px 20px; flex-wrap: wrap; }
+.topnav .brand { font: 600 1.15rem/1 var(--f-display); color: var(--fg); text-decoration: none; margin-right: 8px; }
+.topnav .links { display: flex; flex-wrap: wrap; gap: 2px 4px; }
+.topnav .links a { color: var(--fg-2); text-decoration: none; font-size: .92rem; padding: 6px 10px; border-radius: 6px; }
+.topnav .links a:hover { background: var(--code-bg); color: var(--fg); }
+.topnav .links a[aria-current="page"] { color: var(--fg); background: var(--code-bg); font-weight: 600; }
+
+.page { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; }
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 56px; }
+.with-toc { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; }
+@media (min-width: 1100px) { .with-toc { grid-template-columns: 200px minmax(0, 1fr); } }
+.toc { display: none; }
+@media (min-width: 1100px) { .toc { display: block; position: sticky; top: calc(var(--nav-h) + 24px); align-self: start; max-height: calc(100vh - var(--nav-h) - 48px); overflow-y: auto; } }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: .86rem; }
+.toc a { color: var(--fg-2); text-decoration: none; display: block; padding: 3px 0 3px 10px; border-left: 2px solid var(--rule); }
+.toc a:hover { color: var(--fg); border-left-color: var(--accent); }
+.toc .grp { font: 500 .7rem/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 14px 0 6px; }
+.main { min-width: 0; display: grid; gap: 56px; }
+
+.prose { max-width: 70ch; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 600; letter-spacing: -.01em; }
+h2 { font-size: 1.55rem; font-weight: 600; scroll-margin-top: calc(var(--nav-h) + 16px); }
+h3 { font-size: 1.08rem; font-weight: 600; scroll-margin-top: calc(var(--nav-h) + 16px); }
+p { margin: 0; }
+.stack { display: grid; gap: 14px; }
+.stack-lg { display: grid; gap: 28px; }
+.eyebrow { font: 500 .75rem/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 1.1rem; color: var(--fg-2); }
+.dim { color: var(--fg-2); }
+.small { font-size: .88rem; color: var(--fg-2); }
+code { font-family: var(--f-mono); font-size: .88em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+pre code { background: none; padding: 0; font-size: inherit; }
+pre { margin: 0; font: .85rem/1.55 var(--f-mono); background: var(--code-bg); padding: 14px 16px; border-radius: 8px; overflow-x: auto; color: var(--fg); tab-size: 2; }
+pre .c { color: var(--muted); }
+pre .s { color: var(--good); }
+pre .k { color: var(--accent); font-weight: 500; }
+
+.formula { font: 500 clamp(1rem, 2.6vw, 1.25rem)/1.4 var(--f-mono); padding: 18px 20px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow-x: auto; }
+.formula .hl { color: var(--accent); }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.card { min-width: 0; padding: 16px 18px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; display: grid; gap: 6px; align-content: start; color: var(--fg); text-decoration: none; }
+a.card:hover { border-color: var(--accent); }
+.card h3 { font-size: 1rem; }
+.card p { color: var(--fg-2); font-size: .93rem; }
+.card .eyebrow { font-size: .68rem; }
+
+.versus { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.versus > div { min-width: 0; padding: 16px 18px; border-top: 3px solid var(--rule); background: var(--surface); border-radius: 0 0 8px 8px; display: grid; gap: 6px; align-content: start; }
+.versus .old { border-top-color: var(--linear); } .versus .new { border-top-color: var(--spline); }
+.versus .eq { font: 500 .95rem/1.4 var(--f-mono); }
+.versus p { color: var(--fg-2); font-size: .95rem; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); border-block: 1px solid var(--rule); }
+.stat { padding: 18px 16px 16px; display: grid; gap: 4px; align-content: start; }
+.stat + .stat { border-left: 1px solid var(--rule); }
+@media (max-width: 520px) { .stat + .stat { border-left: 0; border-top: 1px solid var(--rule); } }
+.stat .lab { font-size: .85rem; color: var(--muted); }
+.stat .val { font: 600 1.7rem/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
+.stat .val .from { color: var(--muted); font-weight: 500; font-size: 1.1rem; }
+.stat .val .arrow { color: var(--muted); font-weight: 400; margin: 0 4px; }
+.stat .note { font-size: .85rem; color: var(--fg-2); }
+
+/* usage scenarios */
+.scenario { display: grid; gap: 14px; padding-top: 28px; border-top: 1px solid var(--rule); }
+.scenario .meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 500 .75rem/1 var(--f-mono); padding: 5px 8px; border-radius: 999px; background: var(--code-bg); color: var(--fg-2); }
+.code-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+figure { margin: 0; min-width: 0; display: grid; gap: 8px; align-content: start; }
+figcaption { font-size: .9rem; color: var(--fg-2); }
+figcaption b { color: var(--fg); font-weight: 600; }
+.callout { padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 6px 6px 0; font-size: .93rem; color: var(--fg-2); }
+.callout b { color: var(--fg); }
+
+/* charts */
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: .88rem; color: var(--fg-2); align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.sw { width: 22px; height: 0; border-top: 2px solid; display: inline-block; }
+.sw.truth { border-top: 2px dashed var(--truth); } .sw.linear { border-color: var(--linear); } .sw.spline { border-color: var(--spline); }
+.sw.band { height: 10px; border: 0; background: var(--band); }
+.sw.box { width: 12px; height: 12px; border: 0; border-radius: 3px; }
+.sw.dot { width: 10px; height: 10px; border: 0; border-radius: 50%; }
+.multiples { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px 24px; }
+.panel { min-width: 0; display: grid; gap: 4px; align-content: start; }
+.panel h3 { font-size: .98rem; }
+.panel .sub { font-size: .82rem; color: var(--muted); }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { fill: var(--muted); font: 11px var(--f-body); font-variant-numeric: tabular-nums; }
+svg text.lab { fill: var(--fg-2); }
+svg .ax { stroke: var(--rule); } svg .gl { stroke: var(--grid); }
+.chart-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; align-items: start; }
+.chart-row > div { min-width: 0; display: grid; gap: 10px; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.seg button { font: 500 .85rem var(--f-body); padding: 6px 12px; border: 0; background: var(--surface); color: var(--fg-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.tip { position: fixed; pointer-events: none; z-index: 20; background: var(--surface); color: var(--fg); border: 1px solid var(--rule);
+  border-radius: 6px; padding: 8px 10px; font-size: .82rem; line-height: 1.45; box-shadow: 0 4px 16px rgba(0,0,0,.12); font-variant-numeric: tabular-nums; max-width: 280px; }
+.tip .t { font-weight: 600; margin-bottom: 2px; }
+.tip i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-weight: 600; color: var(--fg-2); font-size: .8rem; white-space: nowrap; }
+table.text td, table.text th { text-align: left; }
+table.text td:first-child { white-space: nowrap; }
+td.win { font-weight: 600; }
+td.bad { color: var(--warn); font-weight: 600; }
+.cols2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px 40px; }
+.cols2 > div { min-width: 0; display: grid; gap: 10px; align-content: start; }
+ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; color: var(--fg-2); }
+ul b { color: var(--fg); font-weight: 600; }
+.foot { font-size: .85rem; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 18px; }
+@media (prefers-reduced-motion: no-preference) { .seg button, .topnav .links a { transition: background .15s; } }
+.fig { display: grid; gap: 10px; padding: 16px 18px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; min-width: 0; }
+.fig > .head { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; justify-content: space-between; }
+.fig h4 { margin: 0; font: 600 .95rem/1.3 var(--f-display); }
+.fig .read { font-size: .88rem; color: var(--fg-2); max-width: 75ch; }
+.fig .read b { color: var(--fg); }
+.fig-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px 24px; align-items: start; }
+.fig-row > div { min-width: 0; display: grid; gap: 6px; }
+.fig-row .cap { font-size: .8rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<header class="topnav"><div class="in"><a class="brand" href="index.html">suez</a><nav class="links" aria-label="Documentation"><a href="index.html">Overview</a><a href="usage.html">Usage</a><a href="performance.html" aria-current="page">Performance</a><a href="age_varying_eqtl.html">Age-varying eQTLs</a><a href="suez.html">Vignette</a><a href="https://github.com/ricardovialle/suez">GitHub</a></nav></div></header>
+<div class="tip" id="tip" hidden></div>
+<div class="page"><div class="wrap with-toc">
+<nav class="toc" aria-label="On this page"><ol><li><a href="#speed">Wall time on the same data</a></li><li><a href="#calibration">Calibration of null p-values</a></li><li><a href="#power">Power at a matched false-positive rate</a></li><li><a href="#history">Faster than suez 0.4</a></li><li><a href="#cores">Multi-core scaling</a></li><li><a href="#age">Smooth conditions</a></li></ol></nav>
+<div class="main">
+  <header class="stack">
+    <div class="eyebrow">Performance</div>
+    <h1>Speed and calibration</h1>
+    <p class="lede prose">How suez compares with tensorQTL, the standard fast eQTL mapper, on the same simulated repeated-measures data, and how much faster the engine has become since suez 0.4. Every number on this page is read from the benchmark result files in <code>bench/</code>.</p>
+  </header>
+
+  <section class="stats" aria-label="Highlights" id="stats"></section>
+
+  <section class="stack">
+    <div class="eyebrow">suez vs tensorQTL</div>
+    <h2 id="speed">Wall time on the same data</h2>
+    <p class="dim prose">Each row is one simulated dataset, from 200 to 4,000 samples, timed end to end (best of 3 interleaved runs). suez runs without the bootstrap here, as tensorQTL has none. tensorQTL's CPU time is the faster of 1 and 8 threads.</p>
+    <div class="legend">
+      <span><i class="sw dot" style="background:var(--suez)"></i>suez, 8 CPU cores</span>
+      <span><i class="sw dot" style="background:var(--tq)"></i>tensorQTL, CPU</span>
+      <span><i class="sw dot" style="background:var(--tq2)"></i>tensorQTL, GPU</span>
+    </div>
+    <div id="speed-chart"></div>
+    <p class="small prose" id="speed-note"></p>
+    <div class="table-wrap"><table id="speed-table"></table></div>
+  </section>
+
+  <section class="stack">
+    <h2 id="calibration">Calibration of null p-values</h2>
+    <p class="dim prose">λ is the median null chi-square divided by its expected value: 1 when p-values are calibrated, above 1 when they are inflated (false positives), below 1 when deflated (lost power). Each dot is one dataset; the methods differ only in how they treat the two samples of each individual.</p>
+    <div class="chart-row">
+      <div><h3>eQTL test (genotype)</h3><div id="cal-geno"></div></div>
+      <div><h3>Response test (genotype × condition)</h3><div id="cal-int"></div></div>
+    </div>
+    <ul class="prose">
+      <li><b>suez</b> stays near 1 for both tests, with either kernel.</li>
+      <li><b>tensorQTL on all samples</b> treats a donor's samples as independent: the eQTL test is inflated and the interaction test deflated, with or without expression PCs.</li>
+      <li><b>tensorQTL per individual</b> (the mean for eQTLs, the difference for response) is calibrated, but needs exactly two samples per donor and doubles the noise of the response test.</li>
+    </ul>
+  </section>
+
+  <section class="stack">
+    <h2 id="power">Power at a matched false-positive rate</h2>
+    <p class="dim prose">Share of genes with a planted effect found at gene level, after setting each method's threshold so its false-gene rate is 5% (the calibrated column). Datasets have 15 to 30 causal genes, so each value carries roughly ±10 to 15 percentage points of noise: read the pattern, not single cells.</p>
+    <div class="table-wrap"><table id="power-table"></table></div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">Engine history</div>
+    <h2 id="history">Faster than suez 0.4</h2>
+    <p class="dim prose">Step 2 on one core, the same workloads, suez 0.4 against the current engine (round 12 of the optimization log). Bars show the speed-up on a log scale.</p>
+    <div id="hist-chart"></div>
+    <div class="table-wrap"><table id="hist-table"></table></div>
+    <p class="small prose">The 0.4 and current timings come from two benchmark sessions on the same Apple M5 (R's reference BLAS); the speed-up multiplies the 0.4 → 0.5 and round-11 → round-12 comparisons, each measured with interleaved runs. Sources: <code>bench/results/final_summary.tsv</code>, <code>bench/results/r12_final_summary.tsv</code>, <code>bench/EXPERIMENT_LOG.md</code>.</p>
+  </section>
+
+  <section class="stack">
+    <h2 id="cores">Multi-core scaling</h2>
+    <p class="dim prose">Step 2 with forked workers. Memory is summed over the process tree, an upper bound since forks share pages.</p>
+    <div class="table-wrap"><table id="cores-table"></table></div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">Modelling</div>
+    <h2 id="age">Smooth conditions</h2>
+    <p class="dim prose">For effects that change with age or dose, a spline condition finds onsets and mid-life peaks that a linear term misses, at no cost in power for linear effects and with better-calibrated null p-values. Details in the <a href="age_varying_eqtl.html">age-varying eQTL report</a>.</p>
+    <div class="stats" id="age-stats"></div>
+  </section>
+
+  <section class="cols2">
+    <div>
+      <h3>When suez is the better tool</h3>
+      <ul>
+        <li><b>Repeated samples</b> of the same individuals, two or more conditions, or unbalanced designs.</li>
+        <li><b>Response eQTLs</b> as the question, including continuous and smooth conditions.</li>
+        <li><b>Related individuals</b> or strong hidden structure, modelled in the same covariance.</li>
+        <li><b>Admixed cohorts</b> with ancestry-specific effects.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>When tensorQTL is the better tool</h3>
+      <ul>
+        <li><b>One sample per unrelated individual</b>: a linear regression is calibrated and very fast.</li>
+        <li><b>Dense GRM kernels at 1,000+ samples</b>, where suez was 2 to 4 times slower.</li>
+        <li><b>trans scans and many permutations</b>: suez maps cis only.</li>
+        <li><b>Mature downstream tooling</b>: gene-level permutation p-values, conditional signals, fine-mapping inputs.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="foot prose" style="max-width:none" id="foot"></footer>
+</div>
+</div>
+<script>// Shared chart helpers for the suez docs: SVG elements, axes on one scale, hover tooltips. Colors come from CSS tokens.
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+const tip = document.getElementById("tip");
+function showTip(ev, html) { tip.innerHTML = html; tip.hidden = false;
+  const r = tip.getBoundingClientRect(); let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - 14; if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px"; }
+function hideTip() { tip.hidden = true; }
+function hover(node, html) { node.addEventListener("pointermove", ev => showTip(ev, typeof html === "function" ? html(ev) : html)); node.addEventListener("pointerleave", hideTip); }
+const sw = v => `<i style="background:var(${v})"></i>`;
+const pct = x => (100 * x).toFixed(x < 0.1 ? 1 : 0) + "%";
+const fmt = (x, d = 2) => x.toFixed(d);
+// linear or log10 scale: s(v) -> pixel
+function scale(d0, d1, r0, r1, log) { const f = log ? Math.log10 : (v => v); const a = f(d0), b = f(d1); return v => r0 + (f(v) - a) / (b - a) * (r1 - r0); }
+// axes: xs, ys are scales; xt, yt tick values; fmtx / fmty label formatters
+function axes(svg, W, H, m, xs, ys, xt, yt, o = {}) {
+  for (const t of yt) { el("line", {x1: m.l, x2: W - m.r, y1: ys(t), y2: ys(t), class: "gl"}, svg);
+    el("text", {x: m.l - 6, y: ys(t) + 4, "text-anchor": "end"}, svg).textContent = o.fmty ? o.fmty(t) : t; }
+  for (const t of xt) { if (o.xgrid) el("line", {x1: xs(t), x2: xs(t), y1: m.t, y2: H - m.b, class: "gl"}, svg);
+    el("text", {x: xs(t), y: H - m.b + 15, "text-anchor": "middle"}, svg).textContent = o.fmtx ? o.fmtx(t) : t; }
+  el("line", {x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, class: "ax"}, svg);
+  if (o.xlab) el("text", {x: W - m.r, y: H - 2, "text-anchor": "end"}, svg).textContent = o.xlab;
+  if (o.ylab) el("text", {x: m.l - 6, y: m.t - 8, "text-anchor": "start"}, svg).textContent = o.ylab;
+}
+const path = (xs, ys, X, Y) => xs.map((x, i) => (i ? "L" : "M") + X(x).toFixed(1) + "," + Y(ys[i]).toFixed(1)).join("");
+</script>
+<script>
+const P = {"speed":[{"dataset":"S","desc":"100 individuals x 2 conditions","N":200.0,"tests":19942.0,"tq_tests":19950.0,"suez_1core":0.72,"suez_8cores":0.26,"tensorqtl_gpu":1.823,"tensorqtl_cpu1":0.8713,"tensorqtl_cpu8":1.434,"boot":1.31,"rss_suez":163.6,"rss_gpu":1387.0,"gpu_mb":11.14,"ratio1":0.8264,"ratio8":0.2984},{"dataset":"M","desc":"200 x 2","N":400.0,"tests":60199.0,"tq_tests":60199.0,"suez_1core":2.45,"suez_8cores":0.69,"tensorqtl_gpu":3.237,"tensorqtl_cpu1":2.532,"tensorqtl_cpu8":4.075,"boot":4.19,"rss_suez":184.0,"rss_gpu":1425.0,"gpu_mb":11.7,"ratio1":0.9677,"ratio8":0.2725},{"dataset":"L","desc":"500 x 2","N":1000.0,"tests":59949.0,"tq_tests":59949.0,"suez_1core":4.41,"suez_8cores":1.22,"tensorqtl_gpu":2.053,"tensorqtl_cpu1":4.242,"tensorqtl_cpu8":2.504,"boot":7.32,"rss_suez":249.5,"rss_gpu":1539.0,"gpu_mb":26.98,"ratio1":2.148,"ratio8":0.5941},{"dataset":"XL","desc":"1,000 x 2","N":2000.0,"tests":23859.0,"tq_tests":23859.0,"suez_1core":3.6,"suez_8cores":1.11,"tensorqtl_gpu":1.543,"tensorqtl_cpu1":4.118,"tensorqtl_cpu8":2.413,"boot":5.71,"rss_suez":255.5,"rss_gpu":1460.0,"gpu_mb":43.45,"ratio1":2.334,"ratio8":0.7195},{"dataset":"XXL","desc":"2,000 x 2","N":4000.0,"tests":6215.0,"tq_tests":6215.0,"suez_1core":2.21,"suez_8cores":0.78,"tensorqtl_gpu":1.756,"tensorqtl_cpu1":3.151,"tensorqtl_cpu8":2.604,"boot":2.98,"rss_suez":283.7,"rss_gpu":1375.0,"gpu_mb":78.93,"ratio1":1.258,"ratio8":0.4441},{"dataset":"G","desc":"200 x 2, 4,000 genes","N":400.0,"tests":999750.0,"tq_tests":1003748.0,"suez_1core":43.55,"suez_8cores":10.81,"tensorqtl_gpu":51.16,"tensorqtl_cpu1":39.73,"tensorqtl_cpu8":47.42,"boot":73.4,"rss_suez":956.4,"rss_gpu":3339.0,"gpu_mb":12.58,"ratio1":1.096,"ratio8":0.2721},{"dataset":"M_grm","desc":"200 x 2, GRM kernel","N":400.0,"tests":30049.0,"tq_tests":30049.0,"suez_1core":2.96,"suez_8cores":0.75,"tensorqtl_gpu":1.622,"tensorqtl_cpu1":1.256,"tensorqtl_cpu8":1.574,"boot":"","rss_suez":172.0,"rss_gpu":1381.0,"gpu_mb":11.7,"ratio1":2.357,"ratio8":0.5972},{"dataset":"L_grm","desc":"500 x 2, GRM kernel","N":1000.0,"tests":39899.0,"tq_tests":39899.0,"suez_1core":12.86,"suez_8cores":2.9,"tensorqtl_gpu":1.477,"tensorqtl_cpu1":2.851,"tensorqtl_cpu8":1.913,"boot":"","rss_suez":256.7,"rss_gpu":1450.0,"gpu_mb":26.98,"ratio1":8.708,"ratio8":1.964},{"dataset":"XL_grm","desc":"1,000 x 2, GRM kernel","N":2000.0,"tests":15839.0,"tq_tests":15839.0,"suez_1core":20.77,"suez_8cores":5.11,"tensorqtl_gpu":1.267,"tensorqtl_cpu1":2.91,"tensorqtl_cpu8":1.649,"boot":"","rss_suez":357.1,"rss_gpu":1391.0,"gpu_mb":43.45,"ratio1":16.4,"ratio8":4.035},{"dataset":"M_fac3","desc":"200 x 3 levels","N":600.0,"tests":30049.0,"tq_tests":30049.0,"suez_1core":2.01,"suez_8cores":0.57,"tensorqtl_gpu":3.431,"tensorqtl_cpu1":3.264,"tensorqtl_cpu8":32.64,"boot":"","rss_suez":173.6,"rss_gpu":1392.0,"gpu_mb":16.47,"ratio1":0.6158,"ratio8":0.1746},{"dataset":"M_num","desc":"200 x 2, numeric condition, GRM","N":400.0,"tests":30049.0,"tq_tests":30049.0,"suez_1core":3.15,"suez_8cores":0.73,"tensorqtl_gpu":1.536,"tensorqtl_cpu1":1.249,"tensorqtl_cpu8":1.554,"boot":"","rss_suez":171.9,"rss_gpu":1383.0,"gpu_mb":11.7,"ratio1":2.522,"ratio8":0.5846},{"dataset":"M_cov","desc":"200 x 2, 10 covariates","N":400.0,"tests":30049.0,"tq_tests":30049.0,"suez_1core":2.35,"suez_8cores":0.65,"tensorqtl_gpu":1.556,"tensorqtl_cpu1":1.3,"tensorqtl_cpu8":1.557,"boot":"","rss_suez":171.8,"rss_gpu":1382.0,"gpu_mb":11.72,"ratio1":1.808,"ratio8":0.5002},{"dataset":"M_eqtl","desc":"200 x 1, no condition, GRM","N":200.0,"tests":30049.0,"tq_tests":30049.0,"suez_1core":1.38,"suez_8cores":0.61,"tensorqtl_gpu":0.6792,"tensorqtl_cpu1":0.3042,"tensorqtl_cpu8":0.4552,"boot":"","rss_suez":168.4,"rss_gpu":1316.0,"gpu_mb":8.757,"ratio1":4.537,"ratio8":2.005},{"dataset":"M_unbal","desc":"200, 1-4 samples each","N":488.0,"tests":30049.0,"tq_tests":30049.0,"suez_1core":1.46,"suez_8cores":0.44,"tensorqtl_gpu":1.578,"tensorqtl_cpu1":1.45,"tensorqtl_cpu8":1.172,"boot":"","rss_suez":171.7,"rss_gpu":1379.0,"gpu_mb":12.48,"ratio1":1.246,"ratio8":0.3754}],"calib":[{"dataset":"M","method":"suez, step-1 kernel","key":"suez_learned","n_null_pairs":48139.0,"lambda_p_geno":0.9959,"fpr05_p_geno":0.05017,"fpr1e3_p_geno":0.0007894,"lambda_p_interact":1.011,"fpr05_p_interact":0.05191,"fpr1e3_p_interact":0.001143},{"dataset":"M","method":"suez, repeated-individual kernel","key":"suez_dataset","n_null_pairs":48139.0,"lambda_p_geno":1.018,"fpr05_p_geno":0.04998,"fpr1e3_p_geno":0.0009348,"lambda_p_interact":1.014,"fpr05_p_interact":0.05206,"fpr1e3_p_interact":0.00108},{"dataset":"M","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","n_null_pairs":48139.0,"lambda_p_geno":1.197,"fpr05_p_geno":0.07175,"fpr1e3_p_geno":0.00216,"lambda_p_interact":0.8008,"fpr05_p_interact":0.02879,"fpr1e3_p_interact":0.0002285},{"dataset":"M","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","n_null_pairs":48139.0,"lambda_p_geno":1.149,"fpr05_p_geno":0.06454,"fpr1e3_p_geno":0.001973,"lambda_p_interact":0.864,"fpr05_p_interact":0.03517,"fpr1e3_p_interact":0.0004362},{"dataset":"M","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","n_null_pairs":48139.0,"lambda_p_geno":0.9987,"fpr05_p_geno":0.04898,"fpr1e3_p_geno":0.0009971,"lambda_p_interact":0.9897,"fpr05_p_interact":0.04907,"fpr1e3_p_interact":0.0009971},{"dataset":"M_fac3","method":"suez, step-1 kernel","key":"suez_learned","n_null_pairs":24019.0,"lambda_p_geno":0.9946,"fpr05_p_geno":0.05229,"fpr1e3_p_geno":0.001291,"lambda_p_interact":0.9922,"fpr05_p_interact":0.05246,"fpr1e3_p_interact":0.001374},{"dataset":"M_fac3","method":"suez, repeated-individual kernel","key":"suez_dataset","n_null_pairs":24019.0,"lambda_p_geno":1.008,"fpr05_p_geno":0.05213,"fpr1e3_p_geno":0.001374,"lambda_p_interact":1.011,"fpr05_p_interact":0.04875,"fpr1e3_p_interact":0.0008743},{"dataset":"M_fac3","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","n_null_pairs":24019.0,"lambda_p_geno":1.405,"fpr05_p_geno":0.1015,"fpr1e3_p_geno":0.005954,"lambda_p_interact":0.2368,"fpr05_p_interact":0.02227,"fpr1e3_p_interact":0.0001249},{"dataset":"M_fac3","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","n_null_pairs":24019.0,"lambda_p_geno":1.251,"fpr05_p_geno":0.07927,"fpr1e3_p_geno":0.003789,"lambda_p_interact":0.3386,"fpr05_p_interact":0.03018,"fpr1e3_p_interact":0.0003331},{"dataset":"M_num","method":"suez, step-1 kernel","key":"suez_learned","n_null_pairs":24019.0,"lambda_p_geno":1.024,"fpr05_p_geno":0.05163,"fpr1e3_p_geno":0.0008327,"lambda_p_interact":1.045,"fpr05_p_interact":0.05009,"fpr1e3_p_interact":0.001166},{"dataset":"M_num","method":"suez, repeated-individual kernel","key":"suez_dataset","n_null_pairs":24019.0,"lambda_p_geno":1.012,"fpr05_p_geno":0.05233,"fpr1e3_p_geno":0.001291,"lambda_p_interact":1.045,"fpr05_p_interact":0.05287,"fpr1e3_p_interact":0.0009992},{"dataset":"M_num","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","n_null_pairs":24019.0,"lambda_p_geno":1.22,"fpr05_p_geno":0.07369,"fpr1e3_p_geno":0.002706,"lambda_p_interact":1.036,"fpr05_p_interact":0.04946,"fpr1e3_p_interact":0.001082},{"dataset":"M_num","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","n_null_pairs":24019.0,"lambda_p_geno":1.121,"fpr05_p_geno":0.06495,"fpr1e3_p_geno":0.001832,"lambda_p_interact":1.033,"fpr05_p_interact":0.05038,"fpr1e3_p_interact":0.001041},{"dataset":"M_unbal","method":"suez, step-1 kernel","key":"suez_learned","n_null_pairs":24070.0,"lambda_p_geno":1.001,"fpr05_p_geno":0.0528,"fpr1e3_p_geno":0.001329,"lambda_p_interact":1.041,"fpr05_p_interact":0.05085,"fpr1e3_p_interact":0.000914},{"dataset":"M_unbal","method":"suez, repeated-individual kernel","key":"suez_dataset","n_null_pairs":24070.0,"lambda_p_geno":1.024,"fpr05_p_geno":0.05575,"fpr1e3_p_geno":0.001371,"lambda_p_interact":1.01,"fpr05_p_interact":0.04952,"fpr1e3_p_interact":0.001039},{"dataset":"M_unbal","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","n_null_pairs":24070.0,"lambda_p_geno":1.4,"fpr05_p_geno":0.09364,"fpr1e3_p_geno":0.005276,"lambda_p_interact":0.8766,"fpr05_p_interact":0.03311,"fpr1e3_p_interact":0.0002908},{"dataset":"M_unbal","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","n_null_pairs":24070.0,"lambda_p_geno":1.284,"fpr05_p_geno":0.08571,"fpr1e3_p_geno":0.004279,"lambda_p_interact":0.8894,"fpr05_p_interact":0.03743,"fpr1e3_p_interact":0.0004985},{"dataset":"M_cov","method":"suez, step-1 kernel","key":"suez_learned","n_null_pairs":24019.0,"lambda_p_geno":1.024,"fpr05_p_geno":0.05508,"fpr1e3_p_geno":0.001082,"lambda_p_interact":1.063,"fpr05_p_interact":0.05829,"fpr1e3_p_interact":0.001207},{"dataset":"M_cov","method":"suez, repeated-individual kernel","key":"suez_dataset","n_null_pairs":24019.0,"lambda_p_geno":1.029,"fpr05_p_geno":0.05508,"fpr1e3_p_geno":0.001332,"lambda_p_interact":1.058,"fpr05_p_interact":0.05616,"fpr1e3_p_interact":0.001082},{"dataset":"M_cov","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","n_null_pairs":24019.0,"lambda_p_geno":1.178,"fpr05_p_geno":0.07419,"fpr1e3_p_geno":0.001957,"lambda_p_interact":0.8161,"fpr05_p_interact":0.02985,"fpr1e3_p_interact":0.0001249},{"dataset":"M_cov","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","n_null_pairs":24019.0,"lambda_p_geno":1.136,"fpr05_p_geno":0.0672,"fpr1e3_p_geno":0.002165,"lambda_p_interact":0.8743,"fpr05_p_interact":0.03535,"fpr1e3_p_interact":0.0002914},{"dataset":"M_cov","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","n_null_pairs":24019.0,"lambda_p_geno":1.002,"fpr05_p_geno":0.05117,"fpr1e3_p_geno":0.001082,"lambda_p_interact":1.022,"fpr05_p_interact":0.05229,"fpr1e3_p_interact":0.0008743},{"dataset":"M_eqtl","method":"suez, step-1 kernel","key":"suez_learned","n_null_pairs":24120.0,"lambda_p_geno":1.013,"fpr05_p_geno":0.05087,"fpr1e3_p_geno":0.001244,"lambda_p_interact":"","fpr05_p_interact":"","fpr1e3_p_interact":""},{"dataset":"M_eqtl","method":"suez, repeated-individual kernel","key":"suez_dataset","n_null_pairs":24120.0,"lambda_p_geno":1.039,"fpr05_p_geno":0.05336,"fpr1e3_p_geno":0.001244,"lambda_p_interact":"","fpr05_p_interact":"","fpr1e3_p_interact":""},{"dataset":"M_eqtl","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","n_null_pairs":24120.0,"lambda_p_geno":1.019,"fpr05_p_geno":0.04938,"fpr1e3_p_geno":0.001119,"lambda_p_interact":"","fpr05_p_interact":"","fpr1e3_p_interact":""},{"dataset":"M_eqtl","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","n_null_pairs":24120.0,"lambda_p_geno":1.026,"fpr05_p_geno":0.05162,"fpr1e3_p_geno":0.001202,"lambda_p_interact":"","fpr05_p_interact":"","fpr1e3_p_interact":""},{"dataset":"HS","method":"suez, step-1 kernel","key":"suez_learned","n_null_pairs":15950.0,"lambda_p_geno":0.989,"fpr05_p_geno":0.04633,"fpr1e3_p_geno":0.0006897,"lambda_p_interact":1.009,"fpr05_p_interact":0.04909,"fpr1e3_p_interact":0.001003},{"dataset":"HS","method":"suez, repeated-individual kernel","key":"suez_dataset","n_null_pairs":15950.0,"lambda_p_geno":1.012,"fpr05_p_geno":0.05154,"fpr1e3_p_geno":0.001066,"lambda_p_interact":0.9889,"fpr05_p_interact":0.04777,"fpr1e3_p_interact":0.001379},{"dataset":"HS","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","n_null_pairs":15950.0,"lambda_p_geno":1.203,"fpr05_p_geno":0.0711,"fpr1e3_p_geno":0.002382,"lambda_p_interact":0.7736,"fpr05_p_interact":0.02683,"fpr1e3_p_interact":0.0},{"dataset":"HS","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","n_null_pairs":15950.0,"lambda_p_geno":1.119,"fpr05_p_geno":0.06357,"fpr1e3_p_geno":0.001944,"lambda_p_interact":0.865,"fpr05_p_interact":0.03455,"fpr1e3_p_interact":0.0006897},{"dataset":"HS","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","n_null_pairs":15950.0,"lambda_p_geno":1.001,"fpr05_p_geno":0.04721,"fpr1e3_p_geno":0.001066,"lambda_p_interact":0.969,"fpr05_p_interact":0.04771,"fpr1e3_p_interact":0.0005643},{"dataset":"NULLR","method":"suez, step-1 kernel","key":"suez_learned","n_null_pairs":99950.0,"lambda_p_geno":0.9813,"fpr05_p_geno":0.04811,"fpr1e3_p_geno":0.001071,"lambda_p_interact":1.018,"fpr05_p_interact":0.05161,"fpr1e3_p_interact":0.001181},{"dataset":"NULLR","method":"suez, repeated-individual kernel","key":"suez_dataset","n_null_pairs":99950.0,"lambda_p_geno":0.9962,"fpr05_p_geno":0.05049,"fpr1e3_p_geno":0.0008604,"lambda_p_interact":1.012,"fpr05_p_interact":0.05178,"fpr1e3_p_interact":0.001041},{"dataset":"NULLR","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","n_null_pairs":99950.0,"lambda_p_geno":1.458,"fpr05_p_geno":0.1056,"fpr1e3_p_geno":0.006613,"lambda_p_interact":0.5165,"fpr05_p_interact":0.006543,"fpr1e3_p_interact":1.001e-05},{"dataset":"NULLR","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","n_null_pairs":99950.0,"lambda_p_geno":1.359,"fpr05_p_geno":0.09352,"fpr1e3_p_geno":0.004792,"lambda_p_interact":0.6237,"fpr05_p_interact":0.01383,"fpr1e3_p_interact":4.002e-05},{"dataset":"NULLR","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","n_null_pairs":99950.0,"lambda_p_geno":0.9866,"fpr05_p_geno":0.04805,"fpr1e3_p_geno":0.0009705,"lambda_p_interact":1.01,"fpr05_p_interact":0.04937,"fpr1e3_p_interact":0.001161}],"power":[{"dataset":"M","method":"suez, step-1 kernel","key":"suez_learned","test":"p_geno","n_causal_genes":30.0,"n_null_genes":240.0,"false_gene_rate":0.05417,"power":0.5667,"power_calibrated":0.5667},{"dataset":"M","method":"suez, step-1 kernel","key":"suez_learned","test":"p_interact","n_causal_genes":30.0,"n_null_genes":240.0,"false_gene_rate":0.05,"power":0.1333,"power_calibrated":0.1333},{"dataset":"M","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_geno","n_causal_genes":30.0,"n_null_genes":240.0,"false_gene_rate":0.05,"power":0.4333,"power_calibrated":0.4333},{"dataset":"M","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_interact","n_causal_genes":30.0,"n_null_genes":240.0,"false_gene_rate":0.0625,"power":0.06667,"power_calibrated":0.06667},{"dataset":"M","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_geno","n_causal_genes":30.0,"n_null_genes":240.0,"false_gene_rate":0.1375,"power":0.7,"power_calibrated":0.5667},{"dataset":"M","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_interact","n_causal_genes":30.0,"n_null_genes":240.0,"false_gene_rate":0.008333,"power":0.0,"power_calibrated":0.1333},{"dataset":"M","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_geno","n_causal_genes":30.0,"n_null_genes":240.0,"false_gene_rate":0.1292,"power":0.4667,"power_calibrated":0.4333},{"dataset":"M","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_interact","n_causal_genes":30.0,"n_null_genes":240.0,"false_gene_rate":0.02083,"power":0.06667,"power_calibrated":0.06667},{"dataset":"M","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","test":"p_geno","n_causal_genes":30.0,"n_null_genes":240.0,"false_gene_rate":0.07083,"power":0.6333,"power_calibrated":0.6},{"dataset":"M","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","test":"p_interact","n_causal_genes":30.0,"n_null_genes":240.0,"false_gene_rate":0.0375,"power":0.1,"power_calibrated":0.1333},{"dataset":"M_fac3","method":"suez, step-1 kernel","key":"suez_learned","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.05833,"power":0.6667,"power_calibrated":0.6667},{"dataset":"M_fac3","method":"suez, step-1 kernel","key":"suez_learned","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.04167,"power":0.4,"power_calibrated":0.4},{"dataset":"M_fac3","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.075,"power":0.4667,"power_calibrated":0.4667},{"dataset":"M_fac3","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.01667,"power":0.2667,"power_calibrated":0.2667},{"dataset":"M_fac3","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.2917,"power":0.9333,"power_calibrated":0.7333},{"dataset":"M_fac3","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.0,"power":0.3333,"power_calibrated":0.6},{"dataset":"M_fac3","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.2,"power":0.7333,"power_calibrated":0.5333},{"dataset":"M_fac3","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.008333,"power":0.2,"power_calibrated":0.3333},{"dataset":"M_num","method":"suez, step-1 kernel","key":"suez_learned","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.025,"power":0.6667,"power_calibrated":0.6667},{"dataset":"M_num","method":"suez, step-1 kernel","key":"suez_learned","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.025,"power":0.4667,"power_calibrated":0.4667},{"dataset":"M_num","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.05833,"power":0.5333,"power_calibrated":0.5333},{"dataset":"M_num","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.025,"power":0.4,"power_calibrated":0.4667},{"dataset":"M_num","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.125,"power":0.8667,"power_calibrated":0.6},{"dataset":"M_num","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.04167,"power":0.5333,"power_calibrated":0.5333},{"dataset":"M_num","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.08333,"power":0.5333,"power_calibrated":0.5333},{"dataset":"M_num","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.01667,"power":0.3333,"power_calibrated":0.4},{"dataset":"M_unbal","method":"suez, step-1 kernel","key":"suez_learned","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.05833,"power":0.6667,"power_calibrated":0.6667},{"dataset":"M_unbal","method":"suez, step-1 kernel","key":"suez_learned","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.05,"power":0.06667,"power_calibrated":0.06667},{"dataset":"M_unbal","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.075,"power":0.4,"power_calibrated":0.4},{"dataset":"M_unbal","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.06667,"power":0.2,"power_calibrated":0.2},{"dataset":"M_unbal","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.325,"power":0.8,"power_calibrated":0.6667},{"dataset":"M_unbal","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.01667,"power":0.0,"power_calibrated":0.1333},{"dataset":"M_unbal","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.225,"power":0.5333,"power_calibrated":0.4},{"dataset":"M_unbal","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.03333,"power":0.1333,"power_calibrated":0.2},{"dataset":"M_cov","method":"suez, step-1 kernel","key":"suez_learned","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.05,"power":0.4667,"power_calibrated":0.4667},{"dataset":"M_cov","method":"suez, step-1 kernel","key":"suez_learned","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.06667,"power":0.06667,"power_calibrated":0.06667},{"dataset":"M_cov","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.125,"power":0.2,"power_calibrated":0.2},{"dataset":"M_cov","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.075,"power":0.06667,"power_calibrated":0.06667},{"dataset":"M_cov","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.15,"power":0.4667,"power_calibrated":0.4},{"dataset":"M_cov","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.0,"power":0.0,"power_calibrated":0.1333},{"dataset":"M_cov","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.175,"power":0.2,"power_calibrated":0.2},{"dataset":"M_cov","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.01667,"power":0.0,"power_calibrated":0.1333},{"dataset":"M_cov","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.06667,"power":0.2667,"power_calibrated":0.2667},{"dataset":"M_cov","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","test":"p_interact","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.03333,"power":0.06667,"power_calibrated":0.1333},{"dataset":"M_eqtl","method":"suez, step-1 kernel","key":"suez_learned","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.05,"power":0.06667,"power_calibrated":0.06667},{"dataset":"M_eqtl","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.06667,"power":0.0,"power_calibrated":0.0},{"dataset":"M_eqtl","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.05,"power":0.06667,"power_calibrated":0.1333},{"dataset":"M_eqtl","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_geno","n_causal_genes":15.0,"n_null_genes":120.0,"false_gene_rate":0.06667,"power":0.0,"power_calibrated":0.0},{"dataset":"HS","method":"suez, step-1 kernel","key":"suez_learned","test":"p_geno","n_causal_genes":20.0,"n_null_genes":160.0,"false_gene_rate":0.025,"power":1.0,"power_calibrated":1.0},{"dataset":"HS","method":"suez, step-1 kernel","key":"suez_learned","test":"p_interact","n_causal_genes":20.0,"n_null_genes":160.0,"false_gene_rate":0.0375,"power":0.8,"power_calibrated":0.85},{"dataset":"HS","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_geno","n_causal_genes":20.0,"n_null_genes":160.0,"false_gene_rate":0.0625,"power":1.0,"power_calibrated":0.95},{"dataset":"HS","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_interact","n_causal_genes":20.0,"n_null_genes":160.0,"false_gene_rate":0.05625,"power":0.5,"power_calibrated":0.5},{"dataset":"HS","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_geno","n_causal_genes":20.0,"n_null_genes":160.0,"false_gene_rate":0.1187,"power":1.0,"power_calibrated":1.0},{"dataset":"HS","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_interact","n_causal_genes":20.0,"n_null_genes":160.0,"false_gene_rate":0.0,"power":0.75,"power_calibrated":0.85},{"dataset":"HS","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_geno","n_causal_genes":20.0,"n_null_genes":160.0,"false_gene_rate":0.09375,"power":1.0,"power_calibrated":0.95},{"dataset":"HS","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_interact","n_causal_genes":20.0,"n_null_genes":160.0,"false_gene_rate":0.01875,"power":0.45,"power_calibrated":0.45},{"dataset":"HS","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","test":"p_geno","n_causal_genes":20.0,"n_null_genes":160.0,"false_gene_rate":0.04375,"power":1.0,"power_calibrated":1.0},{"dataset":"HS","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","test":"p_interact","n_causal_genes":20.0,"n_null_genes":160.0,"false_gene_rate":0.00625,"power":0.8,"power_calibrated":0.8},{"dataset":"NULLR","method":"suez, step-1 kernel","key":"suez_learned","test":"p_geno","n_causal_genes":0.0,"n_null_genes":1000.0,"false_gene_rate":0.047,"power":"","power_calibrated":""},{"dataset":"NULLR","method":"suez, step-1 kernel","key":"suez_learned","test":"p_interact","n_causal_genes":0.0,"n_null_genes":1000.0,"false_gene_rate":0.054,"power":"","power_calibrated":""},{"dataset":"NULLR","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_geno","n_causal_genes":0.0,"n_null_genes":1000.0,"false_gene_rate":0.043,"power":"","power_calibrated":""},{"dataset":"NULLR","method":"suez, repeated-individual kernel","key":"suez_dataset","test":"p_interact","n_causal_genes":0.0,"n_null_genes":1000.0,"false_gene_rate":0.044,"power":"","power_calibrated":""},{"dataset":"NULLR","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_geno","n_causal_genes":0.0,"n_null_genes":1000.0,"false_gene_rate":0.311,"power":"","power_calibrated":""},{"dataset":"NULLR","method":"tensorQTL, all samples, 5 PCs","key":"tq_sample5","test":"p_interact","n_causal_genes":0.0,"n_null_genes":1000.0,"false_gene_rate":0.001,"power":"","power_calibrated":""},{"dataset":"NULLR","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_geno","n_causal_genes":0.0,"n_null_genes":1000.0,"false_gene_rate":0.22,"power":"","power_calibrated":""},{"dataset":"NULLR","method":"tensorQTL, all samples, no PCs","key":"tq_sample0","test":"p_interact","n_causal_genes":0.0,"n_null_genes":1000.0,"false_gene_rate":0.003,"power":"","power_calibrated":""},{"dataset":"NULLR","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","test":"p_geno","n_causal_genes":0.0,"n_null_genes":1000.0,"false_gene_rate":0.053,"power":"","power_calibrated":""},{"dataset":"NULLR","method":"tensorQTL, per individual (mean / difference), 5 PCs","key":"tq_indiv5","test":"p_interact","n_causal_genes":0.0,"n_null_genes":1000.0,"false_gene_rate":0.053,"power":"","power_calibrated":""}],"perm":[{"dataset":"S","method":"tensorqtl_gpu_mapcis","n_samples":200.0,"n_tests":19950.0,"t_map_cis":5.634,"rss_mb":1472.0,"gpu_mb":11.14},{"dataset":"S","method":"tensorqtl_cpu1_mapcis","n_samples":200.0,"n_tests":19950.0,"t_map_cis":10.67,"rss_mb":890.3,"gpu_mb":""},{"dataset":"M","method":"tensorqtl_gpu_mapcis","n_samples":400.0,"n_tests":60199.0,"t_map_cis":9.213,"rss_mb":1516.0,"gpu_mb":11.7},{"dataset":"M","method":"tensorqtl_cpu1_mapcis","n_samples":400.0,"n_tests":60199.0,"t_map_cis":27.46,"rss_mb":1034.0,"gpu_mb":""},{"dataset":"L","method":"tensorqtl_gpu_mapcis","n_samples":1000.0,"n_tests":59949.0,"t_map_cis":5.169,"rss_mb":1677.0,"gpu_mb":26.98},{"dataset":"L","method":"tensorqtl_cpu1_mapcis","n_samples":1000.0,"n_tests":59949.0,"t_map_cis":39.4,"rss_mb":1283.0,"gpu_mb":""},{"dataset":"XL","method":"tensorqtl_gpu_mapcis","n_samples":2000.0,"n_tests":23859.0,"t_map_cis":2.998,"rss_mb":1756.0,"gpu_mb":43.45},{"dataset":"XL","method":"tensorqtl_cpu1_mapcis","n_samples":2000.0,"n_tests":23859.0,"t_map_cis":26.79,"rss_mb":1447.0,"gpu_mb":""},{"dataset":"XXL","method":"tensorqtl_gpu_mapcis","n_samples":4000.0,"n_tests":6215.0,"t_map_cis":2.195,"rss_mb":1956.0,"gpu_mb":78.93},{"dataset":"XXL","method":"tensorqtl_cpu1_mapcis","n_samples":4000.0,"n_tests":6215.0,"t_map_cis":14.69,"rss_mb":1825.0,"gpu_mb":""},{"dataset":"G","method":"tensorqtl_gpu_mapcis","n_samples":400.0,"n_tests":1003748.0,"t_map_cis":147.4,"rss_mb":3397.0,"gpu_mb":12.58},{"dataset":"G","method":"tensorqtl_cpu1_mapcis","n_samples":400.0,"n_tests":1003748.0,"t_map_cis":502.6,"rss_mb":2977.0,"gpu_mb":""}],"env":{"cpu":"Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz","cores":"8","ram":"15 GB","gpu":"NVIDIA GeForce RTX 2070 SUPER, 8192 MiB, 621.01","os":"Ubuntu 24.04.1 LTS (WSL2, kernel 6.18.58.1-microsoft-standard-WSL2)","suez":"2866490 (0.5)","r":"R version 4.4.3 (2025-02-28) libopenblasp-r0.3.34.so","tq":"tensorQTL 1.0.10 / PyTorch 2.14.1 / CUDA 12.9","date":"2026-11-14"},"history":[{"dataset":"S","step":"step2","v04":3.476,"v05":0.618,"now":0.48,"rss04":322.5,"rss_now":180.0},{"dataset":"M","step":"step2","v04":18.853,"v05":2.797,"now":1.74,"rss04":361.6,"rss_now":210.5},{"dataset":"L","step":"step2","v04":49.425,"v05":7.48,"now":3.147,"rss04":527.2,"rss_now":288.8},{"dataset":"XL","step":"step2","v04":62.942,"v05":10.629,"now":2.229,"rss04":984.1,"rss_now":308.7},{"dataset":"M_grm","step":"step2","v04":9.4,"v05":2.925,"now":2.102,"rss04":344.6,"rss_now":204.2},{"dataset":"L_grm","step":"step2","v04":33.398,"v05":10.834,"now":7.818,"rss04":511.5,"rss_now":308.5},{"dataset":"M_learn","step":"step2","v04":8.764,"v05":1.453,"now":1.237,"rss04":344.0,"rss_now":196.0},{"dataset":"M_lc","step":"step2","v04":9.309,"v05":1.547,"now":1.279,"rss04":345.6,"rss_now":196.0},{"dataset":"M_num","step":"step2","v04":9.405,"v05":2.973,"now":2.138,"rss04":344.7,"rss_now":205.2},{"dataset":"M_fac3","step":"step2","v04":21.309,"v05":2.94,"now":1.353,"rss04":372.3,"rss_now":200.7},{"dataset":"M_eqtl","step":"step2","v04":1.876,"v05":0.981,"now":0.716,"rss04":326.2,"rss_now":183.6},{"dataset":"M_cov","step":"step2","v04":27.559,"v05":3.748,"now":1.83,"rss04":338.4,"rss_now":204.1},{"dataset":"M_miss","step":"step2","v04":12.421,"v05":2.732,"now":2.161,"rss04":344.8,"rss_now":194.4},{"dataset":"M_dense","step":"step2","v04":46.086,"v05":6.496,"now":3.994,"rss04":516.8,"rss_now":293.3},{"dataset":"M_unbal","step":"step2","v04":11.518,"v05":1.665,"now":0.997,"rss04":346.1,"rss_now":191.0},{"dataset":"S_rare","step":"step2","v04":3.275,"v05":0.594,"now":0.441,"rss04":321.8,"rss_now":180.8},{"dataset":"HS","step":"step2","v04":6.285,"v05":2.019,"now":1.463,"rss04":326.5,"rss_now":200.2},{"dataset":"LA","step":"step2","v04":9.762,"v05":1.883,"now":1.367,"rss04":367.2,"rss_now":212.8},{"dataset":"S","step":"step1","v04":1.774,"v05":1.129,"now":1.245,"rss04":380.1,"rss_now":331.1},{"dataset":"M","step":"step1","v04":8.017,"v05":4.121,"now":4.3,"rss04":692.2,"rss_now":455.2}],"cores":[{"dataset":"M","cores":1,"wall":1.74,"tree_rss":210.0},{"dataset":"XL_grm","cores":1,"wall":10.11,"tree_rss":460.0},{"dataset":"M_dense","cores":1,"wall":3.994,"tree_rss":294.0},{"dataset":"R_real","cores":1,"wall":35.067,"tree_rss":370.0},{"dataset":"M","cores":2,"wall":0.991,"tree_rss":427.0},{"dataset":"M","cores":4,"wall":0.601,"tree_rss":675.0},{"dataset":"M","cores":8,"wall":0.439,"tree_rss":1138.0},{"dataset":"M_dense","cores":2,"wall":2.336,"tree_rss":552.0},{"dataset":"M_dense","cores":4,"wall":1.417,"tree_rss":892.0},{"dataset":"M_dense","cores":8,"wall":0.92,"tree_rss":1215.0},{"dataset":"XL_grm","cores":2,"wall":6.941,"tree_rss":940.0},{"dataset":"XL_grm","cores":4,"wall":5.183,"tree_rss":1596.0},{"dataset":"XL_grm","cores":8,"wall":4.303,"tree_rss":2564.0},{"dataset":"R_real","cores":2,"wall":20.741,"tree_rss":800.0},{"dataset":"R_real","cores":4,"wall":13.17,"tree_rss":1355.0},{"dataset":"R_real","cores":8,"wall":9.112,"tree_rss":2378.0}],"r12_scaling":[{"dataset":"S","step":"step2","cores":1.0,"wall_base12":0.66,"wall_c4":0.48,"speedup":1.375,"speedup_min":1.366,"speedup_max":1.379,"rss_base12":194.2,"rss_c4":180.0,"tree_rss_base12":194.0,"tree_rss_c4":179.0},{"dataset":"M","step":"step2","cores":1.0,"wall_base12":2.917,"wall_c4":1.74,"speedup":1.676,"speedup_min":1.643,"speedup_max":1.679,"rss_base12":224.9,"rss_c4":210.5,"tree_rss_base12":225.0,"tree_rss_c4":210.0},{"dataset":"L","step":"step2","cores":1.0,"wall_base12":7.811,"wall_c4":3.147,"speedup":2.482,"speedup_min":2.482,"speedup_max":2.507,"rss_base12":431.2,"rss_c4":288.8,"tree_rss_base12":431.0,"tree_rss_c4":288.0},{"dataset":"XL","step":"step2","cores":1.0,"wall_base12":11.073,"wall_c4":2.229,"speedup":4.968,"speedup_min":4.893,"speedup_max":4.968,"rss_base12":760.9,"rss_c4":308.7,"tree_rss_base12":753.0,"tree_rss_c4":308.0},{"dataset":"XXL","step":"step2","cores":1.0,"wall_base12":30.564,"wall_c4":1.202,"speedup":25.428,"speedup_min":24.805,"speedup_max":25.428,"rss_base12":1481.3,"rss_c4":327.8,"tree_rss_base12":1481.0,"tree_rss_c4":328.0},{"dataset":"M_grm","step":"step2","cores":1.0,"wall_base12":2.943,"wall_c4":2.102,"speedup":1.4,"speedup_min":1.378,"speedup_max":1.402,"rss_base12":217.1,"rss_c4":204.2,"tree_rss_base12":218.0,"tree_rss_c4":204.0},{"dataset":"L_grm","step":"step2","cores":1.0,"wall_base12":10.619,"wall_c4":7.818,"speedup":1.358,"speedup_min":1.358,"speedup_max":1.387,"rss_base12":378.7,"rss_c4":308.5,"tree_rss_base12":379.0,"tree_rss_c4":308.0},{"dataset":"XL_grm","step":"step2","cores":1.0,"wall_base12":12.177,"wall_c4":10.11,"speedup":1.204,"speedup_min":1.193,"speedup_max":1.211,"rss_base12":656.0,"rss_c4":459.8,"tree_rss_base12":656.0,"tree_rss_c4":460.0},{"dataset":"M_learn","step":"step2","cores":1.0,"wall_base12":1.477,"wall_c4":1.237,"speedup":1.194,"speedup_min":1.194,"speedup_max":1.201,"rss_base12":207.9,"rss_c4":196.0,"tree_rss_base12":208.0,"tree_rss_c4":196.0},{"dataset":"M_lc","step":"step2","cores":1.0,"wall_base12":1.566,"wall_c4":1.279,"speedup":1.224,"speedup_min":1.208,"speedup_max":1.227,"rss_base12":207.5,"rss_c4":196.0,"tree_rss_base12":207.0,"tree_rss_c4":196.0},{"dataset":"M_num","step":"step2","cores":1.0,"wall_base12":2.976,"wall_c4":2.138,"speedup":1.392,"speedup_min":1.382,"speedup_max":1.395,"rss_base12":216.9,"rss_c4":205.2,"tree_rss_base12":217.0,"tree_rss_c4":205.0},{"dataset":"M_fac3","step":"step2","cores":1.0,"wall_base12":2.962,"wall_c4":1.353,"speedup":2.189,"speedup_min":2.111,"speedup_max":2.216,"rss_base12":244.8,"rss_c4":200.7,"tree_rss_base12":244.0,"tree_rss_c4":200.0},{"dataset":"M_eqtl","step":"step2","cores":1.0,"wall_base12":0.981,"wall_c4":0.716,"speedup":1.37,"speedup_min":1.37,"speedup_max":1.376,"rss_base12":193.9,"rss_c4":183.6,"tree_rss_base12":193.0,"tree_rss_c4":184.0},{"dataset":"M_cov","step":"step2","cores":1.0,"wall_base12":3.753,"wall_c4":1.83,"speedup":2.051,"speedup_min":2.051,"speedup_max":2.088,"rss_base12":218.0,"rss_c4":204.1,"tree_rss_base12":217.0,"tree_rss_c4":204.0},{"dataset":"M_cov30","step":"step2","cores":1.0,"wall_base12":9.512,"wall_c4":4.153,"speedup":2.29,"speedup_min":2.288,"speedup_max":2.302,"rss_base12":234.6,"rss_c4":224.1,"tree_rss_base12":234.0,"tree_rss_c4":224.0},{"dataset":"M_miss","step":"step2","cores":1.0,"wall_base12":2.73,"wall_c4":2.161,"speedup":1.263,"speedup_min":1.26,"speedup_max":1.274,"rss_base12":205.7,"rss_c4":194.4,"tree_rss_base12":205.0,"tree_rss_c4":194.0},{"dataset":"M_dense","step":"step2","cores":1.0,"wall_base12":6.567,"wall_c4":3.994,"speedup":1.644,"speedup_min":1.627,"speedup_max":1.656,"rss_base12":401.9,"rss_c4":293.3,"tree_rss_base12":400.0,"tree_rss_c4":294.0},{"dataset":"M_unbal","step":"step2","cores":1.0,"wall_base12":1.674,"wall_c4":0.997,"speedup":1.679,"speedup_min":1.674,"speedup_max":1.699,"rss_base12":211.0,"rss_c4":191.0,"tree_rss_base12":211.0,"tree_rss_c4":191.0},{"dataset":"S_rare","step":"step2","cores":1.0,"wall_base12":0.602,"wall_c4":0.441,"speedup":1.365,"speedup_min":1.332,"speedup_max":1.402,"rss_base12":194.1,"rss_c4":180.8,"tree_rss_base12":194.0,"tree_rss_c4":181.0},{"dataset":"HS","step":"step2","cores":1.0,"wall_base12":2.023,"wall_c4":1.463,"speedup":1.383,"speedup_min":1.383,"speedup_max":1.385,"rss_base12":210.7,"rss_c4":200.2,"tree_rss_base12":210.0,"tree_rss_c4":201.0},{"dataset":"LA","step":"step2","cores":1.0,"wall_base12":1.898,"wall_c4":1.367,"speedup":1.388,"speedup_min":1.388,"speedup_max":1.393,"rss_base12":226.8,"rss_c4":212.8,"tree_rss_base12":226.0,"tree_rss_c4":212.0},{"dataset":"P_many","step":"step2","cores":1.0,"wall_base12":6.866,"wall_c4":4.835,"speedup":1.42,"speedup_min":1.413,"speedup_max":1.439,"rss_base12":247.6,"rss_c4":240.8,"tree_rss_base12":248.0,"tree_rss_c4":241.0},{"dataset":"P_many10","step":"step2","cores":1.0,"wall_base12":2.124,"wall_c4":1.364,"speedup":1.557,"speedup_min":1.54,"speedup_max":1.582,"rss_base12":224.0,"rss_c4":223.9,"tree_rss_base12":223.0,"tree_rss_c4":224.0},{"dataset":"R_real","step":"step2","cores":1.0,"wall_base12":55.965,"wall_c4":35.067,"speedup":1.596,"speedup_min":1.583,"speedup_max":1.596,"rss_base12":435.2,"rss_c4":369.4,"tree_rss_base12":431.0,"tree_rss_c4":370.0},{"dataset":"XL_grm_many","step":"step2","cores":1.0,"wall_base12":13.095,"wall_c4":11.699,"speedup":1.119,"speedup_min":1.114,"speedup_max":1.121,"rss_base12":639.7,"rss_c4":493.4,"tree_rss_base12":638.0,"tree_rss_c4":492.0}]};
+const A = {"grid":[25,30,35,40,45,50,55,60,65,70,75,80,85,90],"mu_true":[-0.51606,-0.15722,0.15171,0.40513,0.59818,0.72688,0.78836,0.78091,0.70408,0.55869,0.3468,0.07162,-0.2626,-0.65076],"n_ind":300,"n_samples":600,"reps":400,"n_snp":4,"sec_linear":0.663,"sec_spline":0.694,"calib":{"lam_linear":1.10057,"lam_spline":0.98709,"fp_linear":0.07438,"fp_spline":0.05062},"shapes":{"constant":{"truth":[0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35,0.35],"power_linear":0.0825,"power_spline":0.065,"power5_linear":0,"power5_spline":0,"null_linear":0.07167,"null_spline":0.04583,"lambda_linear":1.11771,"lambda_spline":1.01982,"curve_linear":{"median":[0.34548,0.35234,0.35172,0.35151,0.35586,0.35854,0.36263,0.36425,0.36679,0.36389,0.37174,0.37306,0.37033,0.37173],"ex":[0.25449,0.26866,0.28283,0.29701,0.31118,0.32535,0.33953,0.3537,0.36787,0.38204,0.39622,0.41039,0.42456,0.43874],"ex_se":[0.14002,0.1243,0.10968,0.09665,0.08596,0.07854,0.07539,0.07702,0.08315,0.0929,0.10527,0.11944,0.13485,0.15111],"rmse":0.11899},"curve_spline":{"median":[0.34372,0.34757,0.35683,0.35581,0.3609,0.36469,0.3645,0.36278,0.35688,0.36195,0.36693,0.34896,0.35288,0.34932],"ex":[0.47395,0.35786,0.26574,0.20966,0.20125,0.23772,0.29901,0.36406,0.41182,0.42423,0.40159,0.35109,0.27991,0.19526],"ex_se":[0.17921,0.12258,0.11002,0.12247,0.12522,0.11168,0.0984,0.10026,0.10996,0.11054,0.10516,0.11565,0.1581,0.22515],"rmse":0.13915},"mu_spline":[0.27433,0.54562,0.80199,1.03593,1.23981,1.40301,1.51129,1.55019,1.50525,1.36544,1.14044,0.84771,0.50474,0.12902],"mu_spline_se":[0.06104,0.11797,0.16473,0.19655,0.2095,0.20622,0.19555,0.18438,0.17573,0.17009,0.16949,0.17944,0.20426,0.24316],"mu_linear":[-0.17292,-0.1441,-0.11528,-0.08646,-0.05764,-0.02882,0,0.02882,0.05764,0.08646,0.11528,0.1441,0.17292,0.20174]},"linear":{"truth":[-0.025,0.0375,0.1,0.1625,0.225,0.2875,0.35,0.4125,0.475,0.5375,0.6,0.6625,0.725,0.7875],"power_linear":0.8575,"power_spline":0.865,"power5_linear":0.17,"power5_spline":0.17,"null_linear":0.06583,"null_spline":0.05667,"lambda_linear":1.22675,"lambda_spline":1.04687,"curve_linear":{"median":[-0.02134,0.04018,0.10646,0.16713,0.2268,0.29117,0.34794,0.4139,0.47699,0.54111,0.60362,0.66803,0.7349,0.79564],"ex":[0.07476,0.11481,0.15485,0.1949,0.23495,0.275,0.31505,0.35509,0.39514,0.43519,0.47524,0.51529,0.55533,0.59538],"ex_se":[0.16102,0.14302,0.12627,0.11133,0.09902,0.09042,0.08665,0.08832,0.09515,0.10616,0.12019,0.13631,0.15388,0.17244],"rmse":0.12533},"curve_spline":{"median":[-0.03182,0.03109,0.10107,0.1616,0.22331,0.27812,0.3432,0.41243,0.47384,0.53643,0.59555,0.65965,0.73109,0.79857],"ex":[-0.15621,0.01903,0.1711,0.28832,0.35943,0.38597,0.38483,0.37381,0.37071,0.39089,0.43499,0.49811,0.57534,0.66177],"ex_se":[0.2101,0.14619,0.12884,0.13923,0.14057,0.12567,0.1135,0.1191,0.13166,0.13199,0.12422,0.13379,0.18099,0.25786],"rmse":0.13937},"mu_spline":[0.32817,0.64865,0.94312,1.19846,1.40173,1.54544,1.62867,1.65083,1.61138,1.51096,1.35765,1.1623,0.93575,0.68886],"mu_spline_se":[0.06185,0.11956,0.16706,0.19953,0.2131,0.21046,0.2005,0.19004,0.18192,0.1765,0.1758,0.18542,0.2099,0.24871],"mu_linear":[-0.30267,-0.25223,-0.20178,-0.15134,-0.10089,-0.05045,0,0.05045,0.10089,0.15134,0.20178,0.25223,0.30267,0.35312]},"late":{"truth":[0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.225,0.36213,0.53971,0.75,0.98853,1.25227],"power_linear":0.8775,"power_spline":0.9775,"power5_linear":0.1875,"power5_spline":0.5325,"null_linear":0.09083,"null_spline":0.07583,"lambda_linear":1.3674,"lambda_spline":1.21587,"curve_linear":{"median":[-0.03954,0.02289,0.08209,0.14295,0.20301,0.26437,0.32283,0.38413,0.44344,0.50355,0.56571,0.62938,0.69135,0.74686],"ex":[-0.05766,0.01761,0.09288,0.16814,0.24341,0.31867,0.39394,0.4692,0.54447,0.61973,0.695,0.77027,0.84553,0.9208],"ex_se":[0.13681,0.12133,0.10706,0.09455,0.08459,0.07817,0.07617,0.07893,0.08601,0.09644,0.10928,0.12378,0.13943,0.15587],"rmse":0.23113},"curve_spline":{"median":[0.15298,0.15888,0.17016,0.16701,0.15274,0.13459,0.1348,0.16094,0.22363,0.3535,0.52668,0.74572,1.00038,1.29022],"ex":[0.15913,0.18773,0.20713,0.2127,0.20014,0.17643,0.16202,0.17812,0.24597,0.38312,0.58474,0.83763,1.12855,1.44425],"ex_se":[0.17072,0.11989,0.10976,0.12092,0.12255,0.11013,0.10052,0.10586,0.11637,0.11619,0.11052,0.12298,0.16929,0.24086],"rmse":0.13231},"mu_spline":[0.36523,0.71764,1.03248,1.29081,1.4741,1.57689,1.60936,1.58258,1.50766,1.39515,1.25244,1.08574,0.90123,0.70512],"mu_spline_se":[0.06098,0.11789,0.16472,0.19675,0.21012,0.20753,0.19772,0.18741,0.17941,0.17406,0.17337,0.18285,0.20699,0.24525],"mu_linear":[-0.22158,-0.18465,-0.14772,-0.11079,-0.07386,-0.03693,0,0.03693,0.07386,0.11079,0.14772,0.18465,0.22158,0.25851]},"midlife":{"truth":[0.05116,0.05782,0.08731,0.17577,0.34961,0.55437,0.65,0.55437,0.34961,0.17577,0.08731,0.05782,0.05116,0.05012],"power_linear":0.095,"power_spline":0.54,"power5_linear":0,"power5_spline":0.035,"null_linear":0.06667,"null_spline":0.05,"lambda_linear":1.21753,"lambda_spline":0.9524,"curve_linear":{"median":[0.23129,0.2307,0.23499,0.23843,0.24208,0.24733,0.25134,0.24937,0.24392,0.23835,0.24033,0.2365,0.24017,0.24484],"ex":[0.27349,0.26643,0.25937,0.2523,0.24524,0.23818,0.23112,0.22406,0.217,0.20994,0.20288,0.19581,0.18875,0.18169],"ex_se":[0.15537,0.13794,0.12181,0.10754,0.09598,0.08821,0.08526,0.08763,0.09491,0.1061,0.12011,0.13608,0.15338,0.17163],"rmse":0.25251},"curve_spline":{"median":[-0.03567,0.10363,0.21803,0.31458,0.38405,0.43001,0.43398,0.40927,0.37503,0.30631,0.21863,0.12527,0.0252,-0.09948],"ex":[-0.0876,0.11381,0.28272,0.40276,0.45806,0.44947,0.3978,0.32503,0.25314,0.2013,0.17146,0.15911,0.15974,0.16883],"ex_se":[0.18455,0.12829,0.11773,0.13137,0.13422,0.12012,0.1061,0.10742,0.11716,0.11825,0.11401,0.12615,0.17037,0.23979],"rmse":0.18476},"mu_spline":[0.3755,0.74483,1.08967,1.39768,1.65654,1.85431,1.97954,2.0208,1.96665,1.80891,1.55907,1.23601,0.85865,0.44587],"mu_spline_se":[0.0616,0.11905,0.16626,0.1984,0.21152,0.20829,0.19763,0.18646,0.17781,0.17216,0.17154,0.18152,0.20648,0.24567],"mu_linear":[-0.28544,-0.23786,-0.19029,-0.14272,-0.09515,-0.04757,0,0.04757,0.09515,0.14272,0.19029,0.23786,0.28544,0.33301]}},"qq":{"m":1600,"linear":[[0,0.0001],[7,0.0015],[13,0.0029],[20,0.005],[27,0.0093],[33,0.011],[40,0.0139],[47,0.0162],[54,0.0186],[60,0.0205],[67,0.0219],[74,0.0237],[80,0.0256],[87,0.0277],[94,0.0297],[100,0.0313],[107,0.0347],[114,0.0362],[120,0.0374],[127,0.0389],[134,0.0418],[140,0.0443],[147,0.0473],[154,0.0503],[161,0.0545],[167,0.0581],[174,0.0598],[181,0.0635],[187,0.0648],[194,0.068],[201,0.0707],[207,0.0722],[214,0.0735],[221,0.0764],[227,0.0774],[234,0.0806],[241,0.0831],[248,0.0862],[254,0.0881],[261,0.0902],[268,0.0917],[274,0.0929],[281,0.0947],[288,0.0966],[294,0.0982],[301,0.1016],[308,0.1044],[314,0.1087],[321,0.1099],[328,0.1119],[335,0.1148],[341,0.1178],[348,0.121],[355,0.1223],[361,0.1231],[368,0.126],[375,0.1301],[381,0.1327],[388,0.1363],[395,0.1403],[401,0.1441],[408,0.1457],[415,0.1484],[421,0.1498],[428,0.1513],[435,0.1536],[442,0.1547],[448,0.1569],[455,0.1583],[462,0.1615],[468,0.164],[475,0.1653],[482,0.1696],[488,0.1706],[495,0.174],[502,0.1767],[508,0.1776],[515,0.1798],[522,0.1842],[529,0.1877],[535,0.1909],[542,0.1962],[549,0.1988],[555,0.2007],[562,0.2048],[569,0.2066],[575,0.2097],[582,0.2148],[589,0.218],[595,0.2196],[602,0.2227],[609,0.2281],[616,0.2306],[622,0.2336],[629,0.2346],[636,0.236],[642,0.238],[649,0.2402],[656,0.2448],[662,0.2463],[669,0.2483],[676,0.2501],[682,0.2525],[689,0.2572],[696,0.2588],[702,0.2607],[709,0.2632],[716,0.2702],[723,0.2733],[729,0.2776],[736,0.2819],[743,0.287],[749,0.2901],[756,0.2928],[763,0.2966],[769,0.2998],[776,0.3053],[783,0.31],[789,0.3136],[796,0.3175],[803,0.3224],[810,0.3297],[816,0.3341],[823,0.3377],[830,0.3398],[836,0.3452],[843,0.3526],[850,0.3544],[856,0.3607],[863,0.3643],[870,0.3692],[876,0.3757],[883,0.3806],[890,0.3823],[897,0.3865],[903,0.3917],[910,0.395],[917,0.4034],[923,0.4086],[930,0.4158],[937,0.4207],[943,0.4251],[950,0.4279],[957,0.4314],[963,0.4361],[970,0.4434],[977,0.4475],[983,0.4536],[990,0.4601],[997,0.4655],[1004,0.4712],[1010,0.476],[1017,0.4842],[1024,0.4869],[1030,0.4891],[1037,0.4953],[1044,0.5057],[1050,0.5115],[1057,0.52],[1064,0.5303],[1070,0.5378],[1077,0.5442],[1084,0.5486],[1091,0.5598],[1097,0.5643],[1104,0.5718],[1111,0.5832],[1117,0.5872],[1124,0.5956],[1131,0.5996],[1137,0.6026],[1144,0.612],[1151,0.6179],[1157,0.6276],[1164,0.6334],[1171,0.6394],[1178,0.6436],[1184,0.651],[1191,0.6606],[1198,0.6675],[1204,0.682],[1211,0.693],[1218,0.6995],[1224,0.7093],[1231,0.7172],[1238,0.7239],[1244,0.7363],[1251,0.7439],[1258,0.7549],[1264,0.7596],[1271,0.7715],[1278,0.7844],[1285,0.7946],[1291,0.8011],[1298,0.8196],[1305,0.8291],[1311,0.8348],[1318,0.8445],[1325,0.8509],[1331,0.8589],[1338,0.8669],[1345,0.8792],[1351,0.8925],[1358,0.9023],[1365,0.9296],[1372,0.9426],[1378,0.9568],[1385,0.9656],[1392,0.9812],[1398,1.0061],[1405,1.0316],[1412,1.0542],[1418,1.0799],[1425,1.1013],[1432,1.1138],[1438,1.1282],[1445,1.1393],[1452,1.1652],[1459,1.1898],[1465,1.2112],[1472,1.2703],[1479,1.2912],[1485,1.3184],[1492,1.3408],[1499,1.364],[1505,1.4008],[1512,1.4475],[1519,1.487],[1525,1.5156],[1532,1.562],[1539,1.6131],[1545,1.6855],[1552,1.7736],[1559,1.8488],[1560,1.8673],[1561,1.8951],[1562,1.8974],[1563,1.9088],[1564,1.9117],[1565,1.9582],[1566,1.9584],[1567,1.999],[1568,2.003],[1569,2.0596],[1570,2.0749],[1571,2.077],[1572,2.078],[1573,2.0807],[1574,2.1162],[1575,2.1276],[1576,2.1557],[1577,2.1671],[1578,2.1772],[1579,2.188],[1580,2.1945],[1581,2.3416],[1582,2.3591],[1583,2.3716],[1584,2.4227],[1585,2.4334],[1586,2.485],[1587,2.5158],[1588,2.5864],[1589,2.5918],[1590,2.609],[1591,2.733],[1592,2.7461],[1593,2.8231],[1594,2.9755],[1595,3.061],[1596,3.2258],[1597,3.5501],[1598,3.7059],[1599,4.219]],"spline":[[0,0.0008],[7,0.0023],[13,0.0037],[20,0.0058],[27,0.0075],[33,0.0086],[40,0.0097],[47,0.0124],[54,0.0137],[60,0.0145],[67,0.0155],[74,0.0169],[80,0.0205],[87,0.0231],[94,0.0252],[100,0.0265],[107,0.0278],[114,0.0296],[120,0.0323],[127,0.036],[134,0.0377],[140,0.0389],[147,0.0414],[154,0.0431],[161,0.044],[167,0.0452],[174,0.0468],[181,0.0494],[187,0.0513],[194,0.0535],[201,0.0548],[207,0.0563],[214,0.0585],[221,0.0593],[227,0.0615],[234,0.0641],[241,0.0664],[248,0.0683],[254,0.0723],[261,0.0758],[268,0.077],[274,0.0787],[281,0.0802],[288,0.0826],[294,0.0863],[301,0.0891],[308,0.0914],[314,0.0934],[321,0.0958],[328,0.0984],[335,0.0998],[341,0.102],[348,0.1034],[355,0.1074],[361,0.1088],[368,0.1113],[375,0.1135],[381,0.1153],[388,0.118],[395,0.1216],[401,0.125],[408,0.128],[415,0.1301],[421,0.1329],[428,0.1366],[435,0.1384],[442,0.1398],[448,0.143],[455,0.1439],[462,0.1477],[468,0.1521],[475,0.1544],[482,0.1568],[488,0.1596],[495,0.1629],[502,0.165],[508,0.1667],[515,0.1697],[522,0.1742],[529,0.1771],[535,0.1782],[542,0.1799],[549,0.1826],[555,0.1847],[562,0.1892],[569,0.192],[575,0.1938],[582,0.1984],[589,0.2013],[595,0.2039],[602,0.2062],[609,0.2081],[616,0.2125],[622,0.2163],[629,0.2184],[636,0.2203],[642,0.2266],[649,0.2298],[656,0.2331],[662,0.2353],[669,0.2367],[676,0.2418],[682,0.2456],[689,0.2485],[696,0.2503],[702,0.2533],[709,0.2558],[716,0.2608],[723,0.2632],[729,0.2651],[736,0.2679],[743,0.2705],[749,0.2769],[756,0.2784],[763,0.2814],[769,0.2828],[776,0.2852],[783,0.2898],[789,0.2927],[796,0.2966],[803,0.3007],[810,0.3044],[816,0.3057],[823,0.3102],[830,0.3122],[836,0.3166],[843,0.3201],[850,0.3242],[856,0.328],[863,0.3314],[870,0.3341],[876,0.3385],[883,0.341],[890,0.3454],[897,0.3483],[903,0.3511],[910,0.3553],[917,0.359],[923,0.3612],[930,0.3672],[937,0.3703],[943,0.3738],[950,0.3817],[957,0.3867],[963,0.39],[970,0.3946],[977,0.4006],[983,0.4032],[990,0.4099],[997,0.4174],[1004,0.4205],[1010,0.424],[1017,0.4299],[1024,0.4369],[1030,0.4394],[1037,0.4439],[1044,0.4474],[1050,0.4503],[1057,0.4547],[1064,0.4582],[1070,0.4629],[1077,0.4668],[1084,0.4734],[1091,0.4782],[1097,0.4884],[1104,0.4982],[1111,0.5017],[1117,0.5064],[1124,0.5117],[1131,0.5192],[1137,0.5291],[1144,0.5336],[1151,0.5425],[1157,0.5436],[1164,0.5511],[1171,0.5635],[1178,0.5661],[1184,0.5713],[1191,0.5789],[1198,0.5826],[1204,0.5862],[1211,0.5939],[1218,0.6059],[1224,0.6107],[1231,0.615],[1238,0.6252],[1244,0.6336],[1251,0.6417],[1258,0.6468],[1264,0.6602],[1271,0.6676],[1278,0.6771],[1285,0.6849],[1291,0.6966],[1298,0.7078],[1305,0.7247],[1311,0.7386],[1318,0.7573],[1325,0.7644],[1331,0.782],[1338,0.7901],[1345,0.8082],[1351,0.8121],[1358,0.8216],[1365,0.8383],[1372,0.8506],[1378,0.8618],[1385,0.8803],[1392,0.8936],[1398,0.9136],[1405,0.9261],[1412,0.9441],[1418,0.9626],[1425,0.9723],[1432,0.985],[1438,1.0014],[1445,1.0268],[1452,1.0503],[1459,1.0852],[1465,1.1079],[1472,1.1339],[1479,1.1441],[1485,1.1618],[1492,1.1753],[1499,1.2018],[1505,1.2327],[1512,1.2471],[1519,1.3036],[1525,1.3549],[1532,1.3851],[1539,1.4151],[1545,1.4778],[1552,1.5356],[1559,1.5875],[1560,1.5993],[1561,1.6037],[1562,1.6219],[1563,1.6608],[1564,1.6678],[1565,1.6882],[1566,1.6884],[1567,1.6991],[1568,1.7018],[1569,1.7151],[1570,1.7432],[1571,1.7561],[1572,1.796],[1573,1.8074],[1574,1.8221],[1575,1.858],[1576,1.8753],[1577,1.878],[1578,1.8851],[1579,1.8938],[1580,1.9],[1581,1.902],[1582,1.9235],[1583,1.9334],[1584,1.9766],[1585,2.0577],[1586,2.1043],[1587,2.1103],[1588,2.1166],[1589,2.154],[1590,2.185],[1591,2.2494],[1592,2.271],[1593,2.3231],[1594,2.3742],[1595,2.4546],[1596,2.7008],[1597,2.7906],[1598,3.1998],[1599,3.8599]]}};
+const tqBest = r => Math.min(r.tensorqtl_cpu1, r.tensorqtl_cpu8);
+const secs = v => v < 10 ? v.toFixed(2) + " s" : v.toFixed(1) + " s";
+
+// headline
+const dflt = P.speed.filter(r => !/GRM/.test(r.desc)), grm = P.speed.filter(r => /GRM kernel/.test(r.desc));
+const f8 = dflt.map(r => Math.min(r.tensorqtl_gpu, tqBest(r)) / r.suez_8cores);
+const suezCal = P.calib.filter(r => r.key.startsWith("suez")).flatMap(r => [r.lambda_p_geno, r.lambda_p_interact]).filter(v => typeof v === "number");
+const tqCal = P.calib.filter(r => r.key === "tq_sample5").map(r => r.lambda_p_geno);
+const hist = P.history.filter(r => r.step === "step2").map(r => r.v04 / r.now);
+const stat = (lab, val, note) => `<div class="stat"><span class="lab">${lab}</span><span class="val">${val}</span><span class="note">${note}</span></div>`;
+document.getElementById("stats").innerHTML =
+  stat("Faster than the fastest tensorQTL run", `${Math.min(...f8).toFixed(1)}–${Math.max(...f8).toFixed(1)}×`, "suez on 8 cores, default kernel, 200 to 4,000 samples") +
+  stat("Time relative to tensorQTL, dense GRM", `${(Math.min(...grm.map(r => r.ratio8))).toFixed(1)}–${(Math.max(...grm.map(r => r.ratio8))).toFixed(1)}×`, "Slower from 1,000 samples: a dense kernel costs O(N²) per SNP") +
+  stat("Null λ", `${Math.min(...suezCal).toFixed(2)}–${Math.max(...suezCal).toFixed(2)}`, `suez, all tests. tensorQTL on all samples: eQTL λ up to ${Math.max(...tqCal).toFixed(2)}`) +
+  stat("Since suez 0.4", `${Math.round(Math.min(...hist))}–${Math.round(Math.max(...hist))}×`, "Step 2 speed-up on one core");
+
+// speed dot plot, log seconds
+(function () {
+  const rows = P.speed, W = 720, rowH = 30, m = {l: 230, r: 16, t: 26, b: 34}, H = m.t + m.b + rowH * rows.length;
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Wall time per dataset, suez and tensorQTL"}, document.getElementById("speed-chart"));
+  const X = scale(0.2, 100, m.l, W - m.r, true);
+  const ticks = [0.2, 0.5, 1, 2, 5, 10, 20, 50, 100];
+  axes(svg, W, H, m, X, () => 0, ticks, [], {xgrid: true, fmtx: t => t + "s", xlab: "wall time, log scale"});
+  rows.forEach((r, i) => {
+    const y = m.t + rowH * (i + 0.5);
+    el("text", {x: m.l - 10, y: y + 4, "text-anchor": "end", class: "lab"}, svg).textContent = r.desc;
+    const pts = [["--suez", "suez 8 cores", r.suez_8cores], ["--tq", "tensorQTL CPU", tqBest(r)], ["--tq2", "tensorQTL GPU", r.tensorqtl_gpu]];
+    const xs = pts.map(p => X(p[2]));
+    el("line", {x1: Math.min(...xs), x2: Math.max(...xs), y1: y, y2: y, stroke: "var(--rule)", "stroke-width": 2}, svg);
+    pts.slice().reverse().forEach(([v, , t]) => el("circle", {cx: X(t), cy: y, r: 5.5, fill: `var(${v})`, stroke: "var(--surface)", "stroke-width": 2}, svg));
+    const hit = el("rect", {x: 0, y: y - rowH / 2, width: W, height: rowH, fill: "transparent"}, svg);
+    hover(hit, `<div class="t">${r.desc}</div>${r.N.toLocaleString()} samples, ${r.tests.toLocaleString()} tests<br>` +
+      pts.map(([v, n, t]) => `${sw(v)}${n}: ${secs(t)}`).join("<br>") + `<br>suez 1 core: ${secs(r.suez_1core)}`);
+  });
+})();
+document.getElementById("speed-note").textContent = `Hardware: ${P.env.cpu}, ${P.env.cores} cores, ${P.env.gpu.split(",")[0]}; ${P.env.os}. ${P.env.tq}.`;
+(function () {
+  let h = `<thead><tr><th>Dataset</th><th>Samples</th><th>Tests</th><th>suez 1 core</th><th>suez 8 cores</th><th>+ bootstrap, 1 core</th><th>tensorQTL CPU</th><th>tensorQTL GPU</th><th>suez 8 cores vs fastest</th></tr></thead><tbody>`;
+  for (const r of P.speed) {
+    const best = Math.min(tqBest(r), r.tensorqtl_gpu), ratio = r.suez_8cores / best;
+    h += `<tr><td>${r.desc}</td><td>${r.N.toLocaleString()}</td><td>${r.tests.toLocaleString()}</td><td>${secs(r.suez_1core)}</td><td>${secs(r.suez_8cores)}</td>` +
+      `<td>${typeof r.boot === "number" ? secs(r.boot) : "–"}</td><td>${secs(tqBest(r))}</td><td>${secs(r.tensorqtl_gpu)}</td>` +
+      `<td class="${ratio < 1 ? "win" : "bad"}">${ratio < 1 ? (1 / ratio).toFixed(1) + "× faster" : ratio.toFixed(1) + "× slower"}</td></tr>`;
+  }
+  document.getElementById("speed-table").innerHTML = h + "</tbody>";
+})();
+
+// calibration strips
+const METHODS = [["suez_learned", "suez, step-1 kernel"], ["suez_dataset", "suez, same-individual kernel"],
+  ["tq_sample5", "tensorQTL, all samples, 5 PCs"], ["tq_sample0", "tensorQTL, all samples, no PCs"], ["tq_indiv5", "tensorQTL, per individual, 5 PCs"]];
+function strip(id, col) {
+  const W = 420, rowH = 40, m = {l: 150, r: 14, t: 16, b: 34}, H = m.t + m.b + rowH * METHODS.length;
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Genomic inflation by method"}, document.getElementById(id));
+  const X = scale(0.2, 1.6, m.l, W - m.r, false);
+  axes(svg, W, H, m, X, () => 0, [0.2, 0.6, 1, 1.4], [], {xgrid: true, xlab: "λ"});
+  el("line", {x1: X(1), x2: X(1), y1: m.t, y2: H - m.b, stroke: "var(--fg-2)", "stroke-dasharray": "3 3"}, svg);
+  METHODS.forEach(([key, name], i) => {
+    const y = m.t + rowH * (i + 0.5), suez = key.startsWith("suez");
+    const words = name.split(", ");
+    el("text", {x: m.l - 10, y: y - 2, "text-anchor": "end", class: "lab"}, svg).textContent = words[0];
+    el("text", {x: m.l - 10, y: y + 11, "text-anchor": "end"}, svg).textContent = words.slice(1).join(", ");
+    P.calib.filter(r => r.key === key && typeof r[col] === "number").forEach(r => {
+      const c = el("circle", {cx: X(Math.max(0.2, Math.min(1.6, r[col]))), cy: y, r: 6, fill: suez ? "var(--suez)" : "var(--tq)", "fill-opacity": 0.75, stroke: "var(--surface)", "stroke-width": 1.5}, svg);
+      hover(c, `<div class="t">${name}</div>Dataset ${r.dataset}: λ ${r[col].toFixed(3)}<br>${pct(col === "lambda_p_geno" ? r.fpr05_p_geno : r.fpr05_p_interact)} of null tests at p &lt; 0.05`);
+    });
+  });
+}
+strip("cal-geno", "lambda_p_geno"); strip("cal-int", "lambda_p_interact");
+
+// power table
+(function () {
+  const ds = [...new Set(P.power.map(r => r.dataset))];
+  let h = `<thead><tr><th>Method</th>${ds.map(d => `<th>${d}<br>eQTL</th><th><br>response</th>`).join("")}</tr></thead><tbody>`;
+  for (const [key, name] of METHODS) {
+    const cells = ds.map(d => ["p_geno", "p_interact"].map(t => { const r = P.power.find(x => x.dataset === d && x.key === key && x.test === t);
+      return `<td>${r ? pct(r.power_calibrated) : "–"}</td>`; }).join("")).join("");
+    h += `<tr><td>${name}</td>${cells}</tr>`;
+  }
+  document.getElementById("power-table").innerHTML = h + "</tbody>";
+})();
+
+// engine history bars (log speed-up)
+(function () {
+  const rows = P.history.filter(r => r.step === "step2").sort((a, b) => b.v04 / b.now - a.v04 / a.now);
+  const W = 720, rowH = 24, m = {l: 90, r: 50, t: 20, b: 34}, H = m.t + m.b + rowH * rows.length;
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Speed-up since suez 0.4"}, document.getElementById("hist-chart"));
+  const X = scale(1, 100, m.l, W - m.r, true);
+  axes(svg, W, H, m, X, () => 0, [1, 2, 5, 10, 20, 50, 100], [], {xgrid: true, fmtx: t => t + "×", xlab: "speed-up, log scale"});
+  rows.forEach((r, i) => {
+    const s = r.v04 / r.now, y = m.t + rowH * i + 4, h = rowH - 8, w = X(s) - X(1);
+    el("text", {x: m.l - 10, y: y + h / 2 + 4, "text-anchor": "end", class: "lab"}, svg).textContent = r.dataset;
+    el("path", {d: `M${X(1)},${y}H${X(1) + w - 4}Q${X(1) + w},${y} ${X(1) + w},${y + 4}V${y + h - 4}Q${X(1) + w},${y + h} ${X(1) + w - 4},${y + h}H${X(1)}Z`, fill: "var(--suez)"}, svg);
+    el("text", {x: X(s) + 6, y: y + h / 2 + 4, class: "lab"}, svg).textContent = s.toFixed(1) + "×";
+    const hit = el("rect", {x: 0, y: y - 4, width: W, height: rowH, fill: "transparent"}, svg);
+    hover(hit, `<div class="t">${r.dataset}</div>suez 0.4: ${secs(r.v04)}<br>now: ${secs(r.now)}<br>peak RAM ${Math.round(r.rss04)} → ${Math.round(r.rss_now)} MB`);
+  });
+  const all = P.history;
+  let h = `<thead><tr><th>Workload</th><th>Step</th><th>suez 0.4</th><th>0.5</th><th>Now</th><th>Speed-up</th><th>Peak RAM 0.4</th><th>Now</th></tr></thead><tbody>`;
+  for (const r of all) h += `<tr><td>${r.dataset}</td><td>${r.step === "step1" ? "1" : "2"}</td><td>${secs(r.v04)}</td><td>${secs(r.v05)}</td><td>${secs(r.now)}</td><td class="win">${(r.v04 / r.now).toFixed(1)}×</td><td>${Math.round(r.rss04)} MB</td><td>${Math.round(r.rss_now)} MB</td></tr>`;
+  document.getElementById("hist-table").innerHTML = h + "</tbody>";
+})();
+
+// cores table
+(function () {
+  const ds = [...new Set(P.cores.map(r => r.dataset))], cs = [1, 2, 4, 8];
+  let h = `<thead><tr><th>Workload</th>${cs.map(c => `<th>${c} core${c > 1 ? "s" : ""}</th>`).join("")}<th>Speed-up at 8</th><th>Tree RAM at 8</th></tr></thead><tbody>`;
+  for (const d of ds) {
+    const w = c => (P.cores.find(r => r.dataset === d && r.cores === c) || {}).wall;
+    const r8 = P.cores.find(r => r.dataset === d && r.cores === 8);
+    h += `<tr><td>${d}</td>${cs.map(c => `<td>${w(c) ? secs(w(c)) : "–"}</td>`).join("")}<td>${(w(1) / w(8)).toFixed(1)}×</td><td>${Math.round(r8.tree_rss)} MB</td></tr>`;
+  }
+  document.getElementById("cores-table").innerHTML = h + "</tbody>";
+})();
+
+// age-varying highlights
+const S = A.shapes, st2 = (lab, a, b, note) => `<div class="stat"><span class="lab">${lab}</span><span class="val"><span class="from">${a}</span><span class="arrow">→</span>${b}</span><span class="note">${note}</span></div>`;
+document.getElementById("age-stats").innerHTML =
+  st2("Mid-life peak, p &lt; 0.05", pct(S.midlife.power_linear), pct(S.midlife.power_spline), "Linear vs spline") +
+  st2("Late onset, p &lt; 5×10⁻⁵", pct(S.late.power5_linear), pct(S.late.power5_spline), "Linear vs spline") +
+  st2("Linear effect, p &lt; 0.05", pct(S.linear.power_linear), pct(S.linear.power_spline), "No power lost") +
+  st2("Null λ", A.calib.lam_linear.toFixed(2), A.calib.lam_spline.toFixed(2), "Constant-effect genes");
+document.getElementById("foot").innerHTML = `tensorQTL benchmark: suez ${P.env.suez}, ${P.env.r.split(" (")[0]}, ${P.env.tq}, run ${P.env.date}. Scripts and raw tables: <code>bench/tensorqtl/</code>; full report: <a href="suez_vs_tensorqtl.html">suez vs tensorQTL</a>. Engine history: <code>bench/REPORT.md</code> and <code>bench/EXPERIMENT_LOG.md</code>.`;
+</script>
+</div>
+</body>
+</html>

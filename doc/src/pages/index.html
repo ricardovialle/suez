@@ -1,0 +1,83 @@
+<title>suez Documentation</title>
+<div class="wrap">
+  <header class="stack">
+    <div class="eyebrow">suez · response-eQTL mapping in R</div>
+    <h1>eQTLs and response eQTLs in one mixed model</h1>
+    <p class="lede prose">suez tests every cis-SNP for an effect on expression and for an effect that changes with a condition: a treatment, a time point, a dose or age. It fits all samples at once, with repeated samples of an individual, relatedness and hidden confounders in one random effect, so the tests stay calibrated where a plain regression is not.</p>
+    <div class="formula">y = X<sub>0</sub>b + <span class="hl">β·G</span> + <span class="hl">(G × C)·δ</span> + e, &nbsp; e ~ N(0, σ²<sub>k</sub>K + σ²I)</div>
+    <p class="small prose">X<sub>0</sub>: condition terms and covariates. G: the SNP's ALT allele count. C: condition columns (a factor's levels, a number, or a spline basis). K: the samples × samples covariance learned in step 1. The eQTL test compares the models with and without β; the response test compares them with and without δ.</p>
+  </header>
+
+  <section class="stats" aria-label="Highlights" id="stats"></section>
+
+  <section class="stack">
+    <div class="eyebrow">Two steps</div>
+    <h2 id="how">How a run works</h2>
+    <div class="cards">
+      <div class="card"><span class="eyebrow">Step 1 · learn_covariance()</span><h3>One sample covariance for all genes</h3>
+        <p>Fits latent factors (hidden confounders), a same-individual term and optional kinship from all expressed genes. Run time depends on the number of samples, not genes.</p></div>
+      <div class="card"><span class="eyebrow">Step 2 · map_interaction_qtl()</span><h3>Nested mixed models per SNP</h3>
+        <p>For each gene and cis-SNP: no-genotype, genotype, and genotype × condition models with exact maximum likelihood; likelihood-ratio tests <code>p_geno</code> and <code>p_interact</code>.</p></div>
+      <div class="card"><span class="eyebrow">Optional</span><h3>Bootstrap, local ancestry, curves</h3>
+        <p>A parametric bootstrap draw per SNP for calibration, ancestry-specific effects in admixed samples, and β(condition) curves for continuous conditions.</p></div>
+    </div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">Quick start</div>
+    <h2 id="quick-start">From the bundled example to response eQTLs</h2>
+    <p class="dim prose">The package ships a small simulated study: 60 individuals, each measured as control and treated, with RNA-seq counts and a VCF. These blocks are taken from <a href="usage.html">the usage guide</a> and run as written.</p>
+    <div class="code-grid">
+      <figure>{{EX:install}}<figcaption><b>Install</b> from GitHub. A C++17 compiler is needed; the Stan model compiles in about a minute.</figcaption></figure>
+      <figure>{{EX:inputs}}<figcaption><b>Expression.</b> Columns are samples in the same order as the rows of <code>anno</code>.</figcaption></figure>
+    </div>
+    <div class="code-grid">
+      <figure>{{EX:step1}}<figcaption><b>Step 1.</b> Latent factors, repeated individuals and a GRM in one covariance.</figcaption></figure>
+      <figure>{{EX:two_conditions}}<figcaption><b>Step 2.</b> One row per gene × SNP. The planted response eQTLs lead the table. Genotypes come from the <a href="usage.html#inputs">VCF block</a>.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">Choosing a design</div>
+    <h2 id="designs">What goes in <code>anno$condition</code></h2>
+    <div class="table-wrap"><table class="text">
+      <thead><tr><th>Study design</th><th><code>condition</code></th><th>Response test</th><th>Guide</th></tr></thead>
+      <tbody>
+        <tr><td>One sample per individual</td><td><code>1</code> (a single value)</td><td>none: eQTL test only</td><td><a href="usage.html#eqtl-only">eQTL mapping</a></td></tr>
+        <tr><td>Control vs treated, same donors</td><td>factor with 2 levels</td><td>1 df</td><td><a href="usage.html#two-conditions">Two conditions</a></td></tr>
+        <tr><td>Time course, several treatments</td><td>factor with k levels</td><td>k − 1 df, joint</td><td><a href="usage.html#factor">Several conditions</a></td></tr>
+        <tr><td>Dose, time, age as a slope</td><td>numeric</td><td>1 df, linear</td><td><a href="usage.html#numeric">Continuous condition</a></td></tr>
+        <tr><td>Effects that bend with age or dose</td><td><code>splines::ns(x, df)</code></td><td>df, joint; curves with <code>curve_at</code></td><td><a href="usage.html#spline">Smooth condition</a></td></tr>
+        <tr><td>Admixed individuals</td><td>any of the above</td><td>per ancestry, joint, heterogeneity</td><td><a href="usage.html#local-ancestry">Local ancestry</a></td></tr>
+      </tbody></table></div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">Documentation</div>
+    <h2 id="pages">Where to go next</h2>
+    <div class="cards">
+      <a class="card" href="usage.html"><span class="eyebrow">Usage</span><h3>Every scenario, with code</h3><p>Inputs, both steps, all study designs, admixed samples, multiple testing, calibration, and running at scale.</p></a>
+      <a class="card" href="performance.html"><span class="eyebrow">Performance</span><h3>Speed and calibration</h3><p>suez against tensorQTL on CPU and GPU, and the engine's speed-up since suez 0.4.</p></a>
+      <a class="card" href="age_varying_eqtl.html"><span class="eyebrow">Report</span><h3>Age-varying eQTLs</h3><p>Spline conditions against the linear default: recovered curves, power and calibration.</p></a>
+      <a class="card" href="suez.html"><span class="eyebrow">Vignette</span><h3>Worked example</h3><p>Counts and a VCF to eQTL calls, with plots and the admixed cohort.</p></a>
+    </div>
+  </section>
+
+  <footer class="foot prose" style="max-width:none">suez extends PANAMA (Fusi et al. 2012). Cite: Knowles DA*, Burrows CK*, Blischak JD, et al. (2018). Determining the genetic basis of anthracycline-cardiotoxicity by molecular response QTL mapping in induced cardiomyocytes. <i>eLife</i> 7:e33480. <a href="https://doi.org/10.7554/eLife.33480">doi:10.7554/eLife.33480</a>. GPL (≥ 3).</footer>
+</div>
+<script>{{CHARTS_JS}}</script>
+<script>
+const P = {{DATA:perf}};
+const A = {{DATA:age}};
+// headline numbers, computed from the benchmark tables
+const cal = P.calib.filter(r => r.method.startsWith("suez")).map(r => r.lambda_p_geno).concat(P.calib.filter(r => r.method.startsWith("suez") && typeof r.lambda_p_interact === "number").map(r => r.lambda_p_interact));
+const tqAll = Math.max(...P.calib.filter(r => r.key === "tq_sample5").map(r => r.lambda_p_geno));
+const fast = P.speed.filter(r => !/GRM/.test(r.desc)).map(r => Math.min(r.tensorqtl_gpu, r.tensorqtl_cpu1, r.tensorqtl_cpu8) / r.suez_8cores);
+const hist = P.history.filter(r => r.step === "step2").map(r => r.v04 / r.now);
+const stat = (lab, val, note) => `<div class="stat"><span class="lab">${lab}</span><span class="val">${val}</span><span class="note">${note}</span></div>`;
+document.getElementById("stats").innerHTML =
+  stat("Null λ, suez", `${Math.min(...cal).toFixed(2)}–${Math.max(...cal).toFixed(2)}`, `tensorQTL on all samples of the same repeated-measures data: up to ${tqAll.toFixed(2)}`) +
+  stat("Faster than the fastest tensorQTL run", `${Math.min(...fast).toFixed(1)}–${Math.max(...fast).toFixed(1)}×`, "suez on 8 CPU cores, default kernel, against tensorQTL on CPU or GPU") +
+  stat("Faster than suez 0.4", `${Math.round(Math.min(...hist))}–${Math.round(Math.max(...hist))}×`, "Step 2, one core, same workloads") +
+  stat("Mid-life eQTL peak found", `<span class="from">${pct(A.shapes.midlife.power_linear)}</span><span class="arrow">→</span>${pct(A.shapes.midlife.power_spline)}`, "Spline condition against a linear age term");
+</script>

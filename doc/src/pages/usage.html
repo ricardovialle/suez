@@ -1,0 +1,234 @@
+<title>suez Usage Guide</title>
+<div class="wrap with-toc" style="max-width:1080px">
+{{TOC}}
+<div class="main">
+  <header class="stack">
+    <div class="eyebrow">Usage guide</div>
+    <h1>Every way to run suez</h1>
+    <p class="lede prose">Inputs, the two steps, and one section per study design, then inference and running at scale. Every code block on this page runs as written: it is checked by <code>Rscript doc/src/examples.R</code>.</p>
+    <p class="small prose">The first sections use the example study bundled with the package (60 individuals × control and treated, RNA-seq counts, a VCF). Designs that study does not have (time courses, doses, ages, unbalanced visits, admixture) use a simulated table <code>meta</code> with one row per sample, <code>expr</code> (genes × samples), <code>geno</code> (SNPs × individuals) and their <code>snploc_t</code> / <code>geneloc_t</code>, or the bundled admixed cohort.</p>
+  </header>
+
+  <section class="stack-lg">
+    <div class="stack">
+      <div class="eyebrow">Getting started</div>
+      <h2 id="install">Install</h2>
+      {{EX:install}}
+      <p class="small prose">Needs a C++17 compiler (Xcode command line tools, Rtools, or g++/clang). Dependencies, including rstan and StanHeaders ≥ 2.26, install automatically. On Windows use <code>doParallel::registerDoParallel()</code> instead of doMC.</p>
+    </div>
+
+    <div class="stack">
+      <h2 id="inputs">Inputs</h2>
+      <div class="table-wrap"><table class="text">
+        <thead><tr><th>Argument</th><th>Format</th></tr></thead>
+        <tbody>
+          <tr><td><code>input</code></td><td>Genes × samples, log2 scale (e.g. log2 CPM). Row names are gene ids. Columns are samples <b>in the row order of <code>anno</code></b>; column names are not used for matching.</td></tr>
+          <tr><td><code>anno</code></td><td>One row per sample: <code>individual</code> (matches genotype column names) and <code>condition</code>.</td></tr>
+          <tr><td><code>genotype</code></td><td>SNPs × individuals, ALT allele counts 0/1/2, <code>NA</code> allowed (imputed per gene); or a <code>Rsamtools::TabixFile</code> of a bgzipped, indexed VCF.</td></tr>
+          <tr><td><code>snploc</code></td><td><code>snpid</code>, <code>chr</code>, <code>pos</code>.</td></tr>
+          <tr><td><code>geneloc</code></td><td><code>geneid</code>, <code>chr</code>, <code>left</code>, <code>right</code>. Use the same chromosome naming as <code>snploc</code>.</td></tr>
+        </tbody></table></div>
+      <div class="code-grid">
+        <figure>{{EX:inputs}}<figcaption><b>Expression.</b> Filter lowly expressed genes, then TMM log2 CPM. suez quantile-normalizes each gene in step 2 by default.</figcaption></figure>
+        <figure>{{EX:genotypes}}<figcaption><b>Genotypes.</b> Biallelic SNPs, call rate ≥ 95%, MAF ≥ 5%. Missing calls can stay <code>NA</code>.</figcaption></figure>
+      </div>
+      <figure>{{EX:vcf_direct}}<figcaption><b>Or read the VCF directly.</b> suez reads each gene's cis window from the indexed VCF (GT field). The filters above are then not applied, so set <code>maf_threshold</code>. Not available in local-ancestry mode.</figcaption></figure>
+    </div>
+
+    <div class="stack">
+      <h2 id="step1">Step 1: learn the sample covariance</h2>
+      {{EX:step1}}
+      <div class="fig"><div class="head"><h4>What step 1 learned</h4></div><div class="fig-row"><div><div id="f-step1-var"></div><span class="cap">Fitted variances: noise, same-individual, kinship and the largest latent factors</span></div><div><div id="f-step1-heat"></div><span class="cap">Learned covariance, first 16 samples: each individual's two samples form a block</span></div></div><p class="read" id="t-step1"></p></div>
+      <ul class="prose">
+        <li><b>Use all expressed genes</b>, normalized (here: normal scores per gene), not only the ones you will test.</li>
+        <li><b><code>P</code></b> is the number of latent factors. Unneeded factors shrink towards zero variance, so a generous <code>P</code> (10 to 20) is usually safe.</li>
+        <li><b><code>kinship_matrix</code></b> is optional: an individuals × individuals GRM with names matching <code>anno$individual</code>. Build it from genome-wide, LD-pruned SNPs.</li>
+        <li><b>Check convergence</b>: <code>return_code == 0</code>; otherwise pass a larger <code>iter =</code>.</li>
+        <li><b>Skip step 1</b> and suez uses a same-individual kernel only. It is exact and fast at any N, but does not model hidden confounders or relatedness.</li>
+      </ul>
+    </div>
+
+    <div class="stack">
+      <h2 id="step2">Step 2: map eQTLs and response eQTLs</h2>
+      <p class="dim prose">The main arguments, with their defaults:</p>
+      <div class="table-wrap"><table class="text">
+        <thead><tr><th>Argument</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>sample_kernel = NULL</code></td><td>Samples × samples covariance: <code>step1$cov_suez</code>, an expanded GRM, or <code>NULL</code> for the same-individual kernel.</td></tr>
+          <tr><td><code>normalization_approach = "qq"</code></td><td>Per-gene quantile normalization; <code>"log"</code> (centre and scale), <code>"linear"</code> (on 2^input) or <code>"none"</code>.</td></tr>
+          <tr><td><code>permutation_approach = "boot"</code></td><td>One parametric bootstrap draw per SNP for calibration; <code>"permute"</code> for a null run; <code>"none"</code> is about a third faster.</td></tr>
+          <tr><td><code>cisdist = 1e5</code></td><td>Window around the gene body.</td></tr>
+          <tr><td><code>maf_threshold = 0</code></td><td>Drop SNPs at or below this minor allele frequency. SNPs with fewer than 5 ALT alleles are always skipped.</td></tr>
+          <tr><td><code>covariates = NULL</code></td><td>Samples × q fixed effects: a matrix or data.frame (factors are expanded).</td></tr>
+          <tr><td><code>curve_at = NULL</code></td><td>Condition values at which to return β(condition) and μ(condition) with SEs.</td></tr>
+          <tr><td><code>local_ancestry = NULL</code></td><td>Tractor files from <code>read_tractor()</code>: ancestry-specific effects.</td></tr>
+          <tr><td><code>checkpoint_dir = NULL</code></td><td>Write each gene's results as it finishes; a rerun resumes.</td></tr>
+          <tr><td><code>debug = FALSE</code></td><td>Silent; a gene that errors is dropped. <code>TRUE</code> shows progress and stops at the first error.</td></tr>
+        </tbody></table></div>
+      <p class="dim prose">The output columns are listed in the <a href="#columns">reference</a> at the end of this page.</p>
+    </div>
+  </section>
+
+  <section class="stack-lg">
+    <div class="stack">
+      <div class="eyebrow">Study designs</div>
+      <h2 id="designs">One section per design</h2>
+      <p class="dim prose">The design only changes <code>anno$condition</code>, and sometimes the kernel or covariates. The tests and output stay the same.</p>
+    </div>
+
+    <article class="scenario">
+      <h3 id="eqtl-only">eQTL mapping, one sample per individual</h3>
+      <div class="meta"><span class="chip">condition = 1</span><span class="chip">p_geno only</span><span class="chip">bundled data</span></div>
+      {{EX:eqtl_only}}
+      <div class="fig"><div class="head"><h4>What is measured: one eQTL</h4><div class="legend"><span><i class="sw dot" style="background:var(--g0)"></i>0 ALT</span><span><i class="sw dot" style="background:var(--g1)"></i>1</span><span><i class="sw dot" style="background:var(--g2)"></i>2</span><span><i class="sw box" style="background:var(--fg);height:3px"></i>group mean</span></div></div><div id="f-eqtl"></div><p class="read" id="t-eqtl"></p></div>
+      <p class="small prose">A single value of <code>condition</code> drops the interaction terms. With one sample per individual and unrelated donors, a GRM kernel (or step 1 with <code>kinship_matrix</code>) keeps the eQTL test calibrated when there is relatedness or structure; otherwise the result is close to a linear regression.</p>
+    </article>
+
+    <article class="scenario">
+      <h3 id="two-conditions">Two conditions, same individuals</h3>
+      <div class="meta"><span class="chip">factor, 2 levels</span><span class="chip">p_interact, 1 df</span><span class="chip">bundled data</span></div>
+      {{EX:two_conditions}}
+      <div class="fig"><div class="head"><h4>What suez detects: a response eQTL</h4><div class="legend"><span><i class="sw dot" style="background:var(--g0)"></i>0 ALT</span><span><i class="sw dot" style="background:var(--g1)"></i>1</span><span><i class="sw dot" style="background:var(--g2)"></i>2</span><span><i class="sw box" style="background:var(--fg);height:3px"></i>group mean</span></div></div><div class="fig-row"><div><div id="f-two-geno"></div><span class="cap">Expression at the lead SNP, by genotype, in each condition</span></div><div><div id="f-two-reg"></div><span class="cap">Every cis-SNP of the gene; the grey bar is the gene body</span></div></div><p class="read" id="t-two"></p></div>
+      <p class="small prose">The standard response-eQTL design: each donor measured before and after a treatment. Both samples of a donor share the random effect, so suez uses all samples instead of a per-donor difference (which doubles the noise and allows only two conditions). <code>beta_geno</code> is the genotype effect averaged over conditions.</p>
+    </article>
+
+    <article class="scenario">
+      <h3 id="factor">Several conditions or time points</h3>
+      <div class="meta"><span class="chip">factor, k levels</span><span class="chip">p_interact, k − 1 df</span><span class="chip">simulated</span></div>
+      {{EX:factor}}
+      <div class="fig"><div class="head"><h4>A time-dependent eQTL</h4><div class="legend"><span><i class="sw dot" style="background:var(--g0)"></i>0 ALT</span><span><i class="sw dot" style="background:var(--g1)"></i>1</span><span><i class="sw dot" style="background:var(--g2)"></i>2</span><span><i class="sw box" style="background:var(--fg);height:3px"></i>group mean</span></div></div><div id="f-factor"></div><p class="read" id="t-factor"></p></div>
+      <p class="small prose">One joint test of whether the genotype effect differs between any of the levels. The first factor level is the reference; the test itself does not depend on which level that is. For a dose series or ordered times where a trend is the question, use a numeric or spline condition instead.</p>
+    </article>
+
+    <article class="scenario">
+      <h3 id="numeric">Continuous condition: a linear slope</h3>
+      <div class="meta"><span class="chip">numeric</span><span class="chip">p_interact, 1 df</span><span class="chip">simulated</span></div>
+      {{EX:numeric}}
+      <div class="fig"><div class="head"><h4>A dose-dependent eQTL</h4><div class="legend"><span><i class="sw" style="border-color:var(--g0)"></i>0 ALT</span><span><i class="sw" style="border-color:var(--g1)"></i>1</span><span><i class="sw" style="border-color:var(--g2)"></i>2</span></div></div><div id="f-numeric"></div><p class="read" id="t-numeric"></p></div>
+      <p class="small prose">β(condition) = β<sub>0</sub> + β<sub>1</sub>·condition. Transform the condition so a straight line is plausible (here log dose). Rescaling it does not change the p-values.</p>
+    </article>
+
+    <article class="scenario">
+      <h3 id="spline">Smooth condition: effects that bend</h3>
+      <div class="meta"><span class="chip">splines::ns(x, df)</span><span class="chip">p_interact, df</span><span class="chip">curve_at</span><span class="chip">simulated</span></div>
+      {{EX:spline}}
+      <div class="fig"><div class="head"><h4>The fitted curves</h4><div class="legend"><span><i class="sw truth"></i>planted β(age)</span><span><i class="sw spline"></i>spline</span><span><i class="sw linear"></i>linear age term</span><span><i class="sw band"></i>95% CI</span></div></div><div class="fig-row"><div><div id="f-spline-beta"></div><span class="cap">β(age): eQTL effect per ALT allele</span></div><div><div id="f-spline-mu"></div><span class="cap">μ(age): the gene's age trajectory, relative to age 30</span></div></div><p class="read" id="t-spline"></p></div>
+      <p class="small prose">Both the expression trajectory μ(age) and the eQTL effect β(age) become smooth curves, and <code>p_interact</code> jointly tests all genotype × basis terms. With <code>curve_at</code> you get, per grid point, <code>beta_curve_x</code>, <code>se_beta_curve_x</code>, <code>mu_curve_x</code> and <code>se_mu_curve_x</code>. Evaluate the basis with <code>predict()</code> on the same <code>ns</code> object so the knots match. Choose df (2 to 4) by the spread of the condition, not by fit. The <a href="age_varying_eqtl.html">age-varying eQTL report</a> compares this with the linear model.</p>
+    </article>
+
+    <article class="scenario">
+      <h3 id="unbalanced">Unbalanced repeated measures</h3>
+      <div class="meta"><span class="chip">1 to k samples per individual</span><span class="chip">simulated</span></div>
+      {{EX:unbalanced}}
+      <div class="fig"><div class="head"><h4>Losing samples, not individuals</h4><div class="legend"><span><i class="sw dot" style="background:var(--inter)"></i>planted response SNP</span><span><i class="sw dot" style="background:var(--other)"></i>other SNPs</span></div></div><div id="f-unbal"></div><p class="read" id="t-unbal"></p></div>
+      <p class="small prose">Nothing special is needed: <code>anno</code> lists the samples you have. Individuals with one sample still inform the eQTL test, and the same-individual term handles the rest. A per-donor difference would have to drop every donor with a missing sample.</p>
+    </article>
+
+    <article class="scenario">
+      <h3 id="covariates">Known covariates</h3>
+      <div class="meta"><span class="chip">covariates =</span><span class="chip">simulated</span></div>
+      {{EX:covariates}}
+      <div class="fig"><div class="head"><h4>What a covariate buys</h4><div class="legend"><span><i class="sw dot" style="background:var(--inter)"></i>planted SNP</span><span><i class="sw dot" style="background:var(--other)"></i>other SNPs</span></div></div><div id="f-cov"></div><p class="read" id="t-cov"></p></div>
+      <p class="small prose">Fixed effects in every model: genotype PCs, sex, batch, RIN, global ancestry. One row per sample in the order of <code>anno</code>. Hidden confounders do not need to go here: step 1's latent factors model them as part of the random effect.</p>
+    </article>
+
+    <article class="scenario">
+      <h3 id="related">Related individuals and hidden confounders</h3>
+      <div class="meta"><span class="chip">kinship_matrix</span><span class="chip">sample_kernel</span><span class="chip">simulated</span></div>
+      <div class="code-grid">
+        <figure>{{EX:step1_toy}}<figcaption><b>Recommended.</b> Step 1 with the GRM: latent factors, repeated samples and kinship in one covariance.</figcaption></figure>
+        <figure>{{EX:grm_kernel}}<figcaption><b>Quick alternative.</b> A GRM expanded to samples as the kernel. It covers relatedness and repeated samples, but not hidden confounders.</figcaption></figure>
+      </div>
+      <div class="fig"><div class="head"><h4>Two kernels for the same samples</h4><div class="legend"><span><i class="sw box" style="background:var(--geno)"></i>positive covariance</span><span><i class="sw box" style="background:var(--inter)"></i>negative</span></div></div><div class="fig-row"><div><div id="f-rel-cov"></div><span class="cap">Learned by step 1: GRM + same individual + latent factors</span></div><div><div id="f-rel-grm"></div><span class="cap">A GRM expanded to samples: repeated samples share their individual's row</span></div></div><p class="read" id="t-rel">Both kernels put the three samples of an individual in one block. Step 1 adds the latent factors, which spread covariance between individuals who share a hidden confounder.</p></div>
+      <p class="small prose">Without a relatedness term, related individuals inflate the tests. The <a href="performance.html#calibration">calibration results</a> show the same effect for repeated samples analysed as independent ones.</p>
+    </article>
+
+    <article class="scenario">
+      <h3 id="local-ancestry">Admixed individuals: local ancestry</h3>
+      <div class="meta"><span class="chip">local_ancestry =</span><span class="chip">Tractor files</span><span class="chip">bundled admixed cohort</span></div>
+      {{EX:local_ancestry}}
+      <p class="small prose">Phase the genotypes, call local ancestry (RFMix2 or FLARE) and run Tractor's <code>extract_tracts.py</code>; <code>read_tractor()</code> reads the per-ancestry dosage and haplotype-count files. Each SNP is fitted with six nested models:</p>
+      <div class="table-wrap"><table class="text">
+        <thead><tr><th>Test</th><th>Models</th><th>Question</th></tr></thead>
+        <tbody>
+          <tr><td><code>p_geno</code></td><td>M1 vs M0</td><td>Any eQTL effect, on any ancestry (df = number of ancestries)</td></tr>
+          <tr><td><code>p_het</code></td><td>M1 vs M1s</td><td>Do the eQTL effects differ between ancestries?</td></tr>
+          <tr><td><code>p_interact</code></td><td>M2 vs M1c</td><td>Any response eQTL, on any ancestry</td></tr>
+          <tr><td><code>p_interact_het</code></td><td>M2 vs M2s</td><td>Do the responses differ between ancestries?</td></tr>
+          <tr><td><code>beta_&lt;anc&gt;</code>, <code>p_&lt;anc&gt;</code></td><td>Wald, M1</td><td>Effect per ALT allele on that ancestry's haplotypes</td></tr>
+          <tr><td><code>p_interact_&lt;anc&gt;</code></td><td>Wald, M2</td><td>That ancestry's response (a joint F test for several condition columns)</td></tr>
+        </tbody></table></div>
+      <figure>{{EX:local_ancestry_pooled}}
+      <div class="fig"><div class="head"><h4>Effects split by ancestry</h4><div class="legend"><span><i class="sw dot" style="background:var(--g1)"></i>AFR-specific</span><span><i class="sw dot" style="border:2.5px solid var(--g1);background:var(--surface);box-sizing:border-box"></i>AFR response</span><span><i class="sw dot" style="background:var(--inter)"></i>EUR-specific</span><span><i class="sw dot" style="background:var(--tq2)"></i>shared</span></div></div><div class="fig-row"><div><div id="f-la"></div><span class="cap">Per-ancestry eQTL effects at each gene's lead SNP: one-ancestry effects sit on an axis, shared ones on the diagonal</span></div><div><div id="f-la-found"></div><span class="cap">Planted eQTLs found: the minority EUR effects are diluted when the genotype is pooled</span></div></div><p class="read" id="t-la">The local-ancestry model separates who carries the effect. The pooled test still finds shared and majority-ancestry effects, so run both.</p></div><figcaption><b>Also run the pooled model.</b> When the response is the same in all ancestries, the 1-df pooled test has slightly more power. With one sample per individual and the default kernel, the per-ancestry estimates equal Tractor's linear model.</figcaption></figure>
+      <div class="callout"><b>Tag SNPs.</b> LD that differs between ancestries makes effects look different at SNPs that only tag the causal variant. Fine-map before interpreting <code>p_het</code> away from the lead SNP. Keep the GRM in step 1: it does not absorb ancestry-specific effects, and leaving it out inflates the tests in related samples.</div>
+    </article>
+  </section>
+
+  <section class="stack-lg">
+    <div class="stack">
+      <div class="eyebrow">Inference</div>
+      <h2 id="multiple-testing">Multiple testing</h2>
+      {{EX:multiple_testing}}
+      <div class="fig"><div class="head"><h4>Gene-level calls</h4><div class="legend"><span><i class="sw dot" style="background:var(--geno)"></i>eQTL test</span><span><i class="sw dot" style="background:var(--inter)"></i>response test</span></div></div><div id="f-fdr"></div><p class="read" id="t-fdr"></p></div>
+      <p class="small prose">p-values are per SNP. A simple gene-level procedure: Bonferroni within each gene, then Benjamini-Hochberg across genes. For fine-mapping or colocalisation, export the per-SNP statistics.</p>
+    </div>
+    <div class="stack">
+      <h2 id="calibration">Checking calibration and the bootstrap</h2>
+      {{EX:calibration}}
+      <div class="fig"><div class="head"><h4>Are the p-values calibrated?</h4><div class="legend"><span><i class="sw dot" style="background:var(--geno)"></i>eQTL test</span><span><i class="sw dot" style="background:var(--inter)"></i>response test</span></div></div><div id="f-calib"></div><p class="read" id="t-calib"></p></div>
+      <p class="small prose">Most genes have no response eQTL, so λ of <code>p_interact</code> over all tests should be near 1. Each SNP's bootstrap columns give one draw of the interaction likelihood ratio under the genotype-only model. Pooled over a genome-wide run, they form an empirical null for the observed ratios (smallest possible p-value: 1 / (tests + 1)). In local-ancestry mode use <code>l_boot_interact_null</code> in place of <code>l_boot_geno</code>.</p>
+    </div>
+    <div class="stack">
+      <h2 id="permutation">A permutation null run</h2>
+      {{EX:permute}}
+      <div class="fig"><div class="head"><h4>A null run</h4><div class="legend"><span><i class="sw dot" style="background:var(--geno)"></i>eQTL test</span><span><i class="sw dot" style="background:var(--inter)"></i>response test</span></div></div><div id="f-perm"></div><p class="read" id="t-perm"></p></div>
+      <p class="small prose">Shuffles individuals' genotypes within each gene: every test is null, which checks the whole pipeline end to end. Use it as a diagnostic, not for p-values: a permutation is not a valid null for the interaction test, where the genotype main effect must be kept.</p>
+    </div>
+  </section>
+
+  <section class="stack-lg">
+    <div class="stack">
+      <div class="eyebrow">Running at scale</div>
+      <h2 id="scaling">Parallel workers, threads and checkpoints</h2>
+      {{EX:scaling}}
+      <div class="fig"><div class="head"><h4>Speed-up with forked workers</h4><div class="legend" id="l-scale"></div></div><div id="f-scale"></div><p class="read" id="t-scale">Step 2, measured on the <a href="performance.html#cores">benchmark workloads</a>; the dashed line is perfect scaling. The dense-GRM workload at 2,000 samples (XL_grm) scales least; for large kernels, threads reach similar speed with far less memory.</p></div>
+      <ul class="prose">
+        <li><b>Workers</b> (doMC forks) are fastest; <b>threads</b> share one process's memory: with a GRM at 2,000 samples, 1 process × 8 threads ran at about 75% of the speed of 8 workers with a quarter of their RAM.</li>
+        <li><b>Reproducible</b>: each gene draws its seed from your session, so after <code>set.seed()</code> results are identical for any number of workers or threads.</li>
+        <li><b>Checkpoints</b> are reused as they are: delete the directory after changing data or arguments.</li>
+        <li><b>Memory</b>: step 1 and an explicit kernel are N × N. The default same-individual kernel is built analytically and stays light at thousands of samples.</li>
+      </ul>
+    </div>
+    <div class="stack">
+      <h2 id="by-chromosome">Splitting a genome-wide run</h2>
+      {{EX:by_chromosome}}
+      <p class="small prose">Subset <code>geneloc</code> to split the work, one chromosome per job on a cluster. suez does not write results itself; save each part. In local-ancestry mode, read one chromosome of Tractor files at a time.</p>
+    </div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">Reference</div>
+    <h2 id="columns">Output columns</h2>
+    <div class="table-wrap"><table class="text">
+      <thead><tr><th>Column</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>gene</code>, <code>cis_snp</code></td><td>Gene and SNP ids</td></tr>
+        <tr><td><code>l0</code>, <code>l_geno</code>, <code>l_interact</code></td><td>Log-likelihoods without genotype, with genotype, with genotype × condition (only differences are meaningful)</td></tr>
+        <tr><td><code>p_geno</code></td><td>eQTL test: likelihood ratio of <code>l_geno</code> vs <code>l0</code>, 1 df</td></tr>
+        <tr><td><code>df_interact</code>, <code>p_interact</code></td><td>Response test: <code>l_interact</code> vs <code>l_geno</code>; df = condition columns</td></tr>
+        <tr><td><code>beta_geno</code>, <code>se_geno</code></td><td>GLS genotype effect per ALT allele and its SE, in normalized expression units</td></tr>
+        <tr><td><code>l_boot_geno</code>, <code>l_boot_interact</code></td><td>Bootstrap draw under the genotype-only model (<code>"boot"</code>)</td></tr>
+        <tr><td><code>beta_curve_x</code>, <code>se_beta_curve_x</code></td><td>With <code>curve_at</code>: β at condition x (per ancestry in local-ancestry mode: <code>beta_curve_&lt;anc&gt;_x</code>)</td></tr>
+        <tr><td><code>mu_curve_x</code>, <code>se_mu_curve_x</code></td><td>With <code>curve_at</code>: the expression trajectory, relative to the condition whose basis row is 0</td></tr>
+        <tr><td><code>p_het</code>, <code>p_interact_het</code>, <code>beta_&lt;anc&gt;</code>, <code>af_&lt;anc&gt;</code>, <code>laprop_&lt;anc&gt;</code>, …</td><td>Local-ancestry mode, <a href="#local-ancestry">above</a></td></tr>
+      </tbody></table></div>
+    <p class="small prose">A fit that fails gives <code>NA</code>. SNPs are tested when <code>left − cisdist &lt; pos &lt; right + cisdist</code> on the same chromosome.</p>
+  </section>
+</div>
+</div>
+<script>{{CHARTS_JS}}</script>
+<script>
+const U = {{DATA:usage}};
+const P = {{DATA:perf}};
+{{JS:usage_figs}}
+</script>

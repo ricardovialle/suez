@@ -17,7 +17,7 @@ learn_covariance(
 \arguments{
 \item{input}{[genes x samples] Normalized (e.g. quantile normalized) matrix of log2 gene expression}
 
-\item{anno}{[samples x 2] data.frame with `individual` and `condition` columns. `condition` may be a factor/character (one effect per level) or numeric (one slope). If a kinship matrix is provided the row and column names must correspond to the values used in the `individual` column.}
+\item{anno}{[samples x 2] data.frame with `individual` and `condition` columns. `condition` may be a factor/character (one effect per level) or numeric (one slope), or a numeric basis matrix such as `splines::ns(age, df = 3)` (one effect per column). If a kinship matrix is provided the row and column names must correspond to the values used in the `individual` column.}
 
 \item{kinship_matrix}{Representing relatedness between individuals. Optional.}
 
@@ -29,13 +29,13 @@ learn_covariance(
 
 \item{...}{passed to rstan::optimizing}
 }
-\description{
-Function to learn covariance structure across samples using latent factors
-}
 \value{
 list: `cov_suez` [samples x samples], the latent-factor, same-individual and kinship parts
 of the covariance (no isotropic noise: pass it as `sample_kernel` to [map_interaction_qtl]), and
 `optimized_fit`, the rstan::optimizing result (factors `x_adjustable` are in the contrast basis).
+}
+\description{
+Function to learn covariance structure across samples using latent factors
 }
 \details{
 Model, per gene: y = X b + e, e ~ N(0, s_noise I + s_ind SameInd + s_kin Kinship +

@@ -1,0 +1,315 @@
+<title>Age-Varying eQTLs in suez</title>
+
+<div class="wrap">
+  <header class="stack">
+    <div class="eyebrow">Report · smooth conditions</div>
+    <h1>Age-varying eQTLs in one mixed model</h1>
+    <p class="lede prose">Fit the gene's expression trajectory and the genetic effect as smooth functions of age, test whether the eQTL changes with age, and read back both curves with standard errors. Below: how to run it, and what it gains over the previous default, where age entered as a single straight line.</p>
+    <div class="formula">Y<sub>i</sub> = <span class="hl">μ(age<sub>i</sub>)</span> + <span class="hl">β(age<sub>i</sub>)</span> × G<sub>i</sub> + Z<sub>i</sub><sup>T</sup>γ + u<sub>ind</sub> + ε<sub>i</sub></div>
+    <div class="versus">
+      <div class="old"><span class="eyebrow">Previous default · numeric condition</span>
+        <span class="eq">μ(age) = a·age &nbsp; β(age) = β₀ + β₁·age</span>
+        <p>One G×age term, 1 df. Detects effects that grow or shrink steadily with age.</p></div>
+      <div class="new"><span class="eyebrow">New · spline condition</span>
+        <span class="eq">μ(age) = Σ a<sub>j</sub>B<sub>j</sub>(age) &nbsp; β(age) = β₀ + Σ β<sub>j</sub>B<sub>j</sub>(age)</span>
+        <p>Natural-spline basis B (here 3 columns), joint G×basis test with 3 df. Detects onsets, plateaus and mid-life peaks.</p></div>
+    </div>
+  </header>
+
+  <section class="stats" aria-label="Headline results" id="stats"></section>
+
+  <section class="stack">
+    <div class="eyebrow">Usage</div>
+    <h2>From a straight line to a curve: one line changes</h2>
+    <p class="small prose">All scenarios, including this one, are in the <a href="usage.html#spline">usage guide</a>.</p>
+    <p class="prose" style="color:var(--fg-2)">Both steps of suez take the same <code>anno</code> table. Put the spline basis in the <code>condition</code> column and pass <code>curve_at</code> to get the fitted curves back on a grid of ages.</p>
+    <div class="code-grid">
+      <figure>
+<pre><span class="c"># Previous default: age as one numeric column</span>
+anno = data.frame(individual = meta$donor,
+                  condition  = scale(meta$age)[, 1])
+cov = learn_covariance(expr_qq, anno, P = 20)
+res = map_interaction_qtl(expr, geno, geneloc, snploc, anno,
+                          sample_kernel = cov$cov_suez,
+                          covariates = Z)
+<span class="c"># p_interact: does beta change linearly with age? (df 1)</span></pre>
+        <figcaption><b>Linear.</b> One interaction column. A mid-life peak that returns to baseline has almost no linear trend, so this test misses it.</figcaption>
+      </figure>
+      <figure>
+<pre><span class="c"># New: a natural-spline basis of age (3 columns)</span>
+B = splines::<span class="k">ns</span>(meta$age, df = 3)
+anno = data.frame(individual = meta$donor)
+anno$condition = <span class="k">B</span>
+cov = learn_covariance(expr_qq, anno, P = 20)
+ages = seq(25, 90, 5)
+at = <span class="k">predict</span>(B, ages); rownames(at) = ages
+res = map_interaction_qtl(expr, geno, geneloc, snploc, anno,
+                          sample_kernel = cov$cov_suez,
+                          covariates = Z, <span class="k">curve_at</span> = at)
+<span class="c"># p_interact: joint 3-df test of G x B(age)</span></pre>
+        <figcaption><b>Spline.</b> Same call plus <code>curve_at</code>. The basis must be evaluated with <code>predict()</code> on the same <code>ns</code> object so the knots match.</figcaption>
+      </figure>
+    </div>
+    <div class="code-grid">
+      <figure>
+<pre><span class="c"># Reading the curves for one hit</span>
+hit = res[which.min(res$p_interact), ]
+beta = unlist(hit[paste0("beta_curve_", ages)])
+se   = unlist(hit[paste0("se_beta_curve_", ages)])
+mu   = unlist(hit[paste0("mu_curve_", ages)])
+plot(ages, beta, type = "l")
+lines(ages, beta + 1.96 * se, lty = 2)
+lines(ages, beta - 1.96 * se, lty = 2)</pre>
+        <figcaption><b>Output columns.</b> For each grid age x: <code>beta_curve_x</code>, <code>se_beta_curve_x</code> (effect per ALT allele) and <code>mu_curve_x</code>, <code>se_mu_curve_x</code> (expression trajectory, relative to the youngest age).</figcaption>
+      </figure>
+      <figure>
+<pre><span class="c"># Admixed cohorts: per-ancestry curves</span>
+la = read_tractor("cohort.chr22", ancestry_names = c("AFR", "EUR"))
+res = map_interaction_qtl(expr, NULL, geneloc, la$snploc, anno,
+                          sample_kernel = cov$cov_suez,
+                          local_ancestry = la, curve_at = at)
+<span class="c"># beta_curve_AFR_60, beta_curve_EUR_60, ...</span>
+<span class="c"># p_interact_AFR: joint Wald F test, 3 df</span></pre>
+        <figcaption><b>Local ancestry.</b> Each ancestry gets its own β(age) curve and a joint test of its age interaction.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">Recovered curves</div>
+    <h2>What each model sees of β(age)</h2>
+    <p class="prose" style="color:var(--fg-2)">Four simulated eQTL shapes, <span id="nrep"></span> genes each. Lines are the median estimate across genes at each age; the band is one gene's 95% interval from the spline fit, so you can see the uncertainty of a single real hit.</p>
+    <div class="legend" id="leg-curves">
+      <span><i class="sw truth"></i>True β(age)</span>
+      <span><i class="sw linear"></i>Linear (previous default)</span>
+      <span><i class="sw spline"></i>Spline, 3 df</span>
+      <span><i class="sw band"></i>One gene, spline 95% CI</span>
+    </div>
+    <div class="multiples" id="curves"></div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">Detection and calibration</div>
+    <h2>More discoveries where the shape bends, no loss where it doesn't</h2>
+    <div class="chart-row">
+      <div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between">
+          <h3>Power of the G×age test at the causal SNP</h3>
+          <div class="seg" role="group" aria-label="Significance threshold">
+            <button type="button" id="thr-05" aria-pressed="true">p &lt; 0.05</button>
+            <button type="button" id="thr-5e5" aria-pressed="false">p &lt; 5×10⁻⁵</button>
+          </div>
+        </div>
+        <div class="legend"><span><i class="sw box" style="background:var(--linear)"></i>Linear</span><span><i class="sw box" style="background:var(--spline)"></i>Spline</span></div>
+        <div id="power"></div>
+        <p style="font-size:.88rem;color:var(--fg-2)">For the constant shape there is no age effect, so its bar is the false-positive rate.</p>
+      </div>
+      <div>
+        <h3>Null p-values, no age interaction</h3>
+        <div class="legend" id="leg-qq"></div>
+        <div id="qq"></div>
+        <p style="font-size:.88rem;color:var(--fg-2)">All <span id="qqm"></span> SNPs of the constant-effect genes, where no SNP has a G×age effect. Points on the diagonal mean calibrated p-values.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">The other half of the model</div>
+    <h2>Expression trajectory μ(age)</h2>
+    <div class="chart-row">
+      <div>
+        <div class="legend"><span><i class="sw truth"></i>True μ(age)</span><span><i class="sw linear"></i>Linear</span><span><i class="sw spline"></i>Spline</span><span><i class="sw band"></i>Spline 95% CI</span></div>
+        <div id="mu"></div>
+      </div>
+      <div class="stack prose">
+        <p style="color:var(--fg-2)">The same fit returns the gene's age trajectory, adjusted for genotype, kinship, repeated samples and latent confounders. The linear model can only draw a straight line through a rise and fall; the spline follows it.</p>
+        <p style="color:var(--fg-2)">The intercept is not estimated, so μ is relative: suez reports it against the youngest age in the data. Curves here are centred on their mean for comparison.</p>
+        <p style="color:var(--fg-2)">A wrong μ(age) is also a likely reason for the linear model's mild inflation in the null panel above: trajectory left unexplained ends up in the variance components the interaction test relies on.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">Numbers</div>
+    <h2>Results by shape</h2>
+    <div class="table-wrap"><table id="tbl"></table></div>
+    <p style="font-size:.88rem;color:var(--fg-2)">Curve error is the root-mean-square difference between the estimated and true β(age) over ages 25 to 90, across all genes. Bold marks the better model where the difference matters.</p>
+  </section>
+
+  <section class="cols2">
+    <div>
+      <h3>When the spline helps</h3>
+      <ul>
+        <li><b>Effects with an onset or a plateau</b>, such as an eQTL that switches on after 60: about 3 times as many hits at a genome-wide threshold.</li>
+        <li><b>Effects that peak and return</b> in mid-life: the linear test is close to its false-positive rate, the spline finds over half.</li>
+        <li><b>Non-linear expression trajectories</b>, which are common with age. A misfit μ(age) can inflate a linear test.</li>
+        <li><b>Interpretation</b>: you get β at every age with a confidence band, not just a slope.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>What it costs</h3>
+      <ul>
+        <li><b>Degrees of freedom.</b> 3 df instead of 1. Here this cost no power for truly linear effects, but with fewer samples it can.</li>
+        <li><b>Noisier curves at the edges</b> when the truth is a line: slightly higher curve error for linear and constant shapes.</li>
+        <li><b>Sparse ages.</b> Splines need samples across the range. Choose df (2 to 4) and knots by the age distribution, not by fit.</li>
+        <li><b>Run time</b> is about the same: <span id="secs"></span> for this simulation.</li>
+        <li><b>Neighbouring SNPs.</b> In genes with a strong age-varying eQTL, null SNPs nearby were inflated under both models (λ 0.95 to 1.37), because the unmodelled effect makes residual variance depend on age.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="foot prose" style="max-width:none" id="foot"></footer>
+</div>
+
+<script>
+const D = {{DATA:age}};
+const NS = "http://www.w3.org/2000/svg";
+const shapes = [
+  ["constant", "Constant", "No age interaction"],
+  ["linear", "Linear", "Grows steadily with age"],
+  ["late", "Late onset", "Switches on after 60"],
+  ["midlife", "Mid-life peak", "Peaks at 55, fades both ways"]];
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const pct = x => (100 * x).toFixed(x < 0.1 ? 1 : 0) + "%";
+const fmt = x => x.toFixed(2);
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+const tip = document.getElementById("tip");
+function showTip(ev, html) { tip.innerHTML = html; tip.hidden = false;
+  const r = tip.getBoundingClientRect(); let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - 14; if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px"; }
+function hideTip() { tip.hidden = true; }
+const sw = v => `<i style="background:var(${v})"></i>`;
+
+// headline stats
+const S = D.shapes;
+const stat = (lab, a, b, note) => `<div class="stat"><span class="lab">${lab}</span><span class="val"><span class="from">${a}</span><span class="arrow">→</span>${b}</span><span class="note">${note}</span></div>`;
+document.getElementById("stats").innerHTML =
+  stat("Mid-life peak detected, p &lt; 0.05", pct(S.midlife.power_linear), pct(S.midlife.power_spline), "Linear test is near its false-positive rate") +
+  stat("Late onset detected, p &lt; 5×10⁻⁵", pct(S.late.power5_linear), pct(S.late.power5_spline), "About 3× more hits at a genome-wide threshold") +
+  stat("Linear effect detected, p &lt; 0.05", pct(S.linear.power_linear), pct(S.linear.power_spline), "No power lost on the shape the old model assumes") +
+  stat("Null inflation λ", fmt(D.calib.lam_linear), fmt(D.calib.lam_spline), "Constant-effect genes, " + D.qq.m + " null SNPs");
+document.getElementById("nrep").textContent = D.reps;
+document.getElementById("qqm").textContent = D.qq.m.toLocaleString();
+document.getElementById("secs").textContent = D.sec_linear.toFixed(1) + " s linear vs " + D.sec_spline.toFixed(1) + " s spline (" + (4 * D.reps).toLocaleString() + " genes, 8 cores)";
+document.getElementById("foot").innerHTML = `Simulation: ${D.n_ind} individuals measured twice, 4 to 10 years apart (${D.n_samples} samples, ages 20 to 95), ${D.reps} genes per shape with ${D.n_snp} cis-SNPs each (MAF 0.3), one causal. Expression = a non-linear μ(age) + β(age)·G + individual random effect (SD 0.5) + noise (SD 0.8). Both models use suez's default same-individual kernel, no latent factors, <code>normalization_approach = "none"</code>. Spline: <code>splines::ns(age, df = 3)</code>; linear: age scaled to (age − 55)/20. One simulation run (seed 2026); rates carry Monte Carlo error of about ±2.5 percentage points.`;
+
+// axes helper
+function frame(svg, W, H, m, xd, yd, xt, yt, xlab, ylab) {
+  const X = v => m.l + (v - xd[0]) / (xd[1] - xd[0]) * (W - m.l - m.r);
+  const Y = v => H - m.b - (v - yd[0]) / (yd[1] - yd[0]) * (H - m.t - m.b);
+  for (const t of yt) { el("line", {x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t), class: "gl"}, svg);
+    el("text", {x: m.l - 6, y: Y(t) + 4, "text-anchor": "end"}, svg).textContent = t; }
+  for (const t of xt) el("text", {x: X(t), y: H - m.b + 15, "text-anchor": "middle"}, svg).textContent = t;
+  el("line", {x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, class: "ax"}, svg);
+  if (xlab) el("text", {x: W - m.r, y: H - 2, "text-anchor": "end"}, svg).textContent = xlab;
+  if (ylab) el("text", {x: m.l - 6, y: m.t - 8, "text-anchor": "start"}, svg).textContent = ylab;
+  return [X, Y];
+}
+const path = (xs, ys, X, Y) => xs.map((x, i) => (i ? "L" : "M") + X(x).toFixed(1) + "," + Y(ys[i]).toFixed(1)).join("");
+
+// small multiples of beta(age)
+const G = D.grid;
+const curves = document.getElementById("curves");
+for (const [key, name, sub] of shapes) {
+  const s = S[key]; const p = document.createElement("div"); p.className = "panel";
+  p.innerHTML = `<h3>${name}</h3><span class="sub">${sub}</span>`; curves.appendChild(p);
+  const W = 300, H = 210, m = {l: 34, r: 8, t: 18, b: 26};
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `${name}: true and estimated beta by age`}, p);
+  const [X, Y] = frame(svg, W, H, m, [25, 90], [-0.4, 1.4], [30, 50, 70, 90], [-0.4, 0, 0.4, 0.8, 1.2], "age", "β per allele");
+  el("line", {x1: X(25), x2: X(90), y1: Y(0), y2: Y(0), class: "ax"}, svg);
+  const lo = s.curve_spline.ex.map((b, i) => b - 1.96 * s.curve_spline.ex_se[i]), hi = s.curve_spline.ex.map((b, i) => b + 1.96 * s.curve_spline.ex_se[i]);
+  const clip = v => Math.max(-0.4, Math.min(1.4, v));
+  el("path", {d: path(G, hi.map(clip), X, Y) + path(G.slice().reverse(), lo.map(clip).reverse(), X, Y).replace("M", "L") + "Z", fill: "var(--band)", stroke: "none"}, svg);
+  el("path", {d: path(G, s.truth, X, Y), fill: "none", stroke: "var(--truth)", "stroke-width": 2, "stroke-dasharray": "5 4"}, svg);
+  el("path", {d: path(G, s.curve_linear.median, X, Y), fill: "none", stroke: "var(--linear)", "stroke-width": 2, "stroke-linejoin": "round"}, svg);
+  el("path", {d: path(G, s.curve_spline.median, X, Y), fill: "none", stroke: "var(--spline)", "stroke-width": 2, "stroke-linejoin": "round"}, svg);
+  const cross = el("line", {y1: m.t, y2: H - m.b, stroke: "var(--muted)", "stroke-width": 1, visibility: "hidden"}, svg);
+  const hit = el("rect", {x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent"}, svg);
+  hit.addEventListener("pointermove", ev => {
+    const r = svg.getBoundingClientRect(); const vx = (ev.clientX - r.left) / r.width * W;
+    const age = 25 + (vx - m.l) / (W - m.l - m.r) * 65; const i = Math.max(0, Math.min(G.length - 1, Math.round((age - 25) / 5)));
+    cross.setAttribute("x1", X(G[i])); cross.setAttribute("x2", X(G[i])); cross.setAttribute("visibility", "visible");
+    showTip(ev, `<div class="t">${name}, age ${G[i]}</div>${sw("--truth")}True β ${fmt(s.truth[i])}<br>${sw("--linear")}Linear ${fmt(s.curve_linear.median[i])}<br>${sw("--spline")}Spline ${fmt(s.curve_spline.median[i])}<br><span style="color:var(--muted)">One gene: ${fmt(s.curve_spline.ex[i])} ± ${fmt(1.96 * s.curve_spline.ex_se[i])}</span>`);
+  });
+  hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
+}
+
+// power bars
+function drawPower(which) {
+  const box = document.getElementById("power"); box.innerHTML = "";
+  const W = 460, H = 250, m = {l: 40, r: 8, t: 20, b: 30};
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Power of the age interaction test by shape"}, box);
+  const [, Y] = frame(svg, W, H, m, [0, 1], [0, 1], [], [0, 0.25, 0.5, 0.75, 1].map(v => v), null, "share of genes");
+  svg.querySelectorAll("text").forEach(t => { const v = parseFloat(t.textContent); if (!isNaN(v) && t.getAttribute("text-anchor") === "end") t.textContent = Math.round(v * 100) + "%"; });
+  const bw = (W - m.l - m.r) / shapes.length;
+  shapes.forEach(([key, name], k) => {
+    const s = S[key]; const vals = which === "05" ? [s.power_linear, s.power_spline] : [s.power5_linear || 0, s.power5_spline || 0];
+    const cx = m.l + bw * (k + 0.5), w = Math.min(34, bw * 0.32);
+    el("text", {x: cx, y: H - m.b + 16, "text-anchor": "middle"}, svg).textContent = name;
+    vals.forEach((v, j) => {
+      const x = cx + (j ? 1 : -w - 1) , y = Y(v), h = Math.max(0, Y(0) - y);
+      const r = Math.min(4, h);
+      el("path", {d: `M${x},${Y(0)}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${Y(0)}Z`, fill: j ? "var(--spline)" : "var(--linear)"}, svg);
+      el("text", {x: x + w / 2, y: y - 5, "text-anchor": "middle", style: "fill:var(--fg-2)"}, svg).textContent = Math.round(v * 100) + "%";
+      const hit = el("rect", {x: x - 2, y: m.t, width: w + 4, height: Y(0) - m.t, fill: "transparent"}, svg);
+      hit.addEventListener("pointermove", ev => showTip(ev, `<div class="t">${name}</div>${sw(j ? "--spline" : "--linear")}${j ? "Spline" : "Linear"}: ${pct(v)} of ${D.reps} genes at p ${which === "05" ? "&lt; 0.05" : "&lt; 5×10⁻⁵"}`));
+      hit.addEventListener("pointerleave", hideTip);
+    });
+  });
+}
+for (const [id, w] of [["thr-05", "05"], ["thr-5e5", "5e5"]]) document.getElementById(id).addEventListener("click", () => {
+  document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b.id === id)); drawPower(w); });
+drawPower("05");
+
+// QQ plot
+(function () {
+  const m0 = D.qq.m, W = 360, H = 300, mg = {l: 36, r: 10, t: 22, b: 30};
+  const unpack = a => a.map((e, j) => Array.isArray(e) ? e : [j, e]);
+  const box = document.getElementById("qq");
+  document.getElementById("leg-qq").innerHTML = `<span><i class="sw linear"></i>Linear, λ ${fmt(D.calib.lam_linear)}, ${pct(D.calib.fp_linear)} at p &lt; 0.05</span><span><i class="sw spline"></i>Spline, λ ${fmt(D.calib.lam_spline)}, ${pct(D.calib.fp_spline)} at p &lt; 0.05</span>`;
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "QQ plot of null interaction p-values"}, box);
+  const lim = 4;
+  const [X, Y] = frame(svg, W, H, mg, [0, lim], [0, lim], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], "expected −log10 p", "observed −log10 p");
+  el("line", {x1: X(0), y1: Y(0), x2: X(lim), y2: Y(lim), stroke: "var(--muted)", "stroke-dasharray": "3 3"}, svg);
+  for (const [k, v] of [["linear", "--linear"], ["spline", "--spline"]]) {
+    const pts = unpack(D.qq[k]).map(([j, o]) => [-Math.log10((m0 - j) / (m0 + 1)), o]);   // sorted ascending: rank m0 - j
+    el("path", {d: pts.map(([e, o], i) => (i ? "L" : "M") + X(Math.min(e, lim)).toFixed(1) + "," + Y(Math.min(o, lim)).toFixed(1)).join(""), fill: "none", stroke: `var(${v})`, "stroke-width": 2}, svg);
+  }
+})();
+
+// mu(age)
+(function () {
+  const s = S.constant, ctr = a => { const mm = a.reduce((x, y) => x + y, 0) / a.length; return a.map(v => v - mm); };
+  const t = ctr(D.mu_true), sp = ctr(s.mu_spline), li = ctr(s.mu_linear), se = s.mu_spline_se;
+  const W = 460, H = 260, m = {l: 40, r: 10, t: 22, b: 30};
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Expression trajectory by age"}, document.getElementById("mu"));
+  const [X, Y] = frame(svg, W, H, m, [25, 90], [-1.2, 0.8], [30, 40, 50, 60, 70, 80, 90], [-1.2, -0.8, -0.4, 0, 0.4, 0.8], "age", "expression, centred");
+  el("path", {d: path(G, sp.map((v, i) => v + 1.96 * se[i]), X, Y) + path(G.slice().reverse(), sp.map((v, i) => v - 1.96 * se[i]).reverse(), X, Y).replace("M", "L") + "Z", fill: "var(--band)"}, svg);
+  el("path", {d: path(G, t, X, Y), fill: "none", stroke: "var(--truth)", "stroke-width": 2, "stroke-dasharray": "5 4"}, svg);
+  el("path", {d: path(G, li, X, Y), fill: "none", stroke: "var(--linear)", "stroke-width": 2}, svg);
+  el("path", {d: path(G, sp, X, Y), fill: "none", stroke: "var(--spline)", "stroke-width": 2}, svg);
+  const cross = el("line", {y1: m.t, y2: H - m.b, stroke: "var(--muted)", visibility: "hidden"}, svg);
+  const hit = el("rect", {x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent"}, svg);
+  hit.addEventListener("pointermove", ev => { const r = svg.getBoundingClientRect(); const vx = (ev.clientX - r.left) / r.width * W;
+    const i = Math.max(0, Math.min(G.length - 1, Math.round(((vx - m.l) / (W - m.l - m.r) * 65) / 5)));
+    cross.setAttribute("x1", X(G[i])); cross.setAttribute("x2", X(G[i])); cross.setAttribute("visibility", "visible");
+    showTip(ev, `<div class="t">Age ${G[i]}</div>${sw("--truth")}True ${fmt(t[i])}<br>${sw("--linear")}Linear ${fmt(li[i])}<br>${sw("--spline")}Spline ${fmt(sp[i])} ± ${fmt(1.96 * se[i])}`); });
+  hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
+})();
+
+// table
+(function () {
+  const row = (lab, a, b, f, lowerBetter, matters) => {
+    const better = matters ? (lowerBetter ? (a < b ? 0 : 1) : (a > b ? 0 : 1)) : -1;
+    return `<td class="${better === 0 ? "win" : ""}">${f(a)}</td><td class="${better === 1 ? "win" : ""}">${f(b)}</td>`; };
+  let h = `<thead><tr><th>Shape</th><th>Power 0.05<br>linear</th><th><br>spline</th><th>Power 5×10⁻⁵<br>linear</th><th><br>spline</th><th>Curve error<br>linear</th><th><br>spline</th></tr></thead><tbody>`;
+  for (const [key, name] of shapes) { const s = S[key];
+    const d1 = Math.abs(s.power_linear - s.power_spline) > 0.05, d2 = Math.abs((s.power5_linear || 0) - (s.power5_spline || 0)) > 0.05;
+    h += `<tr><td>${name}${key === "constant" ? " (false positives)" : ""}</td>` +
+      row("", s.power_linear, s.power_spline, pct, key === "constant", d1) +
+      row("", s.power5_linear || 0, s.power5_spline || 0, pct, false, d2 && key !== "constant") +
+      row("", s.curve_linear.rmse, s.curve_spline.rmse, v => v.toFixed(3), true, Math.abs(s.curve_linear.rmse - s.curve_spline.rmse) > 0.03) + "</tr>"; }
+  document.getElementById("tbl").innerHTML = h + "</tbody>";
+})();
+</script>

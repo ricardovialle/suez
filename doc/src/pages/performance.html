@@ -1,0 +1,219 @@
+<title>suez Performance</title>
+<div class="wrap with-toc">
+{{TOC}}
+<div class="main">
+  <header class="stack">
+    <div class="eyebrow">Performance</div>
+    <h1>Speed and calibration</h1>
+    <p class="lede prose">How suez compares with tensorQTL, the standard fast eQTL mapper, on the same simulated repeated-measures data, and how much faster the engine has become since suez 0.4. Every number on this page is read from the benchmark result files in <code>bench/</code>.</p>
+  </header>
+
+  <section class="stats" aria-label="Highlights" id="stats"></section>
+
+  <section class="stack">
+    <div class="eyebrow">suez vs tensorQTL</div>
+    <h2 id="speed">Wall time on the same data</h2>
+    <p class="dim prose">Each row is one simulated dataset, from 200 to 4,000 samples, timed end to end (best of 3 interleaved runs). suez runs without the bootstrap here, as tensorQTL has none. tensorQTL's CPU time is the faster of 1 and 8 threads.</p>
+    <div class="legend">
+      <span><i class="sw dot" style="background:var(--suez)"></i>suez, 8 CPU cores</span>
+      <span><i class="sw dot" style="background:var(--tq)"></i>tensorQTL, CPU</span>
+      <span><i class="sw dot" style="background:var(--tq2)"></i>tensorQTL, GPU</span>
+    </div>
+    <div id="speed-chart"></div>
+    <p class="small prose" id="speed-note"></p>
+    <div class="table-wrap"><table id="speed-table"></table></div>
+  </section>
+
+  <section class="stack">
+    <h2 id="calibration">Calibration of null p-values</h2>
+    <p class="dim prose">λ is the median null chi-square divided by its expected value: 1 when p-values are calibrated, above 1 when they are inflated (false positives), below 1 when deflated (lost power). Each dot is one dataset; the methods differ only in how they treat the two samples of each individual.</p>
+    <div class="chart-row">
+      <div><h3>eQTL test (genotype)</h3><div id="cal-geno"></div></div>
+      <div><h3>Response test (genotype × condition)</h3><div id="cal-int"></div></div>
+    </div>
+    <ul class="prose">
+      <li><b>suez</b> stays near 1 for both tests, with either kernel.</li>
+      <li><b>tensorQTL on all samples</b> treats a donor's samples as independent: the eQTL test is inflated and the interaction test deflated, with or without expression PCs.</li>
+      <li><b>tensorQTL per individual</b> (the mean for eQTLs, the difference for response) is calibrated, but needs exactly two samples per donor and doubles the noise of the response test.</li>
+    </ul>
+  </section>
+
+  <section class="stack">
+    <h2 id="power">Power at a matched false-positive rate</h2>
+    <p class="dim prose">Share of genes with a planted effect found at gene level, after setting each method's threshold so its false-gene rate is 5% (the calibrated column). Datasets have 15 to 30 causal genes, so each value carries roughly ±10 to 15 percentage points of noise: read the pattern, not single cells.</p>
+    <div class="table-wrap"><table id="power-table"></table></div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">Engine history</div>
+    <h2 id="history">Faster than suez 0.4</h2>
+    <p class="dim prose">Step 2 on one core, the same workloads, suez 0.4 against the current engine (round 12 of the optimization log). Bars show the speed-up on a log scale.</p>
+    <div id="hist-chart"></div>
+    <div class="table-wrap"><table id="hist-table"></table></div>
+    <p class="small prose">The 0.4 and current timings come from two benchmark sessions on the same Apple M5 (R's reference BLAS); the speed-up multiplies the 0.4 → 0.5 and round-11 → round-12 comparisons, each measured with interleaved runs. Sources: <code>bench/results/final_summary.tsv</code>, <code>bench/results/r12_final_summary.tsv</code>, <code>bench/EXPERIMENT_LOG.md</code>.</p>
+  </section>
+
+  <section class="stack">
+    <h2 id="cores">Multi-core scaling</h2>
+    <p class="dim prose">Step 2 with forked workers. Memory is summed over the process tree, an upper bound since forks share pages.</p>
+    <div class="table-wrap"><table id="cores-table"></table></div>
+  </section>
+
+  <section class="stack">
+    <div class="eyebrow">Modelling</div>
+    <h2 id="age">Smooth conditions</h2>
+    <p class="dim prose">For effects that change with age or dose, a spline condition finds onsets and mid-life peaks that a linear term misses, at no cost in power for linear effects and with better-calibrated null p-values. Details in the <a href="age_varying_eqtl.html">age-varying eQTL report</a>.</p>
+    <div class="stats" id="age-stats"></div>
+  </section>
+
+  <section class="cols2">
+    <div>
+      <h3>When suez is the better tool</h3>
+      <ul>
+        <li><b>Repeated samples</b> of the same individuals, two or more conditions, or unbalanced designs.</li>
+        <li><b>Response eQTLs</b> as the question, including continuous and smooth conditions.</li>
+        <li><b>Related individuals</b> or strong hidden structure, modelled in the same covariance.</li>
+        <li><b>Admixed cohorts</b> with ancestry-specific effects.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>When tensorQTL is the better tool</h3>
+      <ul>
+        <li><b>One sample per unrelated individual</b>: a linear regression is calibrated and very fast.</li>
+        <li><b>Dense GRM kernels at 1,000+ samples</b>, where suez was 2 to 4 times slower.</li>
+        <li><b>trans scans and many permutations</b>: suez maps cis only.</li>
+        <li><b>Mature downstream tooling</b>: gene-level permutation p-values, conditional signals, fine-mapping inputs.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="foot prose" style="max-width:none" id="foot"></footer>
+</div>
+</div>
+<script>{{CHARTS_JS}}</script>
+<script>
+const P = {{DATA:perf}};
+const A = {{DATA:age}};
+const tqBest = r => Math.min(r.tensorqtl_cpu1, r.tensorqtl_cpu8);
+const secs = v => v < 10 ? v.toFixed(2) + " s" : v.toFixed(1) + " s";
+
+// headline
+const dflt = P.speed.filter(r => !/GRM/.test(r.desc)), grm = P.speed.filter(r => /GRM kernel/.test(r.desc));
+const f8 = dflt.map(r => Math.min(r.tensorqtl_gpu, tqBest(r)) / r.suez_8cores);
+const suezCal = P.calib.filter(r => r.key.startsWith("suez")).flatMap(r => [r.lambda_p_geno, r.lambda_p_interact]).filter(v => typeof v === "number");
+const tqCal = P.calib.filter(r => r.key === "tq_sample5").map(r => r.lambda_p_geno);
+const hist = P.history.filter(r => r.step === "step2").map(r => r.v04 / r.now);
+const stat = (lab, val, note) => `<div class="stat"><span class="lab">${lab}</span><span class="val">${val}</span><span class="note">${note}</span></div>`;
+document.getElementById("stats").innerHTML =
+  stat("Faster than the fastest tensorQTL run", `${Math.min(...f8).toFixed(1)}–${Math.max(...f8).toFixed(1)}×`, "suez on 8 cores, default kernel, 200 to 4,000 samples") +
+  stat("Time relative to tensorQTL, dense GRM", `${(Math.min(...grm.map(r => r.ratio8))).toFixed(1)}–${(Math.max(...grm.map(r => r.ratio8))).toFixed(1)}×`, "Slower from 1,000 samples: a dense kernel costs O(N²) per SNP") +
+  stat("Null λ", `${Math.min(...suezCal).toFixed(2)}–${Math.max(...suezCal).toFixed(2)}`, `suez, all tests. tensorQTL on all samples: eQTL λ up to ${Math.max(...tqCal).toFixed(2)}`) +
+  stat("Since suez 0.4", `${Math.round(Math.min(...hist))}–${Math.round(Math.max(...hist))}×`, "Step 2 speed-up on one core");
+
+// speed dot plot, log seconds
+(function () {
+  const rows = P.speed, W = 720, rowH = 30, m = {l: 230, r: 16, t: 26, b: 34}, H = m.t + m.b + rowH * rows.length;
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Wall time per dataset, suez and tensorQTL"}, document.getElementById("speed-chart"));
+  const X = scale(0.2, 100, m.l, W - m.r, true);
+  const ticks = [0.2, 0.5, 1, 2, 5, 10, 20, 50, 100];
+  axes(svg, W, H, m, X, () => 0, ticks, [], {xgrid: true, fmtx: t => t + "s", xlab: "wall time, log scale"});
+  rows.forEach((r, i) => {
+    const y = m.t + rowH * (i + 0.5);
+    el("text", {x: m.l - 10, y: y + 4, "text-anchor": "end", class: "lab"}, svg).textContent = r.desc;
+    const pts = [["--suez", "suez 8 cores", r.suez_8cores], ["--tq", "tensorQTL CPU", tqBest(r)], ["--tq2", "tensorQTL GPU", r.tensorqtl_gpu]];
+    const xs = pts.map(p => X(p[2]));
+    el("line", {x1: Math.min(...xs), x2: Math.max(...xs), y1: y, y2: y, stroke: "var(--rule)", "stroke-width": 2}, svg);
+    pts.slice().reverse().forEach(([v, , t]) => el("circle", {cx: X(t), cy: y, r: 5.5, fill: `var(${v})`, stroke: "var(--surface)", "stroke-width": 2}, svg));
+    const hit = el("rect", {x: 0, y: y - rowH / 2, width: W, height: rowH, fill: "transparent"}, svg);
+    hover(hit, `<div class="t">${r.desc}</div>${r.N.toLocaleString()} samples, ${r.tests.toLocaleString()} tests<br>` +
+      pts.map(([v, n, t]) => `${sw(v)}${n}: ${secs(t)}`).join("<br>") + `<br>suez 1 core: ${secs(r.suez_1core)}`);
+  });
+})();
+document.getElementById("speed-note").textContent = `Hardware: ${P.env.cpu}, ${P.env.cores} cores, ${P.env.gpu.split(",")[0]}; ${P.env.os}. ${P.env.tq}.`;
+(function () {
+  let h = `<thead><tr><th>Dataset</th><th>Samples</th><th>Tests</th><th>suez 1 core</th><th>suez 8 cores</th><th>+ bootstrap, 1 core</th><th>tensorQTL CPU</th><th>tensorQTL GPU</th><th>suez 8 cores vs fastest</th></tr></thead><tbody>`;
+  for (const r of P.speed) {
+    const best = Math.min(tqBest(r), r.tensorqtl_gpu), ratio = r.suez_8cores / best;
+    h += `<tr><td>${r.desc}</td><td>${r.N.toLocaleString()}</td><td>${r.tests.toLocaleString()}</td><td>${secs(r.suez_1core)}</td><td>${secs(r.suez_8cores)}</td>` +
+      `<td>${typeof r.boot === "number" ? secs(r.boot) : "–"}</td><td>${secs(tqBest(r))}</td><td>${secs(r.tensorqtl_gpu)}</td>` +
+      `<td class="${ratio < 1 ? "win" : "bad"}">${ratio < 1 ? (1 / ratio).toFixed(1) + "× faster" : ratio.toFixed(1) + "× slower"}</td></tr>`;
+  }
+  document.getElementById("speed-table").innerHTML = h + "</tbody>";
+})();
+
+// calibration strips
+const METHODS = [["suez_learned", "suez, step-1 kernel"], ["suez_dataset", "suez, same-individual kernel"],
+  ["tq_sample5", "tensorQTL, all samples, 5 PCs"], ["tq_sample0", "tensorQTL, all samples, no PCs"], ["tq_indiv5", "tensorQTL, per individual, 5 PCs"]];
+function strip(id, col) {
+  const W = 420, rowH = 40, m = {l: 150, r: 14, t: 16, b: 34}, H = m.t + m.b + rowH * METHODS.length;
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Genomic inflation by method"}, document.getElementById(id));
+  const X = scale(0.2, 1.6, m.l, W - m.r, false);
+  axes(svg, W, H, m, X, () => 0, [0.2, 0.6, 1, 1.4], [], {xgrid: true, xlab: "λ"});
+  el("line", {x1: X(1), x2: X(1), y1: m.t, y2: H - m.b, stroke: "var(--fg-2)", "stroke-dasharray": "3 3"}, svg);
+  METHODS.forEach(([key, name], i) => {
+    const y = m.t + rowH * (i + 0.5), suez = key.startsWith("suez");
+    const words = name.split(", ");
+    el("text", {x: m.l - 10, y: y - 2, "text-anchor": "end", class: "lab"}, svg).textContent = words[0];
+    el("text", {x: m.l - 10, y: y + 11, "text-anchor": "end"}, svg).textContent = words.slice(1).join(", ");
+    P.calib.filter(r => r.key === key && typeof r[col] === "number").forEach(r => {
+      const c = el("circle", {cx: X(Math.max(0.2, Math.min(1.6, r[col]))), cy: y, r: 6, fill: suez ? "var(--suez)" : "var(--tq)", "fill-opacity": 0.75, stroke: "var(--surface)", "stroke-width": 1.5}, svg);
+      hover(c, `<div class="t">${name}</div>Dataset ${r.dataset}: λ ${r[col].toFixed(3)}<br>${pct(col === "lambda_p_geno" ? r.fpr05_p_geno : r.fpr05_p_interact)} of null tests at p &lt; 0.05`);
+    });
+  });
+}
+strip("cal-geno", "lambda_p_geno"); strip("cal-int", "lambda_p_interact");
+
+// power table
+(function () {
+  const ds = [...new Set(P.power.map(r => r.dataset))];
+  let h = `<thead><tr><th>Method</th>${ds.map(d => `<th>${d}<br>eQTL</th><th><br>response</th>`).join("")}</tr></thead><tbody>`;
+  for (const [key, name] of METHODS) {
+    const cells = ds.map(d => ["p_geno", "p_interact"].map(t => { const r = P.power.find(x => x.dataset === d && x.key === key && x.test === t);
+      return `<td>${r ? pct(r.power_calibrated) : "–"}</td>`; }).join("")).join("");
+    h += `<tr><td>${name}</td>${cells}</tr>`;
+  }
+  document.getElementById("power-table").innerHTML = h + "</tbody>";
+})();
+
+// engine history bars (log speed-up)
+(function () {
+  const rows = P.history.filter(r => r.step === "step2").sort((a, b) => b.v04 / b.now - a.v04 / a.now);
+  const W = 720, rowH = 24, m = {l: 90, r: 50, t: 20, b: 34}, H = m.t + m.b + rowH * rows.length;
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Speed-up since suez 0.4"}, document.getElementById("hist-chart"));
+  const X = scale(1, 100, m.l, W - m.r, true);
+  axes(svg, W, H, m, X, () => 0, [1, 2, 5, 10, 20, 50, 100], [], {xgrid: true, fmtx: t => t + "×", xlab: "speed-up, log scale"});
+  rows.forEach((r, i) => {
+    const s = r.v04 / r.now, y = m.t + rowH * i + 4, h = rowH - 8, w = X(s) - X(1);
+    el("text", {x: m.l - 10, y: y + h / 2 + 4, "text-anchor": "end", class: "lab"}, svg).textContent = r.dataset;
+    el("path", {d: `M${X(1)},${y}H${X(1) + w - 4}Q${X(1) + w},${y} ${X(1) + w},${y + 4}V${y + h - 4}Q${X(1) + w},${y + h} ${X(1) + w - 4},${y + h}H${X(1)}Z`, fill: "var(--suez)"}, svg);
+    el("text", {x: X(s) + 6, y: y + h / 2 + 4, class: "lab"}, svg).textContent = s.toFixed(1) + "×";
+    const hit = el("rect", {x: 0, y: y - 4, width: W, height: rowH, fill: "transparent"}, svg);
+    hover(hit, `<div class="t">${r.dataset}</div>suez 0.4: ${secs(r.v04)}<br>now: ${secs(r.now)}<br>peak RAM ${Math.round(r.rss04)} → ${Math.round(r.rss_now)} MB`);
+  });
+  const all = P.history;
+  let h = `<thead><tr><th>Workload</th><th>Step</th><th>suez 0.4</th><th>0.5</th><th>Now</th><th>Speed-up</th><th>Peak RAM 0.4</th><th>Now</th></tr></thead><tbody>`;
+  for (const r of all) h += `<tr><td>${r.dataset}</td><td>${r.step === "step1" ? "1" : "2"}</td><td>${secs(r.v04)}</td><td>${secs(r.v05)}</td><td>${secs(r.now)}</td><td class="win">${(r.v04 / r.now).toFixed(1)}×</td><td>${Math.round(r.rss04)} MB</td><td>${Math.round(r.rss_now)} MB</td></tr>`;
+  document.getElementById("hist-table").innerHTML = h + "</tbody>";
+})();
+
+// cores table
+(function () {
+  const ds = [...new Set(P.cores.map(r => r.dataset))], cs = [1, 2, 4, 8];
+  let h = `<thead><tr><th>Workload</th>${cs.map(c => `<th>${c} core${c > 1 ? "s" : ""}</th>`).join("")}<th>Speed-up at 8</th><th>Tree RAM at 8</th></tr></thead><tbody>`;
+  for (const d of ds) {
+    const w = c => (P.cores.find(r => r.dataset === d && r.cores === c) || {}).wall;
+    const r8 = P.cores.find(r => r.dataset === d && r.cores === 8);
+    h += `<tr><td>${d}</td>${cs.map(c => `<td>${w(c) ? secs(w(c)) : "–"}</td>`).join("")}<td>${(w(1) / w(8)).toFixed(1)}×</td><td>${Math.round(r8.tree_rss)} MB</td></tr>`;
+  }
+  document.getElementById("cores-table").innerHTML = h + "</tbody>";
+})();
+
+// age-varying highlights
+const S = A.shapes, st2 = (lab, a, b, note) => `<div class="stat"><span class="lab">${lab}</span><span class="val"><span class="from">${a}</span><span class="arrow">→</span>${b}</span><span class="note">${note}</span></div>`;
+document.getElementById("age-stats").innerHTML =
+  st2("Mid-life peak, p &lt; 0.05", pct(S.midlife.power_linear), pct(S.midlife.power_spline), "Linear vs spline") +
+  st2("Late onset, p &lt; 5×10⁻⁵", pct(S.late.power5_linear), pct(S.late.power5_spline), "Linear vs spline") +
+  st2("Linear effect, p &lt; 0.05", pct(S.linear.power_linear), pct(S.linear.power_spline), "No power lost") +
+  st2("Null λ", A.calib.lam_linear.toFixed(2), A.calib.lam_spline.toFixed(2), "Constant-effect genes");
+document.getElementById("foot").innerHTML = `tensorQTL benchmark: suez ${P.env.suez}, ${P.env.r.split(" (")[0]}, ${P.env.tq}, run ${P.env.date}. Scripts and raw tables: <code>bench/tensorqtl/</code>; full report: <a href="suez_vs_tensorqtl.html">suez vs tensorQTL</a>. Engine history: <code>bench/REPORT.md</code> and <code>bench/EXPERIMENT_LOG.md</code>.`;
+</script>

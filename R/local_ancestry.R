@@ -76,7 +76,7 @@ std_cols = function(M) {   # centre and scale; a constant column becomes 0 (= te
 #   M1  LA + G_1..G_k             M2  M1c + G_1..G_k x C
 #   M1s LA + (G_1 + ... + G_k)    M2s M1c + (G_1 + ... + G_k) x C
 # LA = haplotype counts of the first k-1 ancestries, G_a = ALT dosage on ancestry-a haplotypes.
-la_gene = function(gene, D, H, anno, C, U, lambda, Uy, UX0, boot, maf_threshold) {
+la_gene = function(gene, D, H, anno, C, U, lambda, Uy, UX0, boot, maf_threshold, curve_at = NULL, sdC = NULL) {
   k = length(D); anc = names(D); ind = anno$individual; q = ncol(C)
   Gt = Reduce(`+`, D)[, unique(ind), drop = FALSE]             # SNPs x individuals, total ALT dosage
   keep = rowSums(Gt) >= 5 & rowSums(Gt != Gt[, 1]) > 0   # >= 5 ALT alleles, not constant
@@ -102,8 +102,13 @@ la_gene = function(gene, D, H, anno, C, U, lambda, Uy, UX0, boot, maf_threshold)
   }
   models = list(M0 = iLA, M1 = c(iLA, iG), M1s = c(iLA, iGs), M1c = c(iLA, iG, iLAc),
                 M2 = c(iLA, iG, iLAc, iGc), M2s = c(iLA, iG, iLAc, iGsc))
+  curves = !is.null(curve_at)
+  if (curves) models$Mx = integer(0)   # X0 only: the condition trajectory mu
+  # covariances: M2 (per-ancestry joint interaction tests, beta curves), Mx (mu curve, first q columns of X0)
+  cov_models = c(if (q > 1 || curves) 4L, if (curves) 6L)
   do_boot = boot && q > 0
-  fit = .Call(suez_fit_models, U, lambda, Uy, UX0, cols, models, if (do_boot) 3L else -1L, if (do_boot) 4L else -1L)
+  fit = .Call(suez_fit_models, U, lambda, Uy, UX0, cols, models, if (do_boot) 3L else -1L, if (do_boot) 4L else -1L,
+              as.integer(cov_models), if (curves) q else 0L)
   ll = fit$ll; np = fit$npar; colnames(ll) = colnames(np) = names(models)
   test = function(a, b) {
     df = np[, a] - np[, b]
@@ -135,6 +140,27 @@ la_gene = function(gene, D, H, anno, C, U, lambda, Uy, UX0, boot, maf_threshold)
       out[[paste0("beta_interact_", anc[a])]] = bi; out[[paste0("se_interact_", anc[a])]] = si
       out[[paste0("p_interact_", anc[a])]] = wald(bi, si, df2)
     }
+  }
+  if (length(cov_models)) {
+    # per ancestry, from M2: per-allele effects of G_a, G_a x C_1..C_q and their covariance (residual-df scaled)
+    cx = if (curves) q else 0L; d = cx + length(models$M2); V2 = fit$cov[[1]]; S = nrow(V2)
+    for (a in seq_len(k)) {
+      pos = c((k - 1) + a, (k - 1) + k + q * (k - 1) + (seq_len(q) - 1) * k + a)   # within M2's terms
+      sc = cbind(apply(Gs[[a]], 2, sd), sapply(seq_len(q), function(j) apply(Gs[[a]] * C[, j], 2, sd)))   # S x (1+q)
+      sc[sc <= 1e-10] = NA                                       # absent term (std_cols)
+      b = fit$beta[[5]][, pos, drop = FALSE] / sc
+      ii = as.vector(outer(cx + pos, (cx + pos - 1) * d, `+`))      # column-major entries of the (1+q) block
+      V = V2[, ii, drop = FALSE] / sc[, rep(1:(q + 1), q + 1), drop = FALSE] / sc[, rep(1:(q + 1), each = q + 1), drop = FALSE] *
+        (nc / df2)
+      if (q > 1) out[[paste0("p_interact_", anc[a])]] = vapply(seq_len(S), function(s) {   # joint Wald F, df q
+        bi = b[s, -1]; Vi = matrix(V[s, ], q + 1)[-1, -1]
+        if (anyNA(bi) || anyNA(Vi)) return(NA_real_)
+        w = tryCatch(drop(bi %*% solve(Vi, bi)), error = function(e) NA_real_)
+        stats::pf(w / q, q, df2[s], lower.tail = FALSE)
+      }, 0)
+      if (curves) out = add_curve(out, paste0("beta_curve_", anc[a], "_"), b, V, cbind(1, curve_at))
+    }
+    if (curves) out = mu_curve(out, fit$bx[[2]][1, ], matrix(fit$cov[[2]][1, ], q), sdC, curve_at, S)
   }
   if (do_boot) { out$l_boot_interact_null = fit$ll_boot[, 1]; out$l_boot_interact = fit$ll_boot[, 2] }
   out

@@ -1,7 +1,7 @@
 #' Function to learn covariance structure across samples using latent factors
 #'
 #' @param input [genes x samples] Normalized (e.g. quantile normalized) matrix of log2 gene expression
-#' @param anno [samples x 2] data.frame with `individual` and `condition` columns. `condition` may be a factor/character (one effect per level) or numeric (one slope). If a kinship matrix is provided the row and column names must correspond to the values used in the `individual` column.
+#' @param anno [samples x 2] data.frame with `individual` and `condition` columns. `condition` may be a factor/character (one effect per level) or numeric (one slope), or a numeric basis matrix such as `splines::ns(age, df = 3)` (one effect per column). If a kinship matrix is provided the row and column names must correspond to the values used in the `individual` column.
 #' @param P Number of latent factors to model. suez can prune out unnecessary factors (in principle).
 #' @param kinship_matrix Representing relatedness between individuals. Optional.
 #' @param same_ind_initial_weight Initialization.
