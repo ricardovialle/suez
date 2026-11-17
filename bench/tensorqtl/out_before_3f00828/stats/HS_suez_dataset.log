@@ -1,6 +1,0 @@
-          used (Mb) gc trigger (Mb) max used (Mb)
-Ncells  565414 30.2    1269344 67.8   565414 30.2
-Vcells 2316000 17.7    8388608 64.0  2316000 17.7
-Checkpoint dir: 
-Performing initial eigendecomposition...
-suez HS cores=8 kernel=dataset perm=none: step1 NA s, step2 1.21 s, 19950 tests

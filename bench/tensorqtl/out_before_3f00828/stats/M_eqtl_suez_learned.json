@@ -1,1 +1,0 @@
-{"tool":"suez","dataset":"M_eqtl","cores":8,"kernel":"learned","perm":"none","t_step1":4.98,"t_step2":0.59,"n_tests":30049,"n_samples":200}
