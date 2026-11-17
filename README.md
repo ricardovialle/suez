@@ -377,7 +377,8 @@ workers x threads.
 With a `sample_kernel` (e.g. a GRM), genes are processed by position in blocks: each SNP's genotype and
 interaction columns are rotated into the kernel's eigenbasis once per block, on all cores, rather than once for
 every gene whose cis window contains it. A block holds at most `options(suez.rotate_mem)` bytes of rotated
-columns (default `1e9`; at 2,000 samples one SNP takes 32 KB with one interaction term).
+columns (default `5e7`, 50 MB; at 2,000 samples one SNP takes 32 KB with one interaction term). A larger
+cap rotates SNPs shared by neighbouring blocks fewer times, at more memory.
 `options(suez.rotate_once = FALSE)` rotates per gene instead (results agree to rounding).
 
 Rough timings on an Apple M5 (current version, one core, bootstrap on, R's reference BLAS/LAPACK;

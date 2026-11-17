@@ -12,7 +12,7 @@ extern "C" SEXP suez_fit_gene(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern "C" SEXP suez_fit_gene_threads(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern "C" SEXP suez_fit_models(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern "C" SEXP suez_sp_crossprod(SEXP, SEXP);
-extern "C" SEXP suez_rotate_terms(SEXP, SEXP, SEXP, SEXP);
+extern "C" SEXP suez_rotate_terms(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern "C" SEXP suez_contrast_eigen(SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
@@ -20,7 +20,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"suez_fit_gene_threads", (DL_FUNC) &suez_fit_gene_threads, 9},
   {"suez_fit_models", (DL_FUNC) &suez_fit_models, 10},
   {"suez_sp_crossprod", (DL_FUNC) &suez_sp_crossprod, 2},
-  {"suez_rotate_terms", (DL_FUNC) &suez_rotate_terms, 4},
+  {"suez_rotate_terms", (DL_FUNC) &suez_rotate_terms, 5},
   {"suez_contrast_eigen", (DL_FUNC) &suez_contrast_eigen, 4},
   {NULL, NULL, 0}
 };

@@ -968,28 +968,33 @@ static SEXP fit_gene_call(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C
                   Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt, wc, rot != R_NilValue ? &pre : nullptr);
 }
 
-// Standardized genotype and genotype x C_j columns of G (N x S), rotated by U (dense), on nt threads: the same
-// arithmetic per column as fit_gene's load (standardize, then rotate_all in 256-column chunks).
-extern "C" SEXP suez_rotate_terms(SEXP U_, SEXP G_, SEXP C_, SEXP threads) {
+// Standardized genotype and genotype x C_j columns, rotated by U (dense), on nt threads: the same arithmetic per
+// column as fit_gene's load (standardize, then rotate_all in 256-column chunks). Genotypes come per individual
+// (Gi: SNPs x individuals) with each sample's individual (ind, 0-based), and each chunk's N x 256 sample columns
+// are built here: no N x SNPs copy.
+extern "C" SEXP suez_rotate_terms(SEXP U_, SEXP Gi_, SEXP ind_, SEXP C_, SEXP threads) {
   BEGIN_RCPP
   const Eigen::Map<MatrixXd> U = Rcpp::as<Eigen::Map<MatrixXd>>(U_);
-  const Rcpp::NumericMatrix Gd(G_); const Eigen::Map<const MatrixXd> G(Gd.begin(), Gd.nrow(), Gd.ncol());
-  const MatrixXd C = Rcpp::as<MatrixXd>(C_); const int S = G.cols(), q = C.cols(), n = U.cols();
+  const Rcpp::NumericMatrix Gd(Gi_); const Eigen::Map<const MatrixXd> Gi(Gd.begin(), Gd.nrow(), Gd.ncol());
+  const Rcpp::IntegerVector ind(ind_);
+  const MatrixXd C = Rcpp::as<MatrixXd>(C_); const int S = Gi.rows(), q = C.cols(), n = U.cols(), N = U.rows();
   const int nt = std::max(1, Rcpp::as<int>(threads));
-  if (G.rows() != U.rows() || C.rows() != U.rows()) Rcpp::stop("suez_rotate_terms: G, C and U need one row per sample");
+  if (ind.size() != N || C.rows() != N) Rcpp::stop("suez_rotate_terms: ind, C and U need one row per sample");
+  for (int i : ind) if (i < 0 || i >= Gi.cols()) Rcpp::stop("suez_rotate_terms: individual index out of range");
   // rotate() refuses non-finite values with Rcpp::stop, which must not run on a worker thread: checked here
-  if (!G.allFinite() || !C.allFinite()) Rcpp::stop("non-finite genotype or term values (impute missing genotypes first)");
+  if (!Gi.allFinite() || !C.allFinite()) Rcpp::stop("non-finite genotype or term values (impute missing genotypes first)");
   Rcpp::List out(q + 1); std::vector<double*> P;
   for (int j = 0; j <= q; ++j) { Rcpp::NumericMatrix M(n, S); P.push_back(M.begin()); out[j] = M; }
   // 256-column chunks in parallel (each rotated serially: the same arithmetic as rotate_all at any thread count);
   // workers write disjoint columns of plain memory (no R API)
   par_for((S + 255) / 256, nt, [&](int c, int) {
     const int c0 = c * 256, w = std::min(256, S - c0); double sd;
-    MatrixXd Gc = G.middleCols(c0, w);
+    MatrixXd G0(N, w); for (int s = 0; s < w; ++s) for (int i = 0; i < N; ++i) G0(i, s) = Gi(c0 + s, ind[i]);
+    MatrixXd Gc = G0;
     for (int s = 0; s < w; ++s) standardize(Gc.col(s), sd);
     Eigen::Map<MatrixXd>(P[0], n, S).middleCols(c0, w) = rotate_all(U, Gc, 1);
     for (int j = 0; j < q; ++j) {
-      MatrixXd Ic = G.middleCols(c0, w).array().colwise() * C.col(j).array();
+      MatrixXd Ic = G0.array().colwise() * C.col(j).array();
       for (int s = 0; s < w; ++s) if (!standardize(Ic.col(s), sd)) Ic.col(s).setZero();
       Eigen::Map<MatrixXd>(P[1 + j], n, S).middleCols(c0, w) = rotate_all(U, Ic, 1);
     }

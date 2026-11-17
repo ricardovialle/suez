@@ -245,7 +245,8 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   seeds = sample.int(.Machine$integer.max, length(genes))
 
   # Rotate once (dense kernel basis): genes by position in blocks whose cis SNPs' rotated columns fit in
-  # options(suez.rotate_mem) bytes (default 1e9); each SNP's genotype and interaction columns are rotated once per
+  # options(suez.rotate_mem) bytes (default 5e7: most of the gain at ~1/5 of the memory
+  # of 2.5e8 on XL_grm / R_real); each SNP's genotype and interaction columns are rotated once per
   # block, on all cores, instead of once per gene whose window holds it. Not used for the sparse default basis
   # (already cheap), local ancestry, a Tabix genotype source, or per-gene genotype shuffles (permute).
   rc = new.env()   # this block's rotated columns, read by fit_one (forked workers share them)
@@ -254,7 +255,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   blocks = list(seq_along(genes))
   if (rot_on) {
     cr = lapply(seq_along(genes), function(j) cis_rows(g_chr[j], g_left[j], g_right[j]))
-    cap = max(1, floor(getOption("suez.rotate_mem", 1e9) / (8 * ncol(U) * (1 + ncol(C)))))   # SNPs per block
+    cap = max(1, floor(getOption("suez.rotate_mem", 5e7) / (8 * ncol(U) * (1 + ncol(C)))))   # SNPs per block
     blocks = list(); cur = integer(0); seen = logical(nrow(genotype)); n_in = 0
     for (j in order(g_chr, g_left)) {
       new = cr[[j]][!seen[cr[[j]]]]
@@ -365,10 +366,11 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     rc$rot = NULL
     brows = if (rot_on) sort(unique(unlist(cr[b]))) else integer(0)
     if (length(brows)) {
-      Gb = t(impute_mean(genotype[brows, , drop=F])[, anno$individual, drop=F]); storage.mode(Gb) = "double"
-      rc$rot = .Call(suez_rotate_terms, U, Gb, C, max(threads, foreach::getDoParWorkers()))
+      Gi = impute_mean(genotype[brows, , drop=F]); storage.mode(Gi) = "double"   # SNPs x individuals
+      rc$rot = .Call(suez_rotate_terms, U, Gi, match(anno$individual, colnames(Gi)) - 1L, C,
+                     max(threads, foreach::getDoParWorkers()))
       rc$col = integer(nrow(genotype)); rc$col[brows] = seq_along(brows)
-      rm(Gb)
+      rm(Gi)
     }
     res = c(res, foreach(j=b, .errorhandling=errorhandling) %dopar% list(j, fit_one(genes[j], seeds[j], j)))
   }
