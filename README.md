@@ -377,8 +377,10 @@ workers x threads.
 With a `sample_kernel` (e.g. a GRM), genes are processed by position in blocks: each SNP's genotype and
 interaction columns are rotated into the kernel's eigenbasis once per block, on all cores, rather than once for
 every gene whose cis window contains it. A block holds at most `options(suez.rotate_mem)` bytes of rotated
-columns (default `5e7`, 50 MB; at 2,000 samples one SNP takes 32 KB with one interaction term), but at least
-16 genes per worker (a block is one round of the workers; with fewer genes they wait for each other). A larger
+columns (default `5e7`, 50 MB; at 2,000 samples one SNP takes 32 KB with one interaction term), and with
+several workers each block needs at least 16 genes per worker (a block is one round of the workers; with fewer
+genes they wait for each other). When such blocks would not fit in the cap, rotate-once is not used: on 8 cores
+it saves ~5-10% (GRM, N = 1000-2000) at ~250-300 MB more, so raise `suez.rotate_mem` (e.g. `5e8`) for that. A larger
 cap rotates SNPs shared by neighbouring blocks fewer times, at more memory.
 It is used when the rotations it saves exceed about 2 GFLOP per worker (e.g. not for 200 samples on 8 cores,
 where its setup costs more than it saves); `options(suez.rotate_once = TRUE)` or `FALSE` forces it on or off

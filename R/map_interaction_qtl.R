@@ -269,10 +269,12 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   }
   if (rot_on) {
     cap = max(1, floor(getOption("suez.rotate_mem", 5e7) / (8 * ncol(U) * (1 + ncol(C)))))   # SNPs per block
-    # a block also holds >= 16 genes per worker (memory cap exceeded if needed): each block is one foreach round
-    # whose tail leaves workers idle, ~1 / (2 k) of the time at k genes per worker (8 cores, 5 interleaved runs:
-    # 4 genes per worker gained nothing, one block XL_grm 1.06x and R_real 1.11x)
-    min_genes = 16 * max(1, foreach::getDoParWorkers())
+    # with several workers a block also holds >= 16 genes per worker: each block is one foreach round whose tail
+    # leaves workers idle, ~1 / (2 k) of the time at k genes per worker (8 cores, 5 interleaved runs: 4 genes per
+    # worker gained nothing, one block XL_grm 1.06x and R_real 1.11x). Auto mode keeps the memory cap: if such
+    # blocks would exceed it, rotate-once is not used (TRUE uses it anyway, over the cap).
+    workers = max(1, foreach::getDoParWorkers())
+    min_genes = if (workers > 1) 16 * workers else 1
     blocks = list(); cur = integer(0); seen = logical(nrow(genotype)); n_in = 0
     for (j in order(g_chr, g_left)) {
       new = cr[[j]][!seen[cr[[j]]]]
@@ -282,6 +284,9 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
       cur = c(cur, j); seen[new] = TRUE; n_in = n_in + length(new)
     }
     if (length(cur)) blocks[[length(blocks) + 1]] = cur
+    if (!isTRUE(ro) && workers > 1 && max(vapply(blocks, function(b) length(unique(unlist(cr[b]))), 0L)) > cap) {
+      rot_on = FALSE; blocks = list(seq_along(genes))
+    }
   }
 
   fit_one = function(gene, seed, j) {
@@ -380,14 +385,13 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   # results are combined once at the end (combining pairwise copies the growing table at every gene), in gene order
   res = list()
   for (b in blocks) {
-    rc$rot = NULL
+    if (!is.null(rc$rot)) { rc$rot = NULL; invisible(gc(FALSE)) }   # free the last block before the next is made
     brows = if (rot_on) sort(unique(unlist(cr[b]))) else integer(0)
     if (length(brows)) {
-      Gi = impute_mean(genotype[brows, , drop=F]); storage.mode(Gi) = "double"   # SNPs x individuals
-      rc$rot = .Call(suez_rotate_terms, U, Gi, match(anno$individual, colnames(Gi)) - 1L, C,
+      # imputed (as impute_mean) and built per 256-SNP chunk in C++: no SNPs x individuals copies here
+      rc$rot = .Call(suez_rotate_terms, U, genotype, brows - 1L, match(anno$individual, colnames(genotype)) - 1L, C,
                      max(threads, foreach::getDoParWorkers()))
       rc$col = integer(nrow(genotype)); rc$col[brows] = seq_along(brows)
-      rm(Gi)
     }
     res = c(res, foreach(j=b, .errorhandling=errorhandling) %dopar% list(j, fit_one(genes[j], seeds[j], j)))
   }

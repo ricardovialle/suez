@@ -31,6 +31,11 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#if defined(__GLIBC__)
+#include <malloc.h>   // malloc_trim
+#elif defined(__APPLE__)
+#include <malloc/malloc.h>   // malloc_zone_pressure_relief
+#endif
 using Eigen::ArrayXd; using Eigen::MatrixXd; using Eigen::VectorXd; using Eigen::VectorXi;
 static const double NEG_INF = -std::numeric_limits<double>::infinity();
 static const double POS_INF = std::numeric_limits<double>::infinity();
@@ -732,10 +737,15 @@ static MatrixXd rotate(const Eigen::Map<MatrixXd>& U, const MatrixXd& M, int nt)
   }
   MatrixXd Mu(nc, S);
   for (int i = 0; i < N; ++i) Mu.row(cls[i]) = M.row(i);
-  if (nt <= 1) {
-    MatrixXd UZ = MatrixXd::Zero(U.cols(), nc);
-    for (int i = 0; i < N; ++i) UZ.col(cls[i]) += U.row(i).transpose();
-    return UZ * Mu;
+  if (nt <= 1) {   // row slices as the threaded path (same rows bit for bit): UZ held ROT_ROWS rows at a time,
+    // not n x nc (16 MB at N = 2000, per thread of suez_rotate_terms)
+    MatrixXd UZ, R(n, S);
+    for (int r0 = 0; r0 < n; r0 += ROT_ROWS) {
+      const int h = std::min(ROT_ROWS, n - r0); UZ.setZero(h, nc);
+      for (int i = 0; i < N; ++i) UZ.col(cls[i]) += U.row(i).segment(r0, h).transpose();
+      R.middleRows(r0, h).noalias() = UZ * Mu;
+    }
+    return R;
   }
   MatrixXd UZ(n, nc), R(n, S);
   par_for(nch, nt, [&](int c, int) { const int r0 = c * ROT_ROWS, h = std::min(ROT_ROWS, n - r0);
@@ -968,37 +978,62 @@ static SEXP fit_gene_call(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C
                   Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt, wc, rot != R_NilValue ? &pre : nullptr);
 }
 
-// Standardized genotype and genotype x C_j columns, rotated by U (dense), on nt threads: the same arithmetic per
-// column as fit_gene's load (standardize, then rotate_all in 256-column chunks). Genotypes come per individual
-// (Gi: SNPs x individuals) with each sample's individual (ind, 0-based), and each chunk's N x 256 sample columns
-// are built here: no N x SNPs copy.
-extern "C" SEXP suez_rotate_terms(SEXP U_, SEXP Gi_, SEXP ind_, SEXP C_, SEXP threads) {
+// Standardized genotype and genotype x C_j columns of genotype rows `rows` (0-based; genotype: SNPs x individuals,
+// integer or double, NA allowed), rotated by U (dense), on nt threads. Per 256-SNP chunk: calls imputed as
+// impute_mean() (R's round(), mean of the rounded calls as rowMeans(), 0 for a SNP without calls), sample columns
+// built from each sample's individual (ind, 0-based), then the same arithmetic as fit_gene's load (standardize,
+// rotate_all). Only chunk-sized copies of the genotypes are made.
+extern "C" SEXP suez_rotate_terms(SEXP U_, SEXP geno_, SEXP rows_, SEXP ind_, SEXP C_, SEXP threads) {
   BEGIN_RCPP
   const Eigen::Map<MatrixXd> U = Rcpp::as<Eigen::Map<MatrixXd>>(U_);
-  const Rcpp::NumericMatrix Gd(Gi_); const Eigen::Map<const MatrixXd> Gi(Gd.begin(), Gd.nrow(), Gd.ncol());
-  const Rcpp::IntegerVector ind(ind_);
-  const MatrixXd C = Rcpp::as<MatrixXd>(C_); const int S = Gi.rows(), q = C.cols(), n = U.cols(), N = U.rows();
+  if (!Rf_isMatrix(geno_) || (TYPEOF(geno_) != INTSXP && TYPEOF(geno_) != REALSXP))
+    Rcpp::stop("suez_rotate_terms: genotype must be an integer or double matrix");
+  const bool isint = TYPEOF(geno_) == INTSXP; const int* gi = isint ? INTEGER(geno_) : nullptr;
+  const double* gd = isint ? nullptr : REAL(geno_); const size_t M = Rf_nrows(geno_); const int ni = Rf_ncols(geno_);
+  const Rcpp::IntegerVector rows(rows_), ind(ind_);
+  const MatrixXd C = Rcpp::as<MatrixXd>(C_); const int S = rows.size(), q = C.cols(), n = U.cols(), N = U.rows();
   const int nt = std::max(1, Rcpp::as<int>(threads));
   if (ind.size() != N || C.rows() != N) Rcpp::stop("suez_rotate_terms: ind, C and U need one row per sample");
-  for (int i : ind) if (i < 0 || i >= Gi.cols()) Rcpp::stop("suez_rotate_terms: individual index out of range");
+  for (int i : ind) if (i < 0 || i >= ni) Rcpp::stop("suez_rotate_terms: individual index out of range");
+  for (int r : rows) if (r < 0 || (size_t)r >= M) Rcpp::stop("suez_rotate_terms: genotype row out of range");
   // rotate() refuses non-finite values with Rcpp::stop, which must not run on a worker thread: checked here
-  if (!Gi.allFinite() || !C.allFinite()) Rcpp::stop("non-finite genotype or term values (impute missing genotypes first)");
+  if (!C.allFinite()) Rcpp::stop("non-finite condition values");
+  if (!isint) for (int r : rows) for (int i = 0; i < ni; ++i) { const double x = gd[r + M * i]; if (std::isinf(x)) Rcpp::stop("non-finite genotype values"); }
   Rcpp::List out(q + 1); std::vector<double*> P;
   for (int j = 0; j <= q; ++j) { Rcpp::NumericMatrix M(n, S); P.push_back(M.begin()); out[j] = M; }
   // 256-column chunks in parallel (each rotated serially: the same arithmetic as rotate_all at any thread count);
   // workers write disjoint columns of plain memory (no R API)
   par_for((S + 255) / 256, nt, [&](int c, int) {
     const int c0 = c * 256, w = std::min(256, S - c0); double sd;
-    MatrixXd G0(N, w); for (int s = 0; s < w; ++s) for (int i = 0; i < N; ++i) G0(i, s) = Gi(c0 + s, ind[i]);
-    MatrixXd Gc = G0;
-    for (int s = 0; s < w; ++s) standardize(Gc.col(s), sd);
-    Eigen::Map<MatrixXd>(P[0], n, S).middleCols(c0, w) = rotate_all(U, Gc, 1);
-    for (int j = 0; j < q; ++j) {
+    MatrixXd V(w, ni); Eigen::ArrayXi cnt = Eigen::ArrayXi::Zero(w);
+    std::vector<long double> lsum(w, 0.0L);
+    for (int i = 0; i < ni; ++i) for (int s = 0; s < w; ++s) {   // individuals outer: consecutive rows per column
+      const size_t k = rows[c0 + s] + M * i;
+      const bool na = isint ? gi[k] == NA_INTEGER : std::isnan(gd[k]);
+      const double x = na ? NA_REAL : isint ? (double)gi[k] : std::nearbyint(gd[k]);   // R's round(): half to even
+      V(s, i) = x; if (!na) { lsum[s] += x; ++cnt[s]; }
+    }
+    for (int s = 0; s < w; ++s) {   // rowMeans(na.rm = TRUE): long double sum / count; no calls -> 0
+      const double mu = cnt[s] ? (double)(lsum[s] / cnt[s]) : 0;
+      for (int i = 0; i < ni; ++i) if (std::isnan(V(s, i))) V(s, i) = mu;
+    }
+    MatrixXd G0(N, w); for (int s = 0; s < w; ++s) for (int i = 0; i < N; ++i) G0(i, s) = V(s, ind[i]);
+    V.resize(0, 0);
+    for (int j = 0; j < q; ++j) {   // interaction terms from the raw counts first, then G0 standardized in place
       MatrixXd Ic = G0.array().colwise() * C.col(j).array();
       for (int s = 0; s < w; ++s) if (!standardize(Ic.col(s), sd)) Ic.col(s).setZero();
       Eigen::Map<MatrixXd>(P[1 + j], n, S).middleCols(c0, w) = rotate_all(U, Ic, 1);
     }
+    for (int s = 0; s < w; ++s) standardize(G0.col(s), sd);
+    Eigen::Map<MatrixXd>(P[0], n, S).middleCols(c0, w) = rotate_all(U, G0, 1);
   });
+  // the workers' freed buffers (~n x individuals each) stay with the allocator's per-thread arenas: hand them back,
+  // so the main process (and the gene workers forked from it) does not carry them through the gene loop
+#if defined(__GLIBC__)
+  malloc_trim(0);
+#elif defined(__APPLE__)
+  malloc_zone_pressure_relief(nullptr, 0);
+#endif
   return out;
   END_RCPP
 }
