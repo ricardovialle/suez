@@ -1,0 +1,1 @@
+{"tool":"suez","dataset":"M_fac3","cores":8,"kernel":"learned","perm":"none","t_step1":61.73,"t_step2":1.99,"n_tests":30049,"n_samples":600}

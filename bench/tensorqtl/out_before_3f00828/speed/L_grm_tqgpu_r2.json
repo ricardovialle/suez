@@ -1,0 +1,18 @@
+{
+ "tool": "tensorqtl",
+ "dataset": "L_grm",
+ "device": "gpu",
+ "threads": 1,
+ "design": "sample",
+ "n_pcs": 5,
+ "n_samples": 1000,
+ "n_tests": 39899,
+ "t_load": 0.16233706000002712,
+ "t_cuda_init": 0.2127372099994318,
+ "peak_rss_mb": 1501.00390625,
+ "torch": "2.14.1",
+ "t_geno": 1.389110391000031,
+ "gpu_mem_geno_mb": 15.0673828125,
+ "t_interact": 1.2236396150001383,
+ "gpu_mem_interact_mb": 26.9833984375
+}

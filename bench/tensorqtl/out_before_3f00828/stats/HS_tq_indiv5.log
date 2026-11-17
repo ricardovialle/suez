@@ -1,0 +1,26 @@
+Warning: 'rfunc' cannot be imported. R with the 'qvalue' library and the 'rpy2' Python package are needed to compute q-values.
+cis-QTL mapping: nominal associations for all variant-phenotype pairs
+  * 200 samples
+  * 200 phenotypes
+  * 5 covariates
+  * 10000 variants
+  * cis-window: ±100,000
+  * checking phenotypes: 200/200
+  * Computing associations
+    Mapping chromosome chr1
+    time elapsed: 0.01 min
+    * writing output
+done.
+cis-QTL mapping: nominal associations for all variant-phenotype pairs
+  * 200 samples
+  * 200 phenotypes
+  * 5 covariates
+  * 10000 variants
+  * cis-window: ±100,000
+  * checking phenotypes: 200/200
+  * Computing associations
+    Mapping chromosome chr1
+    time elapsed: 0.01 min
+    * writing output
+done.
+{"tool": "tensorqtl", "dataset": "HS", "device": "gpu", "threads": 1, "design": "indiv", "n_pcs": 5, "n_samples": 200, "n_tests": 19950, "t_load": 0.08510870099962631, "t_cuda_init": 0.20783534800011694, "peak_rss_mb": 1264.421875, "torch": "2.14.1", "t_geno": 0.876948046000507, "gpu_mem_geno_mb": 8.4443359375, "t_interact": 0.5738411849997647, "gpu_mem_interact_mb": 11.138671875}

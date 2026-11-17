@@ -1,0 +1,15 @@
+{
+ "tool": "tensorqtl",
+ "dataset": "M_eqtl",
+ "device": "cpu",
+ "threads": 1,
+ "design": "sample",
+ "n_pcs": 5,
+ "n_samples": 200,
+ "n_tests": 30049,
+ "t_load": 0.04561014199953206,
+ "t_cuda_init": 0.0,
+ "peak_rss_mb": 795.04296875,
+ "torch": "2.14.1",
+ "t_geno": 0.5169279850006205
+}

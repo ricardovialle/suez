@@ -1,0 +1,28 @@
+/pastel/Github_scripts/suez/bench/tensorqtl/run_tensorqtl.py:104: Pandas4Warning: Starting with pandas version 4.0 all arguments of min will be keyword-only.
+  x['p_interact'] = np.minimum(1, x.min(1) * len(cols))
+Warning: 'rfunc' cannot be imported. R with the 'qvalue' library and the 'rpy2' Python package are needed to compute q-values.
+cis-QTL mapping: nominal associations for all variant-phenotype pairs
+  * 1000 samples
+  * 150 phenotypes
+  * 6 covariates
+  * 30000 variants
+  * cis-window: ±100,000
+  * checking phenotypes: 150/150
+  * Computing associations
+    Mapping chromosome chr1
+    time elapsed: 0.02 min
+    * writing output
+done.
+cis-QTL mapping: nominal associations for all variant-phenotype pairs
+  * 1000 samples
+  * 150 phenotypes
+  * 5 covariates
+  * 30000 variants
+  * including 1 interaction term(s)
+  * cis-window: ±100,000
+  * checking phenotypes: 150/150
+  * Computing associations
+    Mapping chromosome chr1
+    time elapsed: 0.02 min
+    * writing output
+{"tool": "tensorqtl", "dataset": "L", "device": "gpu", "threads": 1, "design": "sample", "n_pcs": 5, "n_samples": 1000, "n_tests": 59949, "t_load": 0.22584658000050695, "t_cuda_init": 0.21607349599980807, "peak_rss_mb": 1604.8125, "torch": "2.14.1", "t_geno": 1.4063698629997816, "gpu_mem_geno_mb": 15.0673828125, "t_interact": 1.7676265150003019, "gpu_mem_interact_mb": 26.9833984375}

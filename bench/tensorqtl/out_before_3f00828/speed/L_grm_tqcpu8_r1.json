@@ -1,0 +1,16 @@
+{
+ "tool": "tensorqtl",
+ "dataset": "L_grm",
+ "device": "cpu",
+ "threads": 8,
+ "design": "sample",
+ "n_pcs": 5,
+ "n_samples": 1000,
+ "n_tests": 39899,
+ "t_load": 0.24569328999950812,
+ "t_cuda_init": 0.0,
+ "peak_rss_mb": 1071.4140625,
+ "torch": "2.14.1",
+ "t_geno": 1.3461868120002691,
+ "t_interact": 2.790648436999618
+}

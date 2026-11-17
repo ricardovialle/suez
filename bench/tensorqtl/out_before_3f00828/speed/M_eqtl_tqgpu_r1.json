@@ -1,0 +1,16 @@
+{
+ "tool": "tensorqtl",
+ "dataset": "M_eqtl",
+ "device": "gpu",
+ "threads": 1,
+ "design": "sample",
+ "n_pcs": 5,
+ "n_samples": 200,
+ "n_tests": 30049,
+ "t_load": 0.04712650199962809,
+ "t_cuda_init": 0.20056102699982148,
+ "peak_rss_mb": 1252.94140625,
+ "torch": "2.14.1",
+ "t_geno": 0.9961419689998365,
+ "gpu_mem_geno_mb": 8.75732421875
+}

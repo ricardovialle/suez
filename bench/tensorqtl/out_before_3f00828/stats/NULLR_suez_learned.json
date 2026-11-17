@@ -1,0 +1,1 @@
+{"tool":"suez","dataset":"NULLR","cores":8,"kernel":"learned","perm":"none","t_step1":46.75,"t_step2":3.98,"n_tests":99950,"n_samples":400}

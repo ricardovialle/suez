@@ -1,0 +1,6 @@
+          used (Mb) gc trigger  (Mb) max used (Mb)
+Ncells 1405580 75.1    2583220 138.0  1405580 75.1
+Vcells 5008234 38.3   10146329  77.5  5008234 38.3
+Checkpoint dir: 
+Performing initial eigendecomposition...
+suez M_num cores=8 kernel=learned perm=none: step1 13.77 s, step2 1.36 s, 30049 tests
