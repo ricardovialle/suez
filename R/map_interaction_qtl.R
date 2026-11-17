@@ -1,3 +1,5 @@
+ROT_MIN_FLOPS = 2e9   # rotate-once threshold (options(suez.rotate_once) = "auto"), per doMC worker
+
 # Genotype calls (SNPs x individuals) rounded to allele counts; a missing call gets its SNP's mean count over the
 # calls (mean dosage, as tensorQTL, FastQTL / QTLtools and GEMMA), the same in every gene's window. A SNP with no
 # calls is set constant (0), so the variance filter drops it.
@@ -249,17 +251,32 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   # of 2.5e8 on XL_grm / R_real); each SNP's genotype and interaction columns are rotated once per
   # block, on all cores, instead of once per gene whose window holds it. Not used for the sparse default basis
   # (already cheap), local ancestry, a Tabix genotype source, or per-gene genotype shuffles (permute).
+  # options(suez.rotate_once): TRUE / FALSE force it; "auto" (default) uses it when the repeated rotations it avoids
+  # exceed ROT_MIN_FLOPS per doMC worker: its setup runs on the main process before the gene loop (~0.1 s at
+  # N = 200), while per-gene rotations are spread over the workers (8 cores: M_eqtl 2.49 -> 2.62 s, ~1 GFLOP
+  # avoided; XL_grm / R_real, 40-64 GFLOP avoided, gain).
   rc = new.env()   # this block's rotated columns, read by fit_one (forked workers share them)
-  rot_on = getOption("suez.rotate_once", TRUE) && !la_mode && is.matrix(genotype) && !is.list(U) &&
-    permutation_approach != "permute"
+  ro = getOption("suez.rotate_once", "auto")
+  rot_on = !identical(ro, FALSE) && !la_mode && is.matrix(genotype) && !is.list(U) && permutation_approach != "permute"
   blocks = list(seq_along(genes))
   if (rot_on) {
     cr = lapply(seq_along(genes), function(j) cis_rows(g_chr[j], g_left[j], g_right[j]))
+    if (!isTRUE(ro)) {   # avoided flops: repeated SNP columns x contrasts x individuals (rows after dedup) x terms
+      avoided = 2 * (sum(lengths(cr)) - length(unique(unlist(cr)))) * ncol(U) * length(unique(anno$individual)) *
+        (1 + ncol(C))
+      rot_on = avoided / max(1, foreach::getDoParWorkers()) >= ROT_MIN_FLOPS
+    }
+  }
+  if (rot_on) {
     cap = max(1, floor(getOption("suez.rotate_mem", 5e7) / (8 * ncol(U) * (1 + ncol(C)))))   # SNPs per block
+    # a block also holds >= 16 genes per worker (memory cap exceeded if needed): each block is one foreach round
+    # whose tail leaves workers idle, ~1 / (2 k) of the time at k genes per worker (8 cores, 5 interleaved runs:
+    # 4 genes per worker gained nothing, one block XL_grm 1.06x and R_real 1.11x)
+    min_genes = 16 * max(1, foreach::getDoParWorkers())
     blocks = list(); cur = integer(0); seen = logical(nrow(genotype)); n_in = 0
     for (j in order(g_chr, g_left)) {
       new = cr[[j]][!seen[cr[[j]]]]
-      if (length(cur) && n_in + length(new) > cap) {
+      if (length(cur) >= min_genes && n_in + length(new) > cap) {
         blocks[[length(blocks) + 1]] = cur; seen[unlist(cr[cur])] = FALSE; cur = integer(0); n_in = 0; new = cr[[j]]
       }
       cur = c(cur, j); seen[new] = TRUE; n_in = n_in + length(new)

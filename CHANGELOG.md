@@ -8,7 +8,8 @@ with the default kernel; peak RAM -3..-78% (bench/results/r12_final_summary.tsv,
 - Explicit kernels (`sample_kernel`): genes run in position-sorted blocks and each SNP's standardized genotype and
   interaction columns are rotated once per block (on all cores) instead of once per gene whose cis window holds it
   (cis windows overlap ~4x at 100 kb and ~26x at 1 Mb on R_real). Block memory capped by
-  `options(suez.rotate_mem)` (default 5e7 bytes); `options(suez.rotate_once = FALSE)` restores per-gene rotation.
+  `options(suez.rotate_mem)` (default 5e7 bytes; at least 16 genes per doMC worker per block); `options(suez.rotate_once = "auto")` (default) uses it only when it avoids >= 2 GFLOP of rotation per doMC worker
+  (its setup is serial: M_eqtl, 200 samples, 8 cores was 5% slower with it); `TRUE` / `FALSE` force it.
   1 core: 1.10-1.26x (XL_grm 1.26x, R_real 1.16x); 8 cores: 1.05-1.13x at 100 kb, R_real 1.25x at 1 Mb. Data
   log-likelihoods within 4.5e-13, beta within 3.5e-8 (relative to max(|beta|, se)); same output order; works under
   doMC and doParallel. Not used for the default kernel, local ancestry, Tabix genotypes or `permute`.
