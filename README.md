@@ -374,6 +374,12 @@ less memory: with a GRM at 2,000 samples, 1 process x 8 threads ran at about 75%
 with a quarter of their RAM. Use threads when there are few genes, large N or little memory; total CPUs =
 workers x threads.
 
+With a `sample_kernel` (e.g. a GRM), genes are processed by position in blocks: each SNP's genotype and
+interaction columns are rotated into the kernel's eigenbasis once per block, on all cores, rather than once for
+every gene whose cis window contains it. A block holds at most `options(suez.rotate_mem)` bytes of rotated
+columns (default `1e9`; at 2,000 samples one SNP takes 32 KB with one interaction term).
+`options(suez.rotate_once = FALSE)` rotates per gene instead (results agree to rounding).
+
 Rough timings on an Apple M5 (current version, one core, bootstrap on, R's reference BLAS/LAPACK;
 `bench/EXPERIMENT_LOG.md`, round 12): step 2 runs about 35,000 tests per second with 400 samples and the
 default kernel (60,000 tests in 1.7 s), 6,215 tests with 4,000 samples in 1.2 s, about 5,000 per second with

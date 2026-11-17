@@ -53,6 +53,17 @@ res = map_interaction_qtl(Y, G, geneloc, snploc, anno, sample_kernel = K, normal
 
 check("one row per gene x SNP, no failed fits",
       nrow(res) == n_gene * n_snp && !anyNA(res[, c("l_geno", "l_interact", "p_geno", "p_interact")]))
+
+# rotate-once (SNP columns rotated once per block of genes, overlapping cis windows, several blocks under a small
+# memory cap, genes given out of position order) agrees with rotating per gene, in the same row order
+ro = function(on, mem = 1e9) { op = options(suez.rotate_once = on, suez.rotate_mem = mem); on.exit(options(op)); set.seed(3)
+  map_interaction_qtl(Y[n_gene:1, ], G, geneloc, snploc, anno, sample_kernel = K, normalization_approach = "none",
+                      permutation_approach = "boot", cisdist = 2.5e6) }
+r_off = ro(FALSE); r_on = ro(TRUE, 8 * (N - 1) * 2 * 40)   # ~40 SNPs per block
+dl = max(abs(unlist(r_on[c("l_geno", "l_interact")]) - unlist(r_off[c("l_geno", "l_interact")])))
+db = max(abs(unlist(r_on[c("l_boot_geno", "l_boot_interact")]) - unlist(r_off[c("l_boot_geno", "l_boot_interact")])))
+check("rotate-once equals per-gene rotation", identical(r_on[c("gene", "cis_snp")], r_off[c("gene", "cis_snp")]) &&
+        dl < 1e-9 && db < 1e-5, sprintf("(data l %.1e, bootstrap l %.1e)", dl, db))
 Q = qr.Q(qr(matrix(1, N, 1)), complete = TRUE)[, -1]
 e = eigen(crossprod(Q, K %*% Q), symmetric = TRUE); U = Q %*% e$vectors; lam = pmax(e$values, 0)
 Uy = function(g) drop(crossprod(U, Y[g, ]))

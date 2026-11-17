@@ -808,9 +808,16 @@ struct LazyRotated {
 };
 
 // ---------------------------------------------------------------- fit_gene (suez_fit_gene)
+// Term columns rotated once for a block of genes (suez_rotate_terms): R[j] (N-1 x SNPs of the block) for term j
+// (genotype, then genotype x C_j), and this gene's columns in them (0-based). A SNP in the cis windows of several
+// genes is then rotated once instead of once per gene.
+struct PreRot { std::vector<Eigen::Map<const MatrixXd>> R; std::vector<int> cols; };
 template <class UT>
 static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy_, const MatrixXd& UX0_,
-                           const Eigen::Map<MatrixXd>& G, const MatrixXd& C, bool boot, int nt, bool want_cov) {
+                           const Eigen::Map<MatrixXd>& G, const MatrixXd& C, bool boot, int nt, bool want_cov,
+                           const PreRot* pre = nullptr) {
+  // columns c0 .. c0 + w - 1 of term j from pre
+  auto take = [&](int j, int c0, int w) { MatrixXd M(pre->R[j].rows(), w); for (int s = 0; s < w; ++s) M.col(s) = pre->R[j].col(pre->cols[c0 + s]); return M; };
   const int S = G.cols(), q = C.cols(), p0 = UX0_.cols(), n = Uy_.size();
   const ArrayXd lam = lam_.array();
   const Spectrum sp(lam); const GridW gw(sp, lam); Profile PR(sp);
@@ -833,11 +840,11 @@ static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy
     std::vector<MatrixXd> R;
     MatrixXd Gc = G.middleCols(c0, w);
     for (int s = 0; s < w; ++s) standardize(Gc.col(s), gsd[c0 + s]);
-    R.push_back(rotate_all(U, Gc, nt)); Gc.resize(0, 0);
+    R.push_back(pre ? take(0, c0, w) : rotate_all(U, Gc, nt)); Gc.resize(0, 0);
     for (int j = 0; j < q; ++j) {
       MatrixXd Ic = G.middleCols(c0, w).array().colwise() * C.col(j).array();
       for (int s = 0; s < w; ++s) { const int t = c0 + s; iok[j][t] = standardize(Ic.col(s), isd[j][t]); if (!iok[j][t]) Ic.col(s).setZero(); else ++df[t]; }
-      R.push_back(rotate_all(U, Ic, nt));
+      R.push_back(pre ? take(1 + j, c0, w) : rotate_all(U, Ic, nt));
     }
     return R;
   };
@@ -941,9 +948,54 @@ static SEXP fit_gene_call(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C
   if (TYPEOF(U) == VECSXP)
     return fit_gene(sp_map(U), Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
                     Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt, wc);
+  // attr(G, "suez_rotated") = list(R_0, ..., R_q, cols): see PreRot (cols 1-based)
+  const SEXP rot = Rf_getAttrib(G, Rf_install("suez_rotated"));
+  PreRot pre;
+  if (rot != R_NilValue) {
+    const Rcpp::List L(rot); const int q = Rf_ncols(C), nu = Rf_ncols(U);
+    if (L.size() != q + 2) Rcpp::stop("suez_rotated: need 1 + ncol(C) matrices and the column index");
+    const Rcpp::IntegerVector cols(L[q + 1]);
+    if (cols.size() != Gd.ncol()) Rcpp::stop("suez_rotated: one column index per SNP needed");
+    for (int j = 0; j <= q; ++j) {
+      const Rcpp::NumericMatrix M(L[j]);
+      if (M.nrow() != nu) Rcpp::stop("suez_rotated: matrix %d has %d rows, not %d", j + 1, M.nrow(), nu);
+      pre.R.emplace_back(M.begin(), M.nrow(), M.ncol());
+    }
+    for (int c : cols) { if (c < 1 || c > pre.R[0].cols()) Rcpp::stop("suez_rotated: column index out of range"); pre.cols.push_back(c - 1); }
+  }
   return fit_gene(Rcpp::as<Eigen::Map<MatrixXd>>(U),   // U (N x N-1) used in place, not copied per gene
                   Rcpp::as<VectorXd>(lambda), Rcpp::as<VectorXd>(Uy), Rcpp::as<MatrixXd>(UX0),
-                  Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt, wc);
+                  Gm, Rcpp::as<MatrixXd>(C), Rcpp::as<bool>(boot), nt, wc, rot != R_NilValue ? &pre : nullptr);
+}
+
+// Standardized genotype and genotype x C_j columns of G (N x S), rotated by U (dense), on nt threads: the same
+// arithmetic per column as fit_gene's load (standardize, then rotate_all in 256-column chunks).
+extern "C" SEXP suez_rotate_terms(SEXP U_, SEXP G_, SEXP C_, SEXP threads) {
+  BEGIN_RCPP
+  const Eigen::Map<MatrixXd> U = Rcpp::as<Eigen::Map<MatrixXd>>(U_);
+  const Rcpp::NumericMatrix Gd(G_); const Eigen::Map<const MatrixXd> G(Gd.begin(), Gd.nrow(), Gd.ncol());
+  const MatrixXd C = Rcpp::as<MatrixXd>(C_); const int S = G.cols(), q = C.cols(), n = U.cols();
+  const int nt = std::max(1, Rcpp::as<int>(threads));
+  if (G.rows() != U.rows() || C.rows() != U.rows()) Rcpp::stop("suez_rotate_terms: G, C and U need one row per sample");
+  // rotate() refuses non-finite values with Rcpp::stop, which must not run on a worker thread: checked here
+  if (!G.allFinite() || !C.allFinite()) Rcpp::stop("non-finite genotype or term values (impute missing genotypes first)");
+  Rcpp::List out(q + 1); std::vector<double*> P;
+  for (int j = 0; j <= q; ++j) { Rcpp::NumericMatrix M(n, S); P.push_back(M.begin()); out[j] = M; }
+  // 256-column chunks in parallel (each rotated serially: the same arithmetic as rotate_all at any thread count);
+  // workers write disjoint columns of plain memory (no R API)
+  par_for((S + 255) / 256, nt, [&](int c, int) {
+    const int c0 = c * 256, w = std::min(256, S - c0); double sd;
+    MatrixXd Gc = G.middleCols(c0, w);
+    for (int s = 0; s < w; ++s) standardize(Gc.col(s), sd);
+    Eigen::Map<MatrixXd>(P[0], n, S).middleCols(c0, w) = rotate_all(U, Gc, 1);
+    for (int j = 0; j < q; ++j) {
+      MatrixXd Ic = G.middleCols(c0, w).array().colwise() * C.col(j).array();
+      for (int s = 0; s < w; ++s) if (!standardize(Ic.col(s), sd)) Ic.col(s).setZero();
+      Eigen::Map<MatrixXd>(P[1 + j], n, S).middleCols(c0, w) = rotate_all(U, Ic, 1);
+    }
+  });
+  return out;
+  END_RCPP
 }
 
 extern "C" SEXP suez_fit_gene(SEXP U, SEXP lambda, SEXP Uy, SEXP UX0, SEXP G, SEXP C, SEXP boot, SEXP cov) {
