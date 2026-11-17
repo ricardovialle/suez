@@ -16,8 +16,8 @@ It stops if the build or `tests/` fail, simulates and exports any missing datase
 
 `REAL` is the human-cohort shape: 500 individuals x 2 conditions, GRM kernel, 1 gene per 200 kb and a +-1 Mb cis
 window (~5,000 SNPs per gene, each SNP in ~10 genes' windows; 150 genes, 734k tests). It runs once, after the
-interleaved repetitions, with the rotate-once memory cap at its default (50 MB, `suez_1core` / `suez_8cores`) and at
-2 GB (`suez_*_mem2e9`, through `SUEZ_ROTATE_MEM`); tensorQTL uses the same window (`data/REAL/window.txt`).
+interleaved repetitions, with the rotate-once memory cap at its default (2 GB, `suez_1core` / `suez_8cores`) and at
+50 MB (`suez_*_mem5e7`, through `SUEZ_ROTATE_MEM`); tensorQTL uses the same window (`data/REAL/window.txt`).
 
 **Step by step** (the core of `rerun.sh`, from the repository root):
 

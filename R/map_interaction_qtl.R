@@ -247,8 +247,9 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   seeds = sample.int(.Machine$integer.max, length(genes))
 
   # Rotate once (dense kernel basis): genes by position in blocks whose cis SNPs' rotated columns fit in
-  # options(suez.rotate_mem) bytes (default 5e7: most of the gain at ~1/5 of the memory
-  # of 2.5e8 on XL_grm / R_real); each SNP's genotype and interaction columns are rotated once per
+  # options(suez.rotate_mem) bytes (default 2e9: on human-cohort cis windows, +-1 Mb and ~10x overlap, REAL on
+  # Linux ran 1.86-1.95x faster than at 5e7, at ~2.1-2.4 GB; a block holds only the SNPs its genes need, so small
+  # data use far less); each SNP's genotype and interaction columns are rotated once per
   # block, on all cores, instead of once per gene whose window holds it. Not used for the sparse default basis
   # (already cheap), local ancestry, a Tabix genotype source, or per-gene genotype shuffles (permute).
   # options(suez.rotate_once): TRUE / FALSE force it; "auto" (default) uses it when the repeated rotations it avoids
@@ -268,7 +269,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     }
   }
   if (rot_on) {
-    cap = max(1, floor(getOption("suez.rotate_mem", 5e7) / (8 * ncol(U) * (1 + ncol(C)))))   # SNPs per block
+    cap = max(1, floor(getOption("suez.rotate_mem", 2e9) / (8 * ncol(U) * (1 + ncol(C)))))   # SNPs per block
     # with several workers a block also holds >= 16 genes per worker: each block is one foreach round whose tail
     # leaves workers idle, ~1 / (2 k) of the time at k genes per worker (8 cores, 5 interleaved runs: 4 genes per
     # worker gained nothing, one block XL_grm 1.06x and R_real 1.11x). Auto mode keeps the memory cap: if such
@@ -287,7 +288,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
     if (!isTRUE(ro)) {
       nu = vapply(blocks, function(b) length(unique(unlist(cr[b]))), 0L)
       # the work saved is what the blocks actually share: when the cap is below a gene's window, each block
-      # holds one gene and saves nothing (REAL, 1 core, 50 MB: 76 s vs 70 s off)
+      # holds one gene and saves nothing (REAL, 1 core, cap 5e7: 76 s vs 70 s off)
       saved = 2 * (sum(lengths(cr)) - sum(nu)) * ncol(U) * length(unique(anno$individual)) * (1 + ncol(C))
       if ((workers > 1 && max(nu) > cap) || saved / workers < ROT_MIN_FLOPS) {
         rot_on = FALSE; blocks = list(seq_along(genes))
