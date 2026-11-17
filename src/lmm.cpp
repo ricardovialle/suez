@@ -59,6 +59,10 @@ static const double NULL_RTOL = 1e-12;
 // the expansion valid up to x ~ 11 on the default kernel and x ~ 5.4 on a kernel scaled by 1e6).
 static const int KN = 3;
 static const double TAYLOR_TOL = 1e-13;
+// Low-rank weights on the non-null rows (Spectrum::build_lr): used when K skeleton eigenvalues reproduce every weight
+// at every h to LR_TOL (relative to the l1 size of that weight row, i.e. of sum |f| |M|), with K <= rows / LR_GAIN.
+static const double LR_TOL = 1e-13;
+static const int LR_MIN = 64, LR_GAIN = 4, LR_KMAX = 80;
 // Grid: rss = y'Wy - rhs'b loses all digits when rss / y'Wy approaches eps; below 1e-10 the grid value is
 // recomputed from direct residuals (reviewer: near-perfect fits).
 static const double CANCEL_GRID = 1e-10;
@@ -95,6 +99,8 @@ static inline int pidx(int a, int b, int N) { if (a > b) std::swap(a, b); return
 struct Weights {   // per-row coefficients of w, c w^2, c^2 w^3 at one h, and the trace terms
   ArrayXd a, b, e; double T1 = 0, T2 = 0, LD = 0; bool null_ok = true;
   ArrayXd d_, w_, cw_;   // scratch (no allocation per call)
+  bool lr = false; ArrayXd ca, cb, ce;   // weights of the moment rows (Spectrum::RM) when the rows are compressed
+  const ArrayXd& mw(int j) const { return lr ? (j == 0 ? ca : j == 1 ? cb : ce) : (j == 0 ? a : j == 1 ? b : e); }
 };
 
 struct Spectrum {
@@ -129,6 +135,54 @@ struct Spectrum {
     all_single = (gcnt == 1).all();
     run_end.assign(R(), -1);
     for (int r = R() - 1; r >= 0; --r) if (single(r)) run_end[r] = r + 1 < R() && single(r + 1) ? run_end[r + 1] : r + 1;
+    build_lr();
+  }
+  // Moment rows: the null rows, then either the non-null rows or (lr) K compressed rows T M over them. f(h, lam) of
+  // the three weight sets is, on the non-null rows, sum_k f(h, jlam_k) T(k, r) to LR_TOL at every h (interpolative
+  // decomposition on skeleton eigenvalues jlam): grid and Profile weigh K moments instead of one per eigenvalue
+  // (GRM-like kernels: ~20 instead of ~N/2); the direct paths (wsum, expand) keep the exact rows.
+  bool lr = false; ArrayXd jlam; MatrixXd T;
+  int RM() const { return lr ? nnull_rows() + (int)jlam.size() : R(); }
+  MatrixXd compress(const MatrixXd& M) const {   // R() x c raw moments -> RM() x c
+    if (!lr) return M;
+    const int nr = nnull_rows(); MatrixXd C(RM(), M.cols());
+    C.topRows(nr) = M.topRows(nr); C.bottomRows(jlam.size()).noalias() = T * M.bottomRows(R() - nr);
+    return C;
+  }
+  void build_lr() {
+    const int nr = nnull_rows(), m = R() - nr;
+    if (m < LR_MIN) return;
+    // every gene of a run has the same eigenvalues: built once per process (Spectrum is made on the calling thread)
+    static ArrayXd c_glam, c_jlam; static MatrixXd c_T; static bool c_lr = false;
+    if (c_glam.size() == m && (c_glam == glam).all()) { lr = c_lr; if (lr) { jlam = c_jlam; T = c_T; } return; }
+    c_glam = glam; c_lr = false;
+    // weight rows at h = 0, 1 and x = log10(h / (1 - h)) on [-12, 12] (Newton's range), each scaled to l1 = 1
+    std::vector<double> hs{0.0, 1.0}; const int nx = 400;
+    for (int i = 0; i < nx; ++i) hs.push_back(1 / (1 + std::pow(10.0, -(-12 + 24.0 * i / (nx - 1)))));
+    std::vector<ArrayXd> rowsF;
+    for (double h : hs) {
+      if (is_bad(h)) continue;
+      const ArrayXd w = (h * glam + (1 - h)).inverse(), cw = (glam - 1) * w;
+      for (const ArrayXd& f : {ArrayXd(w), ArrayXd(cw * w), ArrayXd(cw * cw * w)}) { const double s = f.abs().sum(); if (s > 0) rowsF.push_back(f / s); }
+    }
+    MatrixXd F(rowsF.size(), m); for (size_t i = 0; i < rowsF.size(); ++i) F.row(i) = rowsF[i].matrix().transpose();
+    // skeleton eigenvalues by column-pivoted Gram-Schmidt (reorthogonalised) on the residual Rw = F - Q Q' F
+    const int kmax = std::min(LR_KMAX, m / LR_GAIN); MatrixXd Rw = F, Q(F.rows(), kmax); std::vector<int> J;
+    for (int k = 0; k < kmax; ++k) {
+      if (Rw.rowwise().lpNorm<1>().maxCoeff() < 0.1 * LR_TOL) break;   // roundoff floor ~5e-15
+      int piv; Rw.colwise().squaredNorm().maxCoeff(&piv);
+      VectorXd q = Rw.col(piv);
+      for (int pass = 0; pass < 2; ++pass) q -= Q.leftCols(k) * (Q.leftCols(k).transpose() * q);
+      q.normalize(); Q.col(k) = q; J.push_back(piv);
+      Rw.noalias() -= q * (q.transpose() * Rw);
+    }
+    if (J.empty() || (int)J.size() >= kmax) return;
+    // T: F ~ F_J T in least squares; accepted only if every row's l1 error is below LR_TOL
+    MatrixXd FJ(F.rows(), J.size()); for (size_t k = 0; k < J.size(); ++k) FJ.col(k) = F.col(J[k]);
+    MatrixXd Tm = FJ.colPivHouseholderQr().solve(F);
+    if ((F - FJ * Tm).rowwise().lpNorm<1>().maxCoeff() > LR_TOL) return;
+    c_lr = lr = true; c_jlam.resize(J.size()); for (size_t k = 0; k < J.size(); ++k) c_jlam[k] = glam[J[k]];
+    c_T = T = Tm; jlam = c_jlam;
   }
   // sum_r gcnt_r log d_r. Where every group has one contrast (GRM-like kernels), log of products of 4 (one log per
   // 4 rows; each product is in [d_min^4, d_max^4], far from under/overflow for d in [1e-60, 1e60]), else Eigen's log.
@@ -182,6 +236,15 @@ struct Spectrum {
     const double cl = lamnull[t] - 1; w = 1 / (h * lamnull[t] + (1 - h)); wb = cl * w * w; we = cl * wb * cl * w;
   }
   void weights(double h, bool derivs, Weights& W) const {
+    weights_rows(h, derivs, W); W.lr = lr;
+    if (!lr) return;
+    const int nr = nnull_rows(), K = jlam.size();
+    W.ca.resize(nr + K); W.cb.setZero(nr + K); W.ce.setZero(nr + K);
+    W.ca.head(nr) = W.a.head(nr); const ArrayXd w = (h * jlam + (1 - h)).inverse(); W.ca.tail(K) = w;
+    if (derivs) { W.cb.head(nr) = W.b.head(nr); W.ce.head(nr) = W.e.head(nr);
+                  const ArrayXd cw = (jlam - 1) * w; W.cb.tail(K) = cw * w; W.ce.tail(K) = cw * cw * w; }
+  }
+  void weights_rows(double h, bool derivs, Weights& W) const {
     const int R_ = R(), nr = nnull_rows();
     W.a.setZero(R_); W.b.setZero(R_); W.e.setZero(R_); W.T1 = W.T2 = W.LD = 0; W.null_ok = true;
     if (R_ > nr) {   // non-null groups, vectorised (Eigen's log)
@@ -231,11 +294,11 @@ struct Spectrum {
 // log determinant per grid point.
 struct GridW {
   MatrixXd A; std::vector<Weights> W; std::vector<char> bad; VectorXd logdet;
-  GridW(const Spectrum& sp, const ArrayXd& lam) : A(NG, sp.R()), W(NG), bad(NG), logdet(NG) {
+  GridW(const Spectrum& sp, const ArrayXd& lam) : A(NG, sp.RM()), W(NG), bad(NG), logdet(NG) {
     for (int i = 0; i < NG; ++i) {
       bad[i] = sp.is_bad(HS[i]);
       if (bad[i]) { A.row(i).setZero(); continue; }
-      sp.weights(HS[i], false, W[i]); A.row(i) = W[i].a.matrix().transpose();
+      sp.weights(HS[i], false, W[i]); A.row(i) = W[i].mw(0).matrix().transpose();
       logdet[i] = (HS[i] * lam + (1 - HS[i])).log().sum();   // as suez 0.4
     }
   }
@@ -261,14 +324,22 @@ struct Block {
       else if (shared(a) && shared(b)) { kind[t] = 1; slot[t] = ny++; }
       else { kind[t] = 2; slot[t] = nper++; }
     }
-    MY.resize(sp.R(), ny); Mper.resize(sp.R(), (size_t)nper * S);
+    // raw moments (sp.R() rows) of the pairs computed here, then compressed to sp.RM() rows; pairs copied from src
+    // (bootstrap) are already compressed
+    MatrixXd MYr(sp.R(), ny); Mper.resize(sp.RM(), (size_t)nper * S);
+    struct Todo { int a, b, s; size_t c; }; std::vector<Todo> todo;
     for (int a = 0; a < N; ++a) for (int b = a; b < N; ++b) {
       const int t = pidx(a, b, N);
-      if (kind[t] == 1) sp.mom(col(a, 0), col(b, 0), MY.col(slot[t]).data());
+      if (kind[t] == 1) sp.mom(col(a, 0), col(b, 0), MYr.col(slot[t]).data());
       else if (kind[t] == 2 && src && b < iy && src->kind[t] == 2)
         for (int s = 0; s < S; ++s) Mper.col((size_t)s * nper + slot[t]) = src->Mper.col((size_t)s * src->nper + src->slot[t]);
-      else if (kind[t] == 2) for (int s = 0; s < S; ++s) sp.mom(col(a, s), col(b, s), Mper.col((size_t)s * nper + slot[t]).data());
+      else if (kind[t] == 2) for (int s = 0; s < S; ++s) todo.push_back({a, b, s, (size_t)s * nper + slot[t]});
     }
+    MY = sp.compress(MYr);
+    MatrixXd Mr(sp.R(), todo.size());
+    for (size_t i = 0; i < todo.size(); ++i) sp.mom(col(todo[i].a, todo[i].s), col(todo[i].b, todo[i].s), Mr.col(i).data());
+    if (sp.lr) Mr = sp.compress(Mr);
+    for (size_t i = 0; i < todo.size(); ++i) Mper.col(todo[i].c) = Mr.col(i);
   }
   // moment column (rows) of pair (a, b) for SNP s
   const double* pm(int a, int b, int s) const {
@@ -280,18 +351,18 @@ struct Block {
 static MatrixXd x0_moments(const Spectrum& sp, const MatrixXd& X0) {
   const int p0 = X0.cols(); MatrixXd M(sp.R(), p0 * (p0 + 1) / 2);
   for (int a = 0; a < p0; ++a) for (int b = a; b < p0; ++b) sp.mom(X0.col(a).data(), X0.col(b).data(), M.col(pidx(a, b, p0)).data());
-  return M;
+  return sp.compress(M);
 }
 
 // A model of SNP s: columns cols (indices into the block's columns) and y, as moments (rows x pairs of
 // [cols, y]) plus the raw columns for the direct-residual and direct-null paths.
 struct Model { MatrixXd MM; std::vector<const double*> z; };   // z: columns then y
 static Model make_model(const Block& bl, int s, const std::vector<int>& cols) {
-  const int p = cols.size(), Nm = p + 1; Model m; m.MM.resize(bl.sp.R(), Nm * (Nm + 1) / 2);
+  const int p = cols.size(), Nm = p + 1; Model m; m.MM.resize(bl.sp.RM(), Nm * (Nm + 1) / 2);
   auto c = [&](int a) { return a < p ? cols[a] : bl.iy; };
   for (int a = 0; a < Nm; ++a) {
     m.z.push_back(bl.col(c(a), s));
-    for (int b = a; b < Nm; ++b) m.MM.col(pidx(a, b, Nm)) = Eigen::Map<const VectorXd>(bl.pm(c(a), c(b), s), bl.sp.R());
+    for (int b = a; b < Nm; ++b) m.MM.col(pidx(a, b, Nm)) = Eigen::Map<const VectorXd>(bl.pm(c(a), c(b), s), bl.sp.RM());
   }
   return m;
 }
@@ -379,12 +450,12 @@ struct Profile {
     const MatrixXd& MM = m.MM; const int Nm = m.z.size(), p = Nm - 1, P2 = MM.cols();
     // derivative sums from residuals (n (2p + 4) flops) instead of two more moment GEMVs (2 R P2): GRM-like kernels
     // (R ~ n rows) with several columns, e.g. covariates; default kernels (few rows) keep the moments
-    const bool dird = f1 && 2.0 * sp.R() * P2 > 1.5 * n * (2 * p + 4); const int nc = f1 && !dird ? 3 : 1;
+    const bool dird = f1 && 2.0 * sp.RM() * P2 > 1.5 * n * (2 * p + 4); const int nc = f1 && !dird ? 3 : 1;
     if (sp.is_bad(h)) { if (f1) *f1 = *f2 = NAN; return NEG_INF; }
     sp.weights(h, f1 != nullptr, W);
     MW.resize(P2, 3);   // three GEMVs: Eigen's GEMM is 2-3x slower than them on these skinny shapes
-    MW.col(0).noalias() = MM.transpose() * W.a.matrix();
-    if (nc == 3) { MW.col(1).noalias() = MM.transpose() * W.b.matrix(); MW.col(2).noalias() = MM.transpose() * W.e.matrix(); }
+    MW.col(0).noalias() = MM.transpose() * W.mw(0).matrix();
+    if (nc == 3) { MW.col(1).noalias() = MM.transpose() * W.mw(1).matrix(); MW.col(2).noalias() = MM.transpose() * W.mw(2).matrix(); }
     if (!W.null_ok)
       for (int t = 0; t < sp.n0; ++t) {
         double w[3]; sp.null_w(t, h, w[0], w[1], w[2]);
@@ -787,7 +858,7 @@ static Rcpp::List fit_gene(const UT& U, const VectorXd& lam_, const VectorXd& Uy
   Rcpp::RNGScope rng;
   std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
   const int k1 = 1 + q, nper = p0 * k1 + k1 * (k1 + 1) / 2 + k1 + p0 + 1;   // per-SNP pairs of the bootstrap block
-  const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.R() * nper))));
+  const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.RM() * nper))));
   // SNP blocks (the serial blocks, so identical results at any thread count) in waves of nt: rotation and the
   // bootstrap normals on this thread in block order (R's RNG in SNP order, as suez 0.4), the data fits and the
   // bootstrap refits of a wave's blocks in parallel. nt = 1: block by block, as before. Workers write only their own
@@ -927,7 +998,7 @@ static Rcpp::List fit_models(const UT& U, const VectorXd& lam_, const VectorXd& 
   Rcpp::RNGScope rng;
   std::vector<int> pos(n); for (int i = 0; i < n; ++i) pos[sp.perm[i]] = i;
   const int nper = p0 * nc + nc * (nc + 1) / 2 + nc + p0 + 1;
-  const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.R() * nper))));
+  const int SB = std::max(16, std::min(256, (int)(MOMENT_BYTES / (8.0 * sp.RM() * nper))));
   auto load = [&](int c0, int w) {   // term columns rotated per chunk (LazyRotated)
     std::vector<MatrixXd> R; for (int j = 0; j < nc; ++j) R.push_back(rotate_all(U, MatrixXd(C[j].middleCols(c0, w)))); return R; };
   LazyRotated lr;
