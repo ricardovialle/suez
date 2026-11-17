@@ -3,7 +3,7 @@ cores: 8
 ram: 50 GB
 gpu: Tesla V100-SXM2-16GB, 16384 MiB, 550.54.15
 os: CentOS Stream 8 (WSL2, kernel 4.18.0-383.el8.x86_64)
-suez: fa6b339 (0.5)
+suez: 1aa76ad (0.5)
 r: R version 4.4.3 (2025-02-28) libopenblasp-r0.3.34.so
 tq: tensorQTL 1.0.10 / PyTorch 2.14.1 / CUDA 12.9
 date: 2026-11-17
