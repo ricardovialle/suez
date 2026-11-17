@@ -22,5 +22,6 @@ for (nm in commandArgs(TRUE)) {
   data.table::fwrite(data.frame(variant_id = d$snploc$snpid, chrom = d$snploc$chr, pos = d$snploc$pos),
                      file.path(out, "variants.tsv"), sep = "\t")
   data.table::fwrite(d$truth, file.path(out, "truth.tsv"), sep = "\t")
+  if (!is.null(d$params$cisdist)) writeLines(format(d$params$cisdist, scientific = FALSE), file.path(out, "window.txt"))
   cat(nm, "exported\n")
 }

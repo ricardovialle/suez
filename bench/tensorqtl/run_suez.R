@@ -3,13 +3,16 @@
 #     kernel: "dataset" (the dataset's sample_kernel; NULL = repeated-individual kernel only)
 #             "learned" (step 1: learn_covariance(qq, anno, P = 10), timed separately)
 #     perm:   "none" or "boot" (permutation_approach)
+# cis window: the dataset's params$cisdist (default 1e5); env SUEZ_ROTATE_MEM sets options(suez.rotate_mem)
 # Writes <out_prefix>.tsv.gz (gene, snp, p_geno, p_interact, beta_geno, se_geno) and <out_prefix>.json (timings).
 a = commandArgs(TRUE); dsn = a[1]; cores = as.integer(a[2]); kernel = a[3]; perm = a[4]; out = a[5]
 suppressPackageStartupMessages({ library(suez, lib.loc = "bench/lib/cur"); library(doMC) })
 # monotonic clock: proc.time()[["elapsed"]] follows the wall clock, which jumps under WSL2
 now = function() as.numeric(strsplit(readLines("/proc/uptime"), " ")[[1]][1])
 registerDoMC(cores)
+m = Sys.getenv("SUEZ_ROTATE_MEM"); if (nzchar(m)) options(suez.rotate_mem = as.numeric(m))
 d = readRDS(file.path("bench/data", paste0(dsn, ".rds")))
+cisdist = if (is.null(d$params$cisdist)) 1e5 else d$params$cisdist
 t_step1 = NA
 K = d$sample_kernel
 if (kernel == "learned") {
@@ -22,7 +25,7 @@ if (kernel == "learned") {
 gc(reset = TRUE)
 set.seed(42)
 args = list(d$input, d$genotype, d$geneloc, d$snploc, d$anno, sample_kernel = K,
-            normalization_approach = "qq", permutation_approach = perm, cisdist = 1e5)
+            normalization_approach = "qq", permutation_approach = perm, cisdist = cisdist)
 if (!is.null(d$covariates)) args$covariates = d$covariates
 t0 = now()
 res = do.call(map_interaction_qtl, args)

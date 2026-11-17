@@ -31,7 +31,7 @@ for t in model_checks local_ancestry_checks learn_covariance_checks; do
 done
 
 step "datasets"
-DS="S M L XL XXL G M_grm L_grm XL_grm M_fac3 M_num M_cov M_eqtl M_unbal HS NULLR"
+DS="S M L XL XXL G M_grm L_grm XL_grm M_fac3 M_num M_cov M_eqtl M_unbal HS NULLR REAL"
 for ds in $DS; do [ -f bench/data/$ds.rds ] || { P -e r Rscript $T/sim_tq.R; break; }; done
 todo=""; for ds in $DS; do [ -f $T/data/$ds/geno.i8 ] || todo="$todo $ds"; done
 [ -z "$todo" ] || P -e r Rscript $T/export.R $todo

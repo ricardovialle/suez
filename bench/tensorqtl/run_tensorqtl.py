@@ -36,6 +36,7 @@ inds = open(f'{D}/individuals.txt').read().split()
 variants = pd.read_csv(f'{D}/variants.tsv', sep='\t', index_col=0)
 G = np.fromfile(f'{D}/geno.i8', dtype=np.int8).reshape(len(variants), len(inds)).astype(np.float32)
 geno_ind = pd.DataFrame(G, index=variants.index, columns=inds)
+window = int(open(f'{D}/window.txt').read()) if os.path.exists(f'{D}/window.txt') else 100000   # cis, bp
 dcov = pd.read_csv(f'{D}/covariates.tsv', sep='\t', index_col=0) if os.path.exists(f'{D}/covariates.tsv') else None
 
 def inv_norm(x):  # rank-based inverse normal per row
@@ -83,7 +84,7 @@ for name, P, C, I in jobs:
     t0 = time.perf_counter()
     try:
         cis.map_nominal(geno, variants, P, ppos, name, covariates_df=C, interaction_df=I,
-                        maf_threshold=0, maf_threshold_interaction=0, window=100000, output_dir=tmp,
+                        maf_threshold=0, maf_threshold_interaction=0, window=window, output_dir=tmp,
                         write_top=False, verbose=False)
     except KeyError as e:
         # tensorQTL 1.0.10 bug: with more than one interaction term, map_nominal fails while summarising the
@@ -106,7 +107,7 @@ for name, P, C, I in jobs:
 if perm:
     name, P, C, _ = jobs[0]
     t0 = time.perf_counter()
-    perm_res = cis.map_cis(geno, variants, P, ppos, covariates_df=C, window=100000, maf_threshold=0,
+    perm_res = cis.map_cis(geno, variants, P, ppos, covariates_df=C, window=window, maf_threshold=0,
                            seed=1, verbose=False)
     timing['t_map_cis'] = time.perf_counter() - t0
     perm_res.to_csv(out + '_map_cis.tsv.gz', sep='\t')

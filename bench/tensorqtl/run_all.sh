@@ -33,6 +33,14 @@ for r in $(seq $REPS); do for ds in $SPEED; do
     [[ "$LADDER" == *" $ds "* ]] && suez speed $ds suez_1core_boot $r ${p}_suez1boot_r$r 1 dataset boot
   fi
 done; done
+# ---- realistic scale (REAL: +-1 Mb windows, 500 x 2, GRM), once: rotate-once memory cap 50 MB (default) vs 2 GB
+p=$O/speed/REAL
+suez speed REAL suez_1core          1 ${p}_suez1_r1   1 dataset none
+suez speed REAL suez_8cores         1 ${p}_suez8_r1   8 dataset none
+SUEZ_ROTATE_MEM=2e9 suez speed REAL suez_1core_mem2e9  1 ${p}_suez1m_r1 1 dataset none
+SUEZ_ROTATE_MEM=2e9 suez speed REAL suez_8cores_mem2e9 1 ${p}_suez8m_r1 8 dataset none
+tq   speed REAL tensorqtl_gpu       1 ${p}_tqgpu_r1   gpu 1 sample 5
+tq   speed REAL tensorqtl_cpu1      1 ${p}_tqcpu1_r1  cpu 1 sample 5
 # ---- gene-level permutations (tensorQTL map_cis, 10,000 permutations), once -------------------------------
 for ds in $LADDER; do
   p=$O/speed/${ds}

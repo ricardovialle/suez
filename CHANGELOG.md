@@ -11,7 +11,9 @@ with the default kernel; peak RAM -3..-78% (bench/results/r12_final_summary.tsv,
   uses it when it avoids >= 2 GFLOP of rotation per doMC worker (its setup is serial: M_eqtl, 200 samples, 8 cores
   was 5% slower with it); `TRUE` / `FALSE` force it. Block memory: `options(suez.rotate_mem)` (default 5e7 bytes),
   a hard limit in auto mode; with several doMC workers a block needs >= 16 genes per worker (each block is one
-  round of the workers), or rotate-once is not used. Imputation and sample columns are built per 256-SNP chunk in
+  round of the workers), or rotate-once is not used. The work saved is counted over the blocks actually formed: when
+  the cap is below one gene's window (N = 1,000 and +-1 Mb windows at 50 MB) each block holds one gene, saves
+  nothing, and auto mode keeps the per-gene path. Imputation and sample columns are built per 256-SNP chunk in
   C++, and the rotation's per-thread scratch is held 240 contrasts at a time (results bit-identical).
   1 core: 1.18-1.27x on XL_grm / R_real; with several workers off by default for the benchmark sizes (~5-10%
   faster at ~250-300 MB more with a larger `suez.rotate_mem`). Data log-likelihoods within 4.5e-13, beta within

@@ -14,13 +14,18 @@ It stops if the build or `tests/` fail, simulates and exports any missing datase
 `bench/tensorqtl/out_<suez commit>_<date>/` (git-ignored), and ends with the speed table and the command to commit
 `results/` and `doc/suez_vs_tensorqtl.html`.
 
+`REAL` is the human-cohort shape: 500 individuals x 2 conditions, GRM kernel, 1 gene per 200 kb and a +-1 Mb cis
+window (~5,000 SNPs per gene, each SNP in ~10 genes' windows; 150 genes, 734k tests). It runs once, after the
+interleaved repetitions, with the rotate-once memory cap at its default (50 MB, `suez_1core` / `suez_8cores`) and at
+2 GB (`suez_*_mem2e9`, through `SUEZ_ROTATE_MEM`); tensorQTL uses the same window (`data/REAL/window.txt`).
+
 **Step by step** (the core of `rerun.sh`, from the repository root):
 
 ```bash
 P() { pixi run --manifest-path bench/tensorqtl/pixi.toml "$@"; }   # function, not a string: works in bash and zsh
 P -e r R CMD INSTALL --no-docs --library=bench/lib/cur .        # suez under test
 P -e r Rscript bench/tensorqtl/sim_tq.R                          # datasets -> bench/data/
-P -e r Rscript bench/tensorqtl/export.R S M L XL XXL G M_grm L_grm XL_grm M_fac3 M_num M_cov M_eqtl M_unbal HS NULLR
+P -e r Rscript bench/tensorqtl/export.R S M L XL XXL G M_grm L_grm XL_grm M_fac3 M_num M_cov M_eqtl M_unbal HS NULLR REAL
 bash bench/tensorqtl/run_all.sh                                   # ~1 h; resumes, skipping finished runs
 P -e py python bench/tensorqtl/analyze.py                        # results/ and doc/suez_vs_tensorqtl.html
 ```

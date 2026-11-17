@@ -16,8 +16,9 @@ DESC = {  # dataset: (description, N samples shown from runs)
     'L_grm': '500 x 2, GRM kernel', 'XL_grm': '1,000 x 2, GRM kernel', 'M_fac3': '200 x 3 levels',
     'M_num': '200 x 2, numeric condition, GRM', 'M_cov': '200 x 2, 10 covariates',
     'M_eqtl': '200 x 1, no condition, GRM', 'M_unbal': '200, 1-4 samples each', 'HS': '200 x 2, strong effects, GRM',
-    'NULLR': '200 x 2, no cis effects, ICC 0.5'}
-SPEED = ['S', 'M', 'L', 'XL', 'XXL', 'G', 'M_grm', 'L_grm', 'XL_grm', 'M_fac3', 'M_num', 'M_cov', 'M_eqtl', 'M_unbal']
+    'NULLR': '200 x 2, no cis effects, ICC 0.5',
+    'REAL': '500 x 2, GRM, +-1 Mb windows (human-cohort shape)'}
+SPEED = ['S', 'M', 'L', 'XL', 'XXL', 'G', 'M_grm', 'L_grm', 'XL_grm', 'M_fac3', 'M_num', 'M_cov', 'M_eqtl', 'M_unbal', 'REAL']
 STATS = ['M', 'M_fac3', 'M_num', 'M_unbal', 'M_cov', 'M_eqtl', 'HS', 'NULLR']
 
 # ---------------------------------------------------------------------------------------------- runs
@@ -226,6 +227,8 @@ for ds in SPEED:
              tests=sget(ds, 'suez_1core', 'n_tests'), tq_tests=sget(ds, 'tensorqtl_gpu', 'n_tests'))
     for m, _ in SPEED_M: r[m] = sget(ds, m)
     r['boot'] = sget(ds, 'suez_1core_boot')
+    r['suez_1core_mem2e9'] = sget(ds, 'suez_1core_mem2e9'); r['suez_8cores_mem2e9'] = sget(ds, 'suez_8cores_mem2e9')
+    r['rss_suez8'] = sget(ds, 'suez_8cores', 'rss_mb'); r['rss_suez8_mem2e9'] = sget(ds, 'suez_8cores_mem2e9', 'rss_mb')
     r['rss_suez'] = sget(ds, 'suez_1core', 'rss_mb'); r['rss_gpu'] = sget(ds, 'tensorqtl_gpu', 'rss_mb')
     r['gpu_mb'] = sget(ds, 'tensorqtl_gpu', 'gpu_mb')
     best_tq = np.nanmin([r['tensorqtl_gpu'], r['tensorqtl_cpu1'], r['tensorqtl_cpu8']])

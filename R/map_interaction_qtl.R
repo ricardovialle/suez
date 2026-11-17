@@ -252,7 +252,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
   # block, on all cores, instead of once per gene whose window holds it. Not used for the sparse default basis
   # (already cheap), local ancestry, a Tabix genotype source, or per-gene genotype shuffles (permute).
   # options(suez.rotate_once): TRUE / FALSE force it; "auto" (default) uses it when the repeated rotations it avoids
-  # exceed ROT_MIN_FLOPS per doMC worker: its setup runs on the main process before the gene loop (~0.1 s at
+  # exceed ROT_MIN_FLOPS per doMC worker (counted again over the blocks actually formed): its setup runs on the main process before the gene loop (~0.1 s at
   # N = 200), while per-gene rotations are spread over the workers (8 cores: M_eqtl 2.49 -> 2.62 s, ~1 GFLOP
   # avoided; XL_grm / R_real, 40-64 GFLOP avoided, gain).
   rc = new.env()   # this block's rotated columns, read by fit_one (forked workers share them)
@@ -284,8 +284,14 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
       cur = c(cur, j); seen[new] = TRUE; n_in = n_in + length(new)
     }
     if (length(cur)) blocks[[length(blocks) + 1]] = cur
-    if (!isTRUE(ro) && workers > 1 && max(vapply(blocks, function(b) length(unique(unlist(cr[b]))), 0L)) > cap) {
-      rot_on = FALSE; blocks = list(seq_along(genes))
+    if (!isTRUE(ro)) {
+      nu = vapply(blocks, function(b) length(unique(unlist(cr[b]))), 0L)
+      # the work saved is what the blocks actually share: when the cap is below a gene's window, each block
+      # holds one gene and saves nothing (REAL, 1 core, 50 MB: 76 s vs 70 s off)
+      saved = 2 * (sum(lengths(cr)) - sum(nu)) * ncol(U) * length(unique(anno$individual)) * (1 + ncol(C))
+      if ((workers > 1 && max(nu) > cap) || saved / workers < ROT_MIN_FLOPS) {
+        rot_on = FALSE; blocks = list(seq_along(genes))
+      }
     }
   }
 
