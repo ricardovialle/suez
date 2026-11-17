@@ -24,7 +24,7 @@
         <tbody>
           <tr><td><code>input</code></td><td>Genes × samples, log2 scale (e.g. log2 CPM). Row names are gene ids. Columns are samples <b>in the row order of <code>anno</code></b>; column names are not used for matching.</td></tr>
           <tr><td><code>anno</code></td><td>One row per sample: <code>individual</code> (matches genotype column names) and <code>condition</code>.</td></tr>
-          <tr><td><code>genotype</code></td><td>SNPs × individuals, ALT allele counts 0/1/2, <code>NA</code> allowed (imputed per gene); or a <code>Rsamtools::TabixFile</code> of a bgzipped, indexed VCF.</td></tr>
+          <tr><td><code>genotype</code></td><td>SNPs × individuals, ALT allele counts 0/1/2, <code>NA</code> allowed (set to the SNP's mean count); or a <code>Rsamtools::TabixFile</code> of a bgzipped, indexed VCF.</td></tr>
           <tr><td><code>snploc</code></td><td><code>snpid</code>, <code>chr</code>, <code>pos</code>.</td></tr>
           <tr><td><code>geneloc</code></td><td><code>geneid</code>, <code>chr</code>, <code>left</code>, <code>right</code>. Use the same chromosome naming as <code>snploc</code>.</td></tr>
         </tbody></table></div>

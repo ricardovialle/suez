@@ -5,6 +5,16 @@
 Step 2 vs round 11, 1 core, median of 3 serial interleaved runs (every run faster): 1.12-2.5x on N <= 1000 and GRM
 kernels (R_real-like GRM + covariates + missing data 1.6x, 30 covariates 2.3x), 5x at N = 2000 and 25x at N = 4000
 with the default kernel; peak RAM -3..-78% (bench/results/r12_final_summary.tsv, bench/EXPERIMENT_LOG.md round 12).
+- Missing genotypes are set to the SNP's mean count over its calls (mean dosage, as tensorQTL, FastQTL / QTLtools
+  and GEMMA) instead of a per-gene SVD reconstruction rounded to 0/1/2. **Results change on data with missing
+  calls.** On R_real with 2% of the observed calls masked, the SVD matched the true call 62% of the time against
+  61% for the rounded mean, and its RMSE (0.64) was worse than the mean dosage's (0.58): with 95% of the variance
+  kept it is nearly full rank. Imputed values no longer depend on the gene, and the per-window Gram matrix,
+  eigen-decomposition and reconstruction (45% of R_real's run time on reference BLAS) are gone. `easy_impute`
+  removed (internal).
+- GRM-like kernels: the per-SNP weights over h use K skeleton eigenvalues (interpolative decomposition, exact to
+  1e-13 at every h) instead of one row per eigenvalue (K = 16-27 vs 199-999 rows). 1 core: R_real 1.88x,
+  L_grm / M_grm 1.33x, XL_grm 1.15x; data log-likelihoods within 3e-12, default kernels bit-identical.
 - Default kernel (`sample_kernel = NULL`, same-individual Z Z'): its contrast eigenbasis is built analytically
   (sparse Haar-like basis, exact eigenvalues) instead of an O(N^3) eigen-decomposition, and U'G uses it sparsely.
   Data fits equal to 1.2e-10; **bootstrap draws for a given seed change** (different basis inside tied eigenvalues;

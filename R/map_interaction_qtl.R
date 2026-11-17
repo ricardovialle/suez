@@ -1,33 +1,13 @@
-
-
-unscale = function(x) {
-  x = sweep(x, 1, attr(x, "scaled:scale"), "*")
-  sweep(x, 1, attr(x, "scaled:center"), "+")
-}
-
-#' Simple SVD based imputation of missing genotypes
-#'
-#' @param geno [samples] x [SNPs] genotype matrix (0/1/2)
-#' @param prop_var Proportion of variance that the PCs should explain
-#'
-#' @return Complete genotype matrix.
-easy_impute=function(geno, prop_var=0.95) {
-  temp=t(scale(t(geno)))
-  miss=is.na(geno)
-  temp[is.na(temp)]=0   # missing calls, and rows that are constant among their calls (0/0 after scaling)
-  # temp = U D V': the rank-k reconstruction U_k D_k V_k' is the projection of temp on U_k (or of temp' on
-  # V_k), so only the eigen-decomposition of the smaller Gram matrix is needed (~2x faster than svd())
-  wide=nrow(temp) <= ncol(temp)
-  e=.Call(suez_eigen_sym, if (wide) tcrossprod(temp) else crossprod(temp))
-  v=pmax(e$values, 0); v=v/sum(v)
-  W=e$vectors[, seq_len(sum(cumsum(v)<prop_var)), drop=F]
-  recon=if (wide) W %*% crossprod(W, temp) else (temp %*% W) %*% t(W)
-  temp[miss]=recon[miss]
-  temp=unscale(temp)
-  stopifnot(max(abs(temp[!miss]-geno[!miss]))<1e-10)
-  temp=round(temp)
-  class(temp)="integer"
-  temp
+# Genotype calls (SNPs x individuals) rounded to allele counts; a missing call gets its SNP's mean count over the
+# calls (mean dosage, as tensorQTL, FastQTL / QTLtools and GEMMA), the same in every gene's window. A SNP with no
+# calls is set constant (0), so the variance filter drops it.
+impute_mean = function(geno) {
+  g = round(geno)
+  if (anyNA(g)) {
+    ij = which(is.na(g), arr.ind = TRUE); mu = rowMeans(g, na.rm = TRUE); mu[is.nan(mu)] = 0
+    g[ij] = mu[ij[, 1]]
+  }
+  g
 }
 
 #' qqnorm without plotting
@@ -302,8 +282,7 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
                               genome_build = genome_build)
     if (is.null(geno_here)) return(NULL)
     
-    imp_geno = if (anyNA(geno_here)) easy_impute(geno_here) else {   # nothing to impute: rounded, as easy_impute does
-      round(geno_here) }   # integer-valued doubles: G below is double anyway
+    imp_geno = impute_mean(geno_here)
     if (maf_threshold > 0) {
       af = rowMeans(geno_here, na.rm=T)/2 # ALT frequency, on unimputed genotypes
       mafs = pmin(af, 1 - af)
@@ -317,8 +296,9 @@ map_interaction_qtl = function(input, genotype, geneloc, snploc, anno, sample_ke
 
     G = t(imp_geno[, anno$individual, drop=F])                     # samples x SNPs
     storage.mode(G) = "double"
-    # >= 5 ALT alleles; varies across samples: for integer-valued columns (rounded genotypes, exact sums)
-    # N sum(x^2) == (sum x)^2 iff x is constant (Cauchy-Schwarz)
+    # >= 5 ALT alleles; varies across samples: N sum(x^2) == (sum x)^2 iff x is constant (Cauchy-Schwarz), exact
+    # here: a SNP constant among its calls is filled with that same count (integer sums divide exactly), and any
+    # other column's variance is far above rounding (counts, or means of counts)
     cs = colSums(G)
     keep = rowSums(imp_geno) >= 5 & nrow(G) * colSums(G * G) != cs * cs
     if (!any(keep)) return(NULL)

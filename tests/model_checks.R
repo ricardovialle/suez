@@ -191,6 +191,10 @@ ri = map_interaction_qtl(Y[1, , drop = FALSE], Gi, geneloc, snploc, anno, sample
                          permutation_approach = "none", cisdist = 100)
 check("missing genotypes imputed, gene with a monomorphic SNP with missing calls kept",
       nrow(ri) == n_snp - 1 && !s_mono %in% ri$cis_snp && !anyNA(ri$l_geno))
+# a missing call is its SNP's mean count over the (rounded) calls; a SNP with no calls becomes 0
+gm = rbind(a = c(0, 1, NA, 2), b = c(NA, NA, NA, NA), c = c(1.2, NA, 0.6, 2))
+check("missing genotypes set to the SNP's mean count",
+      identical(suez:::impute_mean(gm), rbind(a = c(0, 1, 1, 2), b = c(0, 0, 0, 0), c = c(1, 4 / 3, 1, 2))))
 
 # bimodal likelihood in h: two peaks of near-equal height, the higher one on either side, so a fit
 # that refines only the best grid point lands on the wrong peak in one of the two genes

@@ -170,7 +170,7 @@ The planted response eQTL, `gene1` / `snp1`, has the smallest interaction p-valu
 |---|---|
 | expression (`input`) | numeric matrix, genes x samples, log2 scale (e.g. log2 CPM). Row names are gene ids. Columns are samples, **in the same order as the rows of `anno`** (column names are not used for matching). |
 | `anno` | data.frame, one row per sample, with columns `individual` (id matching the genotype column names) and `condition` (factor / character for categories, numeric for a continuous condition, or a numeric basis matrix such as `splines::ns(age, df = 3)` for effects that change smoothly with the condition).; with `curve_at`, suez returns the fitted curves beta(condition) and mu(condition) with SEs). |
-| `genotype` | numeric matrix, SNPs x individuals, with ALT allele counts 0/1/2 (`NA` allowed: imputed per gene with an SVD of the cis genotypes). Row names are SNP ids, column names individual ids. It can also be a `Rsamtools::TabixFile` of a bgzipped, indexed VCF (GT field). |
+| `genotype` | numeric matrix, SNPs x individuals, with ALT allele counts 0/1/2 (`NA` allowed: set to the SNP's mean count over its calls). Row names are SNP ids, column names individual ids. It can also be a `Rsamtools::TabixFile` of a bgzipped, indexed VCF (GT field). |
 | `snploc` | data.frame with columns `snpid`, `chr`, `pos`. |
 | `geneloc` | data.frame with columns `geneid`, `chr`, `left`, `right` (gene start and end). Genes in both `geneloc` and `rownames(input)` are tested. |
 | `kinship_matrix` (step 1, optional) | individuals x individuals relatedness matrix (e.g. a GRM from plink or GCTA), with row and column names that match `anno$individual`. |

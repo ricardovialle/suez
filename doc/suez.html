@@ -380,7 +380,7 @@ then compute TMM-normalized log2 CPM.</p>
 <h2>3. Genotypes: read the VCF, filter, convert to dosages</h2>
 <p>Keep biallelic SNPs with a call rate of at least 95% and a minor
 allele frequency of at least 5%. Missing calls can stay <code>NA</code>:
-suez imputes them per gene.</p>
+suez sets each to the SNP&rsquo;s mean count over its calls (mean dosage).</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>vcf <span class="ot">=</span> <span class="fu">readVcf</span>(<span class="fu">ext</span>(<span class="st">&quot;genotypes.vcf.gz&quot;</span>))</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>vcf <span class="ot">=</span> vcf[<span class="fu">isSNV</span>(vcf)]                            <span class="co"># biallelic SNPs</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>gt <span class="ot">=</span> <span class="fu">geno</span>(vcf)<span class="sc">$</span>GT</span>

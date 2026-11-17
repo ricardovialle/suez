@@ -50,7 +50,7 @@ dim(logcpm)
 ## 3. Genotypes: read the VCF, filter, convert to dosages
 
 Keep biallelic SNPs with a call rate of at least 95% and a minor allele frequency of at least 5%. Missing
-calls can stay `NA`: suez imputes them per gene.
+calls can stay `NA`: suez sets each to the SNP's mean count over its calls (mean dosage).
 
 ```{r genotypes}
 vcf = readVcf(ext("genotypes.vcf.gz"))
